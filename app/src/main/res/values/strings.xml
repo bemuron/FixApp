@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">FixApp</string>
+    <string name="categories_list_instructions">In what category is the item you want fixed?</string>
+    <string name="describe_project_header">Describe Your project</string>
+    <string name="title">Title;</string>
+    <string name="job_title_sample">Job Title e.g Broken water tap</string>
+    <string name="job_desc_sample">Briefly describe the job</string>
+    <string name="job_post_button">Post</string>
+    <string name="job_images_instructions">Upload image of the job(i.e what you want fixed)</string>
+    <string name="description">Description;</string>
+
+    <string name="hint_password">Password</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_first_name">First Name</string>
+    <string name="hint_last_name">Last Name</string>
+    <string name="hint_dob">Date of Birth</string>
+    <string name="hint_gender">Gender</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="btn_register">REGISTER</string>
+    <string name="btn_link_to_register">Not a member? Sign up now.</string>
+    <string name="btn_link_to_login">Already registred! Login.</string>
+    <string name="register_on_fixapp">Register with FixApp</string>
+
+    <string name="project_images_info">Pictures of what has to be fixed</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_post_job">Post a job</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="google_maps_key">Map</string>
+</resources>
