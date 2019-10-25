@@ -26,10 +26,22 @@
     <string name="title_activity_post_job">Post a job</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">FixApp</string>
+    <string name="nav_header_subtitle">Get things done</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps">Map</string>
     <string name="google_maps_key">Map</string>
+
+    <!--nav bar strings-->
+    <string name="my_jobs">My Jobs</string>
+    <string name="browse_jobs">Browse Jobs</string>
+    <string name="messages">Messages</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="profile">Profile</string>
+    <string name="payment_history">Payment History</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

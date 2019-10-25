@@ -5,24 +5,42 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/post_job"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="@string/title_activity_post_job" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/my_jobs"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="@string/my_jobs" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/browse_jobs"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="@string/browse_jobs" />
+
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/my_profile"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="@string/profile" />
     </group>
 
-    <item android:title="Communicate">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/dashboard"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/dashboard" />
+
+        <item
+            android:id="@+id/payment_history"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/payment_history" />
+
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/action_settings" />
+    </group>
+
+    <!--<item android:title="Communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
@@ -33,6 +51,6 @@
                 android:icon="@drawable/ic_menu_send"
                 android:title="Send" />
         </menu>
-    </item>
+    </item>-->
 
 </menu>

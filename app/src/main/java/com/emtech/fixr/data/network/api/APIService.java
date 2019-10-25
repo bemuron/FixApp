@@ -1,6 +1,5 @@
 package com.emtech.fixr.data.network.api;
 
-import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.models.Categories;
 
