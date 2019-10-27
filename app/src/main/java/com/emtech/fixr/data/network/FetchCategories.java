@@ -76,12 +76,6 @@ public class FetchCategories {
         progressDialog.setMessage("Signing Up...");
         progressDialog.show();
 */
-            //building retrofit object
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(APIUrl.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
             //Defining retrofit com.emtech.retrofitexample.api service
             //APIService service = retrofit.create(APIService.class);
         APIService service = new LocalRetrofitApi().getRetrofitService();

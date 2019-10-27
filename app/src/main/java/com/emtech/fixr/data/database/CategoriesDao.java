@@ -28,4 +28,7 @@ public interface CategoriesDao {
 
     @Query("SELECT * from categories ORDER BY category_id ASC")
     LiveData<List<Category>> getAllCategories();
+
+    @Query("SELECT COUNT(category_id) FROM categories")
+    int countCategoriesInDb();
 }

@@ -50,6 +50,7 @@ public class FixAppRepository {
     private boolean mInitialized = false;
     private UsersDao mUsersDao;
     private Cursor mUserDetail;
+    private int mCount;
 
     private FixAppRepository(CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
                                PostFixAppJob postFixAppJob, RegisterUser registerUser,
@@ -109,9 +110,9 @@ public class FixAppRepository {
         if (mInitialized) return;
         mInitialized = true;
 
-        //  if (isFetchNeeded()) {
-//}
-        mExecutors.diskIO().execute(this::startFetchCategoryService);
+        if (isFetchNeeded()) {
+            mExecutors.diskIO().execute(this::startFetchCategoryService);
+        }
     }
 
     /**
@@ -119,7 +120,7 @@ public class FixAppRepository {
      **/
 
     public LiveData<List<Category>> getAllCategories(){
-        //initializeData();
+        initializeData();
         return mCategoryDao.getAllCategories();
     }
 
@@ -150,13 +151,16 @@ public class FixAppRepository {
      *
      * @return Whether a fetch is needed
      */
-    /*
+    /**
+     * Checks if there are more than one category in the db.
+     *
+     * @return Whether a fetch is needed
+     */
     private boolean isFetchNeeded() {
-        Date today = SunshineDateUtils.getNormalizedUtcDateForToday();
-        int count = mWeatherDao.countAllFutureWeather(today);
-        return (count < WeatherNetworkDataSource.NUM_DAYS);
+        mExecutors.diskIO().execute(() ->
+                mCount = mCategoryDao.countCategoriesInDb());
+        return (mCount < 1);
     }
-    */
 
     /**
      * Network related operation
