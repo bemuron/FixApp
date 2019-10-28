@@ -5,7 +5,7 @@
     <string name="title">Title;</string>
     <string name="job_title_sample">Job Title e.g Broken water tap</string>
     <string name="job_desc_sample">Briefly describe the job</string>
-    <string name="job_post_button">Post</string>
+    <string name="job_post_button">Post Job</string>
     <string name="job_images_instructions">Upload image of the job(i.e what you want fixed)</string>
     <string name="description">Description;</string>
 
@@ -26,10 +26,31 @@
     <string name="title_activity_post_job">Post a job</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">FixApp</string>
+    <string name="nav_header_subtitle">Get things done</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_maps">Map</string>
     <string name="google_maps_key">Map</string>
+
+    <!--nav bar strings-->
+    <string name="my_jobs">My Jobs</string>
+    <string name="browse_jobs">Browse Jobs</string>
+    <string name="messages">Messages</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="profile">Profile</string>
+    <string name="payment_history">Payment History</string>
+
+    <string name="ask_job_date">When do you need it done?</string>
+    <string name="continue_button">Continue</string>
+    <string name="check_job_time">At a certain time of the day</string>
+    <string name="title_job_hourly_rate">Hourly rate</string>
+    <string name="title_job_total">Total</string>
+    <string name="job_total_hours">Hours</string>
+    <string name="ask_what_is_budget">What is your budget</string>
+    <string name="price_per_hr">Price per hour</string>
+    <string name="title_summary_budget">Estimated budget;</string>
+    <string name="budget_default_value">UGX.0</string>
+    <string name="sort_job_time_instruction">Don\'t worry you can sort out the exact time with the tasker later</string>
+
 </resources>

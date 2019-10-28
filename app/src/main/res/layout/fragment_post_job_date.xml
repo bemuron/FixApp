@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/margin_padding_normal"
+    android:orientation="vertical"
+    tools:context=".presentation.ui.fragment.PostJobDateFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:text="@string/ask_job_date" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"/>
+
+    <CheckBox
+        android:id="@+id/checkbox_time_needed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check_job_time"/>
+
+    <!--the next 4 checkboxes are dependent on the previous one being selected-->
+
+    <CheckBox
+        android:id="@+id/checkbox_morning_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check_job_time"/>
+    <CheckBox
+        android:id="@+id/checkbox_midday_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check_job_time"/>
+    <CheckBox
+        android:id="@+id/checkbox_afternoon_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check_job_time"/>
+    <CheckBox
+        android:id="@+id/checkbox_evening_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/check_job_time"/>
+
+    <Button
+        android:id="@+id/continue_two"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_padding_normal"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/whiteTextColor"
+        android:text="@string/continue_button"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_small"
+        android:text="@string/sort_job_time_instruction" />
+
+
+
+</LinearLayout>
