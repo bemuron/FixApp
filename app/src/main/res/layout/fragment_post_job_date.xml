@@ -1,14 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/margin_padding_normal"
+    android:orientation="vertical"
     tools:context=".presentation.ui.fragment.PostJobDateFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:text="@string/ask_job_date" />
 
-</FrameLayout>
+    <EditText
+        android:id="@+id/job_date_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:clickable="true"
+        android:focusable="false"
+        android:inputType="date"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"/>
+
+    <Switch
+        android:id="@+id/switch_time_needed"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_padding_normal"
+        android:text="@string/check_job_time"/>
+
+    <!--the next 4 checkboxes are dependent on the previous one being selected-->
+
+    <CheckBox
+        android:id="@+id/checkbox_morning_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCheckboxClicked"
+        android:padding="@dimen/margin_padding_normal"
+        android:text="@string/check_box_morning"/>
+    <CheckBox
+        android:id="@+id/checkbox_midday_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCheckboxClicked"
+        android:padding="@dimen/margin_padding_normal"
+        android:text="@string/check_box_midday"/>
+    <CheckBox
+        android:id="@+id/checkbox_afternoon_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCheckboxClicked"
+        android:padding="@dimen/margin_padding_normal"
+        android:text="@string/check_box_afternoon"/>
+    <CheckBox
+        android:id="@+id/checkbox_evening_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onCheckboxClicked"
+        android:padding="@dimen/margin_padding_normal"
+        android:text="@string/check_box_evening"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_small"
+        android:text="@string/sort_job_time_instruction" />
+
+
+    <Button
+        android:id="@+id/continue_two"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_padding_normal"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/whiteTextColor"
+        android:text="@string/continue_button"/>
+
+
+</LinearLayout>

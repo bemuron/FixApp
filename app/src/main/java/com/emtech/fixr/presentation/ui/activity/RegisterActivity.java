@@ -116,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if (!firstName.isEmpty() && !lastName.isEmpty()  && !birth_date.isEmpty()
                         && !email.isEmpty() && !password.isEmpty() && !gender.isEmpty()) {
-                    String fullName = firstName + "" + lastName;
+                    String fullName = firstName + " " + lastName;
                     registerUser(fullName, birth_date, gender, email, password);
                 } else {
                     Toast.makeText(getApplicationContext(),

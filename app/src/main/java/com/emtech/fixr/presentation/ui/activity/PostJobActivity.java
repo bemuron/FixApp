@@ -3,6 +3,7 @@ package com.emtech.fixr.presentation.ui.activity;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v7.app.ActionBar;
@@ -19,6 +20,8 @@ import com.emtech.fixr.R;
 import com.emtech.fixr.app.MyApplication;
 import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.helpers.SessionManager;
+import com.emtech.fixr.presentation.ui.fragment.PostJobBudgetFragment;
+import com.emtech.fixr.presentation.ui.fragment.PostJobDateFragment;
 import com.emtech.fixr.presentation.ui.fragment.PostJobFragment;
 import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.PostJobViewModelFactory;
@@ -29,7 +32,9 @@ import java.io.File;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
-public class PostJobActivity extends AppCompatActivity implements PostJobFragment.OnPostButtonListener, PostFixAppJob.JobPostedCallBack {
+public class PostJobActivity extends AppCompatActivity implements PostJobFragment.OnPostButtonListener,
+        PostFixAppJob.JobPostedCallBack,PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
+        PostJobDateFragment.OnJobDateFragmentInteractionListener{
     private static final String LOG_TAG = PostJobActivity.class.getSimpleName();
     private PostJobActivityViewModel postJobActivityViewModel;
     private SessionManager session;
@@ -139,7 +144,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         }
     }
 
-    //set up the tutor list fragment
+    //set up the post job details fragment
     private void setupViewFragment(PostJobFragment postJobFragment) {
 
         // Add the fragment to the 'fragment_container' FrameLayout
@@ -166,16 +171,52 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         return postJobFragment;
     }
 
+    //open the next fragment(date and time) when the first(job details) is done
+    private void setUpJobDateFragment(){
+        PostJobDateFragment jobDateFragment = (PostJobDateFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.post_job_fragment_container);
+
+        if (jobDateFragment== null) {
+            jobDateFragment = PostJobDateFragment.newInstance();
+        }
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        getSupportFragmentManager().beginTransaction()
+                //.addToBackStack(TUTOR_LIST_FRAGMENT_TAG )
+                .replace(R.id.post_job_fragment_container, jobDateFragment)
+                .commit();
+    }
+
+    //open the next fragment(job budget) when the previous(job date time) is done
+    private void setUpJobBudgetFragment(){
+        PostJobBudgetFragment jobBudgetFragment = (PostJobBudgetFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.post_job_fragment_container);
+
+        if (jobBudgetFragment== null) {
+            jobBudgetFragment = PostJobBudgetFragment.newInstance();
+        }
+
+        // Add the fragment to the 'fragment_container' FrameLayout
+        getSupportFragmentManager().beginTransaction()
+                //.addToBackStack(TUTOR_LIST_FRAGMENT_TAG )
+                .replace(R.id.post_job_fragment_container, jobBudgetFragment)
+                .commit();
+
+    }
+
 
     //post job fragment callback
     @Override
     public void jobPostDataCallback(int userId, String jobTitle, String jobDesc,
                                     File file, int categoryId, PostJobActivity postJobActivityInstance) {
-        pDialog.setMessage("Posting job details ...");
-        showDialog();
+        //pDialog.setMessage("Posting job details ...");
+        //showDialog();
         //call the viewmodel method to send the job to the server
         Log.d(LOG_TAG, "Passing job details to view model");
-        postJobActivityViewModel.postJob(userId, jobTitle, jobDesc,file, categoryId, postJobActivityInstance);
+        setUpJobDateFragment();
+        //post details to local db and get the id of that record to keep updating with more
+        //input from the user
+        //postJobActivityViewModel.postJob(userId, jobTitle, jobDesc,file, categoryId, postJobActivityInstance);
 
     }
 
@@ -213,5 +254,36 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         session.setLogin(false);
         session.logoutUser();
         //mViewModel.delete();
+    }
+
+    //receive the user input from the job budget fragment
+    //store in the local db if there is no network connection *** up for debate
+    //otherwise get everything the user put in and upload to the db
+    @Override
+    public void onJobBudgetFragmentInteraction(String totalBudget, String estTotBudget,
+                                               String pricePerHr, String totalHrs) {
+        if (pricePerHr == null && totalHrs == null){
+            Log.e(LOG_TAG, "From job budget frag: total budget = "+totalBudget);
+            Log.e(LOG_TAG, "From job budget frag: est tot budget = "+estTotBudget);
+        }else if (totalBudget == null){
+            Log.e(LOG_TAG, "From job budget frag: price per hour = "+pricePerHr);
+            Log.e(LOG_TAG, "From job budget frag: total hrs = "+totalHrs);
+            Log.e(LOG_TAG, "From job budget frag: est tot budget = "+estTotBudget);
+        }
+
+    }
+
+    //receive the user input from the job date fragment
+    //cache it in the local db
+    @Override
+    public void onJobDateFragmentInteraction(String jobDate, String timeSelected) {
+        if (timeSelected == null) {
+            setUpJobBudgetFragment();
+            Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
+        }else{
+            setUpJobBudgetFragment();
+            Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
+        }
+
     }
 }

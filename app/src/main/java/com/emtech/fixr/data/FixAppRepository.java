@@ -113,8 +113,6 @@ public class FixAppRepository {
         if (isFetchNeeded()) {
             mExecutors.diskIO().execute(this::startFetchCategoryService);
         }
-
-
     }
 
     /**
@@ -150,6 +148,11 @@ public class FixAppRepository {
 
     /**
      * Checks if there are enough days of future weather for the app to display all the needed data.
+     *
+     * @return Whether a fetch is needed
+     */
+    /**
+     * Checks if there are more than one category in the db.
      *
      * @return Whether a fetch is needed
      */

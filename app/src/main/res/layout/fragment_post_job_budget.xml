@@ -1,14 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/margin_padding_normal"
+    android:orientation="vertical"
     tools:context=".presentation.ui.fragment.PostJobBudgetFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RadioGroup
+        android:id="@+id/job_budget_radio_group"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
 
-</FrameLayout>
+
+        <RadioButton
+            android:id="@+id/job_budget_total_radio_button"
+            android:layout_width="100dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:button="@android:color/transparent"
+            android:paddingLeft="16dp"
+            android:paddingTop="20dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="20dp"
+            android:text="@string/title_job_total"
+            android:textColor="@drawable/radio_flat_text_selector" />
+
+        <RadioButton
+            android:id="@+id/job_budget_hourly_radio_button"
+            android:gravity="center"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_flat_selector"
+            android:button="@android:color/transparent"
+            android:paddingLeft="14dp"
+            android:paddingTop="20dp"
+            android:paddingRight="14dp"
+            android:paddingBottom="20dp"
+            android:text="@string/title_job_hourly_rate"
+            android:textColor="@drawable/radio_flat_text_selector" />
+    </RadioGroup>
+
+    <!--the textview and edittext below is to be made visible if the user selects budget total option-->
+
+    <TextView
+        android:id="@+id/total_budget_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:text="@string/ask_what_is_budget" />
+
+    <EditText
+        android:id="@+id/total_budget_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:inputType="number"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"/>
+
+    <!--the textviews and edittexts below are to be made visible if the user selects hourly rate option-->
+
+    <TextView
+        android:id="@+id/title_hours_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:text="@string/job_total_hours" />
+
+    <EditText
+        android:id="@+id/total_hours_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"/>
+
+    <TextView
+        android:id="@+id/title_price_per_hr_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:text="@string/price_per_hr" />
+
+    <EditText
+        android:id="@+id/price_per_hr_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:inputType="number"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"/>
+
+    <TextView
+        android:id="@+id/summary_budget_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:text="@string/title_summary_budget" />
+
+    <TextView
+        android:id="@+id/summary_budget_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:text="@string/budget_default_value" />
+
+    <Button
+        android:id="@+id/post_job_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/whiteTextColor"
+        android:text="@string/job_post_button"/>
+
+</LinearLayout>
