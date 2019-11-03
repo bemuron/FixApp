@@ -6,7 +6,7 @@
     <string name="job_title_sample">Job Title e.g Broken water tap</string>
     <string name="job_desc_sample">Briefly describe the job</string>
     <string name="job_post_button">Post Job</string>
-    <string name="job_images_instructions">Upload image of the job(i.e what you want fixed)</string>
+    <string name="job_images_instructions">Upload image of what you want to be fixed (optional)</string>
     <string name="description">Description;</string>
 
     <string name="hint_password">Password</string>
@@ -51,6 +51,13 @@
     <string name="price_per_hr">Price per hour</string>
     <string name="title_summary_budget">Estimated budget;</string>
     <string name="budget_default_value">UGX.0</string>
+    <string name="title_add_job_must_haves">Add must haves</string>
+    <string name="switch_ask_job_remote">Can this task be completed remotely?</string>
+    <string name="job_location_hint">Job Location e.g Kireka, Kampala</string>
     <string name="sort_job_time_instruction">Don\'t worry you can sort out the exact time with the tasker later</string>
+    <string name="check_box_morning">Morning before 10am</string>
+    <string name="check_box_midday">Midday 10am - 2am</string>
+    <string name="check_box_afternoon">Afternoon 2pm - 6pm</string>
+    <string name="check_box_evening">Evening after 6pm</string>
 
 </resources>

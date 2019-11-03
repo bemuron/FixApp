@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/margin_padding_normal"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".presentation.ui.fragment.PostJobBudgetFragment">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_padding_normal"
+    android:orientation="vertical">
 
     <RadioGroup
         android:id="@+id/job_budget_radio_group"
@@ -56,6 +62,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimaryDark"
+        android:visibility="gone"
         android:padding="@dimen/margin_padding_normal"
         android:textSize="@dimen/text_size_xxnormal"
         android:text="@string/ask_what_is_budget" />
@@ -64,7 +71,9 @@
         android:id="@+id/total_budget_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:maxLines="1"
+        android:inputType="number"
         android:textColor="@color/colorPrimaryDark"
         android:padding="@dimen/margin_padding_normal"
         android:textSize="@dimen/text_size_xxnormal"/>
@@ -76,6 +85,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimaryDark"
+        android:visibility="gone"
         android:padding="@dimen/margin_padding_normal"
         android:textSize="@dimen/text_size_xxnormal"
         android:text="@string/job_total_hours" />
@@ -84,6 +94,8 @@
         android:id="@+id/total_hours_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:inputType="number"
         android:maxLines="1"
         android:textColor="@color/colorPrimaryDark"
         android:padding="@dimen/margin_padding_normal"
@@ -94,6 +106,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimaryDark"
+        android:visibility="gone"
         android:padding="@dimen/margin_padding_normal"
         android:textSize="@dimen/text_size_xxnormal"
         android:text="@string/price_per_hr" />
@@ -102,7 +115,9 @@
         android:id="@+id/price_per_hr_edit_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:maxLines="1"
+        android:inputType="number"
         android:textColor="@color/colorPrimaryDark"
         android:padding="@dimen/margin_padding_normal"
         android:textSize="@dimen/text_size_xxnormal"/>
@@ -136,3 +151,4 @@
         android:text="@string/job_post_button"/>
 
 </LinearLayout>
+</ScrollView>

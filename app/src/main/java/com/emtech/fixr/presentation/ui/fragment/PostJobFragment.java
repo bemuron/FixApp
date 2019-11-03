@@ -135,7 +135,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
         jobImage2.setOnClickListener(this);
         jobImage3 = view.findViewById(R.id.job_image3);
         jobImage3.setOnClickListener(this);
-        postButton = view.findViewById(R.id.post_job_button);
+        postButton = view.findViewById(R.id.continue_one);
         postButton.setOnClickListener(this);
         //postButton.setVisibility(View.INVISIBLE);
         //jobImage1 = (ImageView) view.findViewById(R.id.)
@@ -192,7 +192,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
     public void onClick(View view) {
 
         switch (view.getId()){
-            case R.id.post_job_button:
+            case R.id.continue_one:
                 //send the data to PostJobActivity to be posted to the server
                 getJobDetails("job_image1");
                 break;

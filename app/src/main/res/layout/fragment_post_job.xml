@@ -55,6 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fadingEdge="vertical"
+            android:minLines="2"
             android:gravity="top"
             android:hint="@string/job_desc_sample"
             android:inputType="textMultiLine"
@@ -64,11 +65,49 @@
     </android.support.design.widget.TextInputLayout>
 
     <!--Add must haves-->
+    <TextView
+        android:id="@+id/job_must_haves"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:text="@string/title_add_job_must_haves"
+        android:textSize="@dimen/text_size_xxnormal"/>
 
-    <!--Switch to select if the job can be completed remotely or not-->
+    <!--Switch to select if the job can be completed remotely or not
+    if job can be completed remotely, then location input area should be
+    invisible-->
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_normal"
+        android:paddingBottom="@dimen/margin_padding_normal"
+        android:paddingLeft="@dimen/margin_padding_normal"
+        android:paddingRight="@dimen/margin_padding_normal"
+        android:text="@string/switch_ask_job_remote"/>
 
     <!--If cannot be completed remotely add job location text area otherwise
     hide it-->
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/job_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/edit_text_job_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="@dimen/margin_padding_small"
+            android:layout_marginLeft="@dimen/margin_padding_small"
+            android:layout_marginStart="@dimen/margin_padding_small"
+            android:layout_marginTop="@dimen/margin_padding_small"
+            android:hint="@string/job_location_hint"
+            android:padding="@dimen/margin_padding_normal"
+            android:maxLines="1"
+            android:textColor="#000000"/>
+
+    </android.support.design.widget.TextInputLayout>
 
     <!--adding images is optional-->
 
@@ -115,7 +154,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/post_job_button"
+        android:id="@+id/continue_one"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
