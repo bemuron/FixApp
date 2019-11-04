@@ -13,6 +13,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -25,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,7 +57,7 @@ import static android.app.Activity.RESULT_OK;
 public class PostJobFragment extends Fragment implements View.OnClickListener{
     private static final String TAG = PostJobFragment.class.getSimpleName();
     OnPostButtonListener mCallback;
-    private TextView postJobInstructionsTextView;
+    private TextView postJobInstructionsTextView, jobMustHaves;
     private final static int WRITE_EXTERNAL_RESULT = 100;
     private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 55;
     private static final int SELECT_IMAGE_REQUEST_CODE =25 ;
@@ -66,6 +69,8 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
     private Bitmap bitmap;
     private File file;
     private int categoryId, userId;
+    private ScrollView layoutBottomSheet;
+    private BottomSheetBehavior sheetBehavior;
     private String categoryName, mediaPath, currentJobImage = null;
 
     public PostJobFragment(){
@@ -100,6 +105,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
         }
 
         setUpWidgets(view);
+        handleBottomSheet();
         return view;
     }
 
@@ -125,8 +131,14 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
 
     //initialise the views
     private void setUpWidgets(View view){
+        //find the bottom sheet layout
+        layoutBottomSheet = view.findViewById(R.id.bottom_sheet);
+        sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
+        sheetBehavior.setPeekHeight(0);
         postJobInstructionsTextView = view.findViewById(R.id.post_job_instructions);
         postJobInstructionsTextView.setText("Post your fixer-apper to the community of professional "+categoryName+"s.");
+        jobMustHaves = view.findViewById(R.id.job_must_haves);
+        jobMustHaves.setOnClickListener(this);
         jobTitleEditText = view.findViewById(R.id.edit_text_job_title);
         jobDescEditText = view.findViewById(R.id.edit_text_job_desc);
         jobImage1 = view.findViewById(R.id.job_image1);
@@ -141,6 +153,40 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
         //jobImage1 = (ImageView) view.findViewById(R.id.)
         //radgrp = (RadioGroup) view.findViewById(R.id.radiogroup);
         //hint = view.findViewById(R.id.hintId);
+    }
+
+    //handle bottom sheet state
+    private void handleBottomSheet(){
+        /**
+         * bottom sheet state change listener
+         * we are changing button text when sheet changed state
+         * */
+        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                switch (newState) {
+                    case BottomSheetBehavior.STATE_HIDDEN:
+                        break;
+                    case BottomSheetBehavior.STATE_EXPANDED: {
+                        Log.e(TAG, "Expand sheet");
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_COLLAPSED: {
+                        Log.e(TAG, "close sheet");
+                    }
+                    break;
+                    case BottomSheetBehavior.STATE_DRAGGING:
+                        break;
+                    case BottomSheetBehavior.STATE_SETTLING:
+                        break;
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+
+            }
+        });
     }
 
     //handles user selection of image
@@ -231,6 +277,12 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
                     postButton.setEnabled(true);
                     //getJobDetails("job_image3");
                 }
+                break;
+
+            case R.id.job_must_haves:
+                //handle click on the job must haves text view
+                //it will slide up the bottom sheet
+                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
                 break;
         }
 

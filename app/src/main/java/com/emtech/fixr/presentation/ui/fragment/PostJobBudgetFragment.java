@@ -147,6 +147,7 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
             perHourTv.setVisibility(View.GONE);
             totHrsTv.setVisibility(View.GONE);
             onButtonClickedOnTotalBudget();
+            realTimeTotBudgetEtChange();
 
         }else if (budgetTypeSelected.equals("Hourly rate")){
             isHourlyChecked = true;
@@ -157,6 +158,8 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
             totalBudgetEt.setVisibility(View.GONE);
             totalBudgetTv.setVisibility(View.GONE);
             onButtonClickedOnHourlyBudget();
+            realTimeTotHrsEtChange();
+            realTimeTotBudgetEtChange();
         }
     }
 
@@ -223,9 +226,6 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count > 0) {
                     estTotBudgetTv.setText("UGX." + s);
-                    if (isTotalBudgetChecked){
-                        estTotBudgetTv.setText("UGX." + s);
-                    }
                 }
 
             }
@@ -251,9 +251,6 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
                 if (count > 0) {
                     perHourPrice = Integer.parseInt(s.toString());
                     calculateTotalBudget(perHourPrice, hoursTotal);
-                    if (isHourlyChecked){
-                        calculateTotalBudget(perHourPrice, hoursTotal);
-                    }
                 }
 
             }
@@ -277,9 +274,6 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
                 if (count > 0) {
                     hoursTotal = Integer.parseInt(s.toString());
                     calculateTotalBudget(perHourPrice, hoursTotal);
-                    if (isHourlyChecked){
-                        calculateTotalBudget(perHourPrice, hoursTotal);
-                    }
                 }
 
             }

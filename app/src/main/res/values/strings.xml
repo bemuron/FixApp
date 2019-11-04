@@ -59,5 +59,10 @@
     <string name="check_box_midday">Midday 10am - 2am</string>
     <string name="check_box_afternoon">Afternoon 2pm - 6pm</string>
     <string name="check_box_evening">Evening after 6pm</string>
-
+    <string name="job_must_haves_instructions">Add up to three things the Tasker needs
+        to have inorder to make an offer, e.g</string>
+    <string name="job_must_haves_eg_one">\u2713 Must have a van</string>
+    <string name="job_must_haves_eg_two">\u2713 Should be able to work late</string>
+    <string name="must_haves_hint">What they must have or do</string>
+    <string name="add_must_have">Add</string>
 </resources>

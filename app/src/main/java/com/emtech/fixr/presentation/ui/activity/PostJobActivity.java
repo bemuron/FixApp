@@ -29,9 +29,6 @@ import com.emtech.fixr.utilities.InjectorUtils;
 
 import java.io.File;
 
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-
 public class PostJobActivity extends AppCompatActivity implements PostJobFragment.OnPostButtonListener,
         PostFixAppJob.JobPostedCallBack,PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
         PostJobDateFragment.OnJobDateFragmentInteractionListener{
@@ -73,39 +70,39 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                 (this, factory).get(PostJobActivityViewModel.class);
 
         //find the bottom sheet layout
-        layoutBottomSheet = findViewById(R.id.bottom_sheet);
-        sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
+        //layoutBottomSheet = findViewById(R.id.bottom_sheet);
+        //sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
 
         /**
          * bottom sheet state change listener
          * we are changing button text when sheet changed state
          * */
-        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                switch (newState) {
-                    case BottomSheetBehavior.STATE_HIDDEN:
-                        break;
-                    case BottomSheetBehavior.STATE_EXPANDED: {
-                        Log.e(LOG_TAG, "close sheet");
-                    }
-                    break;
-                    case BottomSheetBehavior.STATE_COLLAPSED: {
-                        Log.e(LOG_TAG, "Expand sheet");
-                    }
-                    break;
-                    case BottomSheetBehavior.STATE_DRAGGING:
-                        break;
-                    case BottomSheetBehavior.STATE_SETTLING:
-                        break;
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
+//        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+//            @Override
+//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+//                switch (newState) {
+//                    case BottomSheetBehavior.STATE_HIDDEN:
+//                        break;
+//                    case BottomSheetBehavior.STATE_EXPANDED: {
+//                        Log.e(LOG_TAG, "close sheet");
+//                    }
+//                    break;
+//                    case BottomSheetBehavior.STATE_COLLAPSED: {
+//                        Log.e(LOG_TAG, "Expand sheet");
+//                    }
+//                    break;
+//                    case BottomSheetBehavior.STATE_DRAGGING:
+//                        break;
+//                    case BottomSheetBehavior.STATE_SETTLING:
+//                        break;
+//                }
+//            }
+//
+//            @Override
+//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+//
+//            }
+//        });
 
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout

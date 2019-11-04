@@ -9,7 +9,7 @@
     android:orientation="vertical"
     android:padding="@dimen/card_margin"
     app:behavior_hideable="true"
-    app:behavior_peekHeight="100dp"
+    app:behavior_peekHeight="0dp"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
     tools:context=".presentation.ui.activity.PostJobActivity">
 
@@ -24,21 +24,37 @@
         android:paddingRight="@dimen/margin_padding_tiny">
 
         <TextView
-            android:id="@+id/post_job_instructions"
+            android:id="@+id/must_haves_instructions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:textColor="@color/colorPrimaryDark"
+            android:text="@string/job_must_haves_instructions"
             android:padding="@dimen/margin_padding_normal"
             android:textSize="@dimen/text_size_xxnormal"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/job_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/must_haves_eg_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/job_must_haves_eg_one"
+            android:paddingRight="@dimen/margin_padding_normal"
+            android:paddingLeft="@dimen/margin_padding_normal"
+            android:textSize="@dimen/text_size_xnormal"/>
+
+        <TextView
+            android:id="@+id/must_haves_eg_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/job_must_haves_eg_two"
+            android:paddingRight="@dimen/margin_padding_normal"
+            android:paddingLeft="@dimen/margin_padding_normal"
+            android:textSize="@dimen/text_size_xnormal"/>
 
             <EditText
-                android:id="@+id/edit_text_job_title"
+                android:id="@+id/edit_text_must_haves_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -46,81 +62,46 @@
                 android:layout_marginLeft="@dimen/margin_padding_small"
                 android:layout_marginStart="@dimen/margin_padding_small"
                 android:layout_marginTop="@dimen/margin_padding_small"
-                android:hint="@string/job_title_sample"
+                android:hint="@string/must_haves_hint"
                 android:padding="@dimen/margin_padding_normal"
                 android:maxLines="1"
                 android:textColor="#000000"/>
 
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/job_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/edit_text_job_desc"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fadingEdge="vertical"
-                android:gravity="top"
-                android:hint="@string/job_desc_sample"
-                android:inputType="textMultiLine"
-                android:padding="@dimen/margin_padding_normal"
-                android:scrollbars="vertical"
-                android:textSize="@dimen/text_size_large"/>
-
-        </android.support.design.widget.TextInputLayout>
+        <Button
+            android:id="@+id/add_must_have_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/colorPrimaryDark"
+            android:textColor="@color/whiteTextColor"
+            android:text="@string/add_must_have"/>
 
         <TextView
-            android:id="@+id/job_images"
+            android:id="@+id/must_have_one"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_size_xxnormal"
             android:padding="@dimen/margin_padding_normal"
-            android:gravity="center_horizontal"
             android:textColor="@color/colorPrimaryDark"
             android:text="@string/job_images_instructions"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/must_have_two"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/card_margin"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal">
+            android:textSize="@dimen/text_size_xxnormal"
+            android:padding="@dimen/margin_padding_normal"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/job_images_instructions"/>
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/job_image1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/card_margin"
-                android:src="@mipmap/ic_crop_original_black_48dp"/>
-
-            <ImageView
-                android:id="@+id/job_image2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:padding="@dimen/card_margin"
-                android:src="@mipmap/ic_crop_original_black_48dp"/>
-
-            <ImageView
-                android:id="@+id/job_image3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:padding="@dimen/card_margin"
-                android:src="@mipmap/ic_crop_original_black_48dp"/>
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/post_job_button"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/must_have_three"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="@color/whiteTextColor"
-            android:text="@string/job_post_button"/>
+            android:textSize="@dimen/text_size_xxnormal"
+            android:padding="@dimen/margin_padding_normal"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/job_images_instructions"/>
 
     </LinearLayout>
 
