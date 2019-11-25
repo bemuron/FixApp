@@ -32,6 +32,11 @@ public interface APIService {
             @Part("posted_by") int posted_by,
             @Part("job_title") String job_title,
             @Part("description") String description,
+            @Part("location") String location,
+            @Part("must_have_one") String must_have_one,
+            @Part("must_have_two") String must_have_two,
+            @Part("must_have_three") String must_have_three,
+            @Part("is_job_remote") int is_job_remote,
             @Part MultipartBody.Part file,
             @Part("name") RequestBody name,
             @Part("category_id") int category_id);

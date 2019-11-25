@@ -76,32 +76,48 @@
             android:textColor="@color/whiteTextColor"
             android:text="@string/add_must_have"/>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/must_haves_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <TextView
             android:id="@+id/must_have_one"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_size_xxnormal"
-            android:padding="@dimen/margin_padding_normal"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="@string/job_images_instructions"/>
+            android:paddingRight="@dimen/margin_padding_normal"
+            android:paddingLeft="@dimen/margin_padding_normal"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
             android:id="@+id/must_have_two"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_size_xxnormal"
-            android:padding="@dimen/margin_padding_normal"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="@string/job_images_instructions"/>
+            android:paddingRight="@dimen/margin_padding_normal"
+            android:paddingLeft="@dimen/margin_padding_normal"
+            android:textColor="@color/colorPrimaryDark"/>
 
         <TextView
             android:id="@+id/must_have_three"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_size_xxnormal"
-            android:padding="@dimen/margin_padding_normal"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="@string/job_images_instructions"/>
+            android:paddingRight="@dimen/margin_padding_normal"
+            android:paddingLeft="@dimen/margin_padding_normal"
+            android:textColor="@color/colorPrimaryDark"/>
+
+        <Button
+            android:id="@+id/save_must_haves_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_padding_xxnormal"
+            android:layout_gravity="center_horizontal"
+            android:textSize="@dimen/text_size_xnormal"
+            android:background="@color/save"
+            android:textColor="@color/whiteTextColor"
+            android:text="@string/save_must_have"/>
 
     </LinearLayout>
 

@@ -63,7 +63,8 @@ public class PostFixAppJob {
     /**
      * Starts an intent service to post the job.
      */
-    public void startPostJobService(int userId, String jobTitle, String jobDesc,
+    public void startPostJobService(int userId, String jobTitle, String jobDesc, String jobLocation,
+                                    String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                     File file, int categoryId, PostJobActivity postJobActivityInstance) {
 
         postJobActivity = postJobActivityInstance;
@@ -74,6 +75,11 @@ public class PostFixAppJob {
         jobBundle.putInt("userId", userId);
         jobBundle.putString("jobTitle", jobTitle);
         jobBundle.putString("jobDesc", jobDesc);
+        jobBundle.putString("jobLocation", jobLocation);
+        jobBundle.putString("mustHaveOne", mustHaveOne);
+        jobBundle.putString("mustHaveTwo", mustHaveTwo);
+        jobBundle.putString("mustHaveThree", mustHaveThree);
+        jobBundle.putInt("isJobRemote", isJobRemote);
         jobBundle.putSerializable("filePath", file);
         jobBundle.putInt("categoryId", categoryId);
         intentToPost.putExtras(jobBundle);
@@ -83,7 +89,8 @@ public class PostFixAppJob {
     }
 
     //retrofit call to post the job details to the server
-    public void postJobDetails(int userId, String jobTitle, String jobDesc,
+    public void postJobDetails(int userId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                               String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                File file, int categoryId){
 
         //Map is used to multipart the file using okhttp3.RequestBody
@@ -99,7 +106,8 @@ public class PostFixAppJob {
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<Result> call = service.postJob(userId, jobTitle, jobDesc, fileToUpload, fileName, categoryId);
+        Call<Result> call = service.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, fileToUpload, fileName, categoryId);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<Result>() {

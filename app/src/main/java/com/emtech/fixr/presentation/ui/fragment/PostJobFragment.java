@@ -9,16 +9,22 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +34,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +42,9 @@ import com.emtech.fixr.R;
 import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
+import com.emtech.fixr.models.JobMustHave;
 import com.emtech.fixr.models.User;
+import com.emtech.fixr.presentation.adapters.MustHavesAdapter;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;
@@ -54,7 +63,9 @@ import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PostJobFragment extends Fragment implements View.OnClickListener{
+public class PostJobFragment extends Fragment implements View.OnClickListener,
+        MustHavesAdapter.MustHavesAdapterListener
+{
     private static final String TAG = PostJobFragment.class.getSimpleName();
     OnPostButtonListener mCallback;
     private TextView postJobInstructionsTextView, jobMustHaves;
@@ -62,16 +73,26 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
     private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 55;
     private static final int SELECT_IMAGE_REQUEST_CODE =25 ;
     private EditText jobTitleEditText;
-    private EditText jobDescEditText;
+    private EditText jobDescEditText,jobLocationEditText, mustHavesEditText;
+    private TextInputLayout jobLocationTextInputLayout;
     private ImageView jobImage1, jobImage2, jobImage3;
+    private TextView mustHaveOneTv, mustHaveTwoTv, mustHaveThreeTv;
     private ProgressDialog pDialog;
-    private Button postButton;
+    private Button postButton, addMustHaveButton, saveMustHavesButton;
     private Bitmap bitmap;
+    private RecyclerView recyclerView;
+    private ArrayList<JobMustHave> mustHavesArrayList = new ArrayList<>();
+    private MustHavesAdapter mAdapter;
     private File file;
-    private int categoryId, userId;
+    private Switch isJobRemoteSwitch;
+    private int categoryId, userId, isJobRemote = 0;
     private ScrollView layoutBottomSheet;
+    private boolean locationSwitchChecked = false;
     private BottomSheetBehavior sheetBehavior;
-    private String categoryName, mediaPath, currentJobImage = null;
+    //private JobMustHave mustHave;
+    private String categoryName, mediaPath, currentJobImage = null,
+            mustHaveOne = null, mustHaveTwo = null, mustHaveThree = null,
+            mstHaveOne, mstHaveTwo, mstHaveThree, musthave;
 
     public PostJobFragment(){
 
@@ -105,14 +126,29 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
         }
 
         setUpWidgets(view);
+        setUpMustHavesAdapter();
         handleBottomSheet();
         return view;
     }
 
+    //remove the must have when the uers clicks on the delete button
+    @Override
+    public void onIconDeleteClicked(int position) {
+        //mAdapter.resetAnimationIndex();
+        //List<Integer> selectedItemPositions =
+          //      mAdapter.getSelectedItems();
+        //for (int i = selectedItemPositions.size() - 1; i >= 0; i--) {
+            //mAdapter.removeData(selectedItemPositions.get(i));
+        mAdapter.removeData(position);
+        //}
+        mAdapter.notifyDataSetChanged();
+    }
+
     // Container Activity must implement this interface
     public interface OnPostButtonListener {
-        void jobPostDataCallback(int userId, String jobTitle, String jobDesc,
-                                        File file, int categoryId, PostJobActivity postJobActivity);
+        void jobPostDataCallback(int userId, String jobTitle, String jobDesc, String jobLocation,
+                                 String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
+                                 File file, int categoryId, PostJobActivity postJobActivityInstance);
     }
 
     @Override
@@ -131,16 +167,33 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
 
     //initialise the views
     private void setUpWidgets(View view){
+        recyclerView = view.findViewById(R.id.must_haves_list);
         //find the bottom sheet layout
         layoutBottomSheet = view.findViewById(R.id.bottom_sheet);
         sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
         sheetBehavior.setPeekHeight(0);
         postJobInstructionsTextView = view.findViewById(R.id.post_job_instructions);
-        postJobInstructionsTextView.setText("Post your fixer-apper to the community of professional "+categoryName+"s.");
+        postJobInstructionsTextView.setText("Post your job/task to the community of professional "+categoryName+"s.");
         jobMustHaves = view.findViewById(R.id.job_must_haves);
         jobMustHaves.setOnClickListener(this);
+        jobLocationTextInputLayout = view.findViewById(R.id.job_location);
+        isJobRemoteSwitch = view.findViewById(R.id.is_remote_job_switch);
+        isJobRemoteSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                jobLocationTextInputLayout.setVisibility(View.GONE);
+                locationSwitchChecked = true;
+                isJobRemote = 1;//true
+
+            } else {
+                jobLocationTextInputLayout.setVisibility(View.VISIBLE);
+                locationSwitchChecked = false;
+                isJobRemote = 0;//false
+            }
+        });
         jobTitleEditText = view.findViewById(R.id.edit_text_job_title);
         jobDescEditText = view.findViewById(R.id.edit_text_job_desc);
+        jobLocationEditText = view.findViewById(R.id.edit_text_job_location);
+        mustHavesEditText = view.findViewById(R.id.edit_text_must_haves_input);
         jobImage1 = view.findViewById(R.id.job_image1);
         jobImage1.setOnClickListener(this);
         jobImage2 = view.findViewById(R.id.job_image2);
@@ -149,10 +202,28 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
         jobImage3.setOnClickListener(this);
         postButton = view.findViewById(R.id.continue_one);
         postButton.setOnClickListener(this);
+        addMustHaveButton = view.findViewById(R.id.add_must_have_button);
+        addMustHaveButton.setOnClickListener(this);
+        saveMustHavesButton = view.findViewById(R.id.save_must_haves_button);
+        saveMustHavesButton.setOnClickListener(this);
+        mustHaveOneTv = view.findViewById(R.id.must_have_one);
+        mustHaveTwoTv = view.findViewById(R.id.must_have_two);
+        mustHaveThreeTv = view.findViewById(R.id.must_have_three);
         //postButton.setVisibility(View.INVISIBLE);
         //jobImage1 = (ImageView) view.findViewById(R.id.)
         //radgrp = (RadioGroup) view.findViewById(R.id.radiogroup);
         //hint = view.findViewById(R.id.hintId);
+    }
+
+    //set up the list adapter to handle the job must haves
+    private void setUpMustHavesAdapter(){
+        mAdapter = new MustHavesAdapter(PostJobActivity.getInstance(), mustHavesArrayList,this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(PostJobActivity.getInstance().getApplicationContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(PostJobActivity.getInstance(),
+                LinearLayoutManager.VERTICAL));
+        recyclerView.setAdapter(mAdapter);
     }
 
     //handle bottom sheet state
@@ -213,15 +284,67 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
             //return false;
         }
 
-        //Map is used to multipart the file using okhttp3.RequestBody
-        if (mediaPath != null) {
-            file = new File(mediaPath);
+        String jobLocation = jobLocationEditText.getText().toString().trim();
 
-            if (!jobTitle.isEmpty() && !jobDesc.isEmpty() && file.exists()) {
-
+        //job title and description are mandatory
+        //after making making sure they are there we can check for the rest
+        if (!jobTitle.isEmpty() && !jobDesc.isEmpty()){
+            //if location is specified
+            //if location switch is not on then location should be specified
+            //otherwise job is remote
+            if (!locationSwitchChecked && TextUtils.isEmpty(jobLocation)){ //we want a location specified
+                Toast.makeText(getActivity(), "Please include job location", Toast.LENGTH_LONG).show();
+                jobLocationEditText.setError("Job location is required");
+            }else if (!locationSwitchChecked && !TextUtils.isEmpty(jobLocation)){//location is specified
                 //send data to parent activity to be posted to the server
-                mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, file, categoryId, PostJobActivity.getInstance());
+                //image is not added but location is
+                mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                        mustHaveThree, isJobRemote, null, categoryId, PostJobActivity.getInstance());
+                Log.e(TAG, "1st musthaveone = "
+                        +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
+                        mustHaveThree);
+                //if image has been added
+                //Map is used to multipart the file using okhttp3.RequestBody
+                if (mediaPath != null) {
+                    file = new File(mediaPath);
+                    if (file.exists()) {//image is added
+
+                            //send data to parent activity to be posted to the server
+                            mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                                    mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
+                        Log.e(TAG, "2nd musthaveone = "
+                                +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
+                                mustHaveThree);
+                    }
+                }
+                //image is not added but location is
+            }/*else if (!locationSwitchChecked && mediaPath == null){
+                    //send data to parent activity to be posted to the server
+                    mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                            mustHaveThree, isJobRemote, null, categoryId, PostJobActivity.getInstance());
+            }*/
+            //image selected but location not
+            if (mediaPath != null && locationSwitchChecked){
+                file = new File(mediaPath);
+                if (file.exists()) {//image is added
+
+                    //send data to parent activity to be posted to the server
+                    mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, null, mustHaveOne, mustHaveTwo,
+                            mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
+                    Log.e(TAG, "3rd musthaveone = "
+                            +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
+                            mustHaveThree);
+                }
+            }else if (mediaPath == null && locationSwitchChecked){
+
+                    //send data to parent activity to be posted to the server
+                    mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, null, mustHaveOne, mustHaveTwo,
+                            mustHaveThree, isJobRemote, null, categoryId, PostJobActivity.getInstance());
+                Log.e(TAG, "4th musthaveone = "
+                        +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
+                        mustHaveThree);
             }
+
         }
     }
 
@@ -283,6 +406,51 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
                 //handle click on the job must haves text view
                 //it will slide up the bottom sheet
                 sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                break;
+
+            case R.id.save_must_haves_button:
+                //handle click on the save must haves button
+                //it will collapse the bottom sheet
+                //if no musthaves have been added yet, put the first one in the first text view
+                mustHaveOne = mstHaveOne;
+                mustHaveTwo = mstHaveTwo;
+                mustHaveThree = mstHaveThree;
+                sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                break;
+
+            case R.id.add_must_have_button:
+                musthave = mustHavesEditText.getText().toString().trim();
+                if (TextUtils.isEmpty(musthave)) {
+                    mustHavesEditText.setError("Please type in a must have");
+                }else {
+                   mstHaveOne = mustHaveOneTv.getText().toString().trim();
+                   mstHaveTwo = mustHaveTwoTv.getText().toString().trim();
+                   mstHaveThree = mustHaveThreeTv.getText().toString().trim();
+//                    //if no musthaves have been added yet, put the first one in the first text view
+                    if (mstHaveOne.length() == 0) {
+                        //display what the user typed in the tv
+                        mustHaveOneTv.setText("\u2713 " + musthave);
+                        mustHavesEditText.setText("");
+                        //mustHaveOne = mstHaveOne;
+                    }if (mstHaveTwo.length() == 0 && mstHaveOne.length() > 0){
+                        //display what the user typed in the tv
+                        mustHaveTwoTv.setText("\u2713 " + musthave);
+                        mustHavesEditText.setText("");
+                        //mustHaveTwo = mstHaveTwo;
+
+                    }if (mstHaveThree.length() == 0 && mstHaveTwo.length() > 0 && mstHaveOne.length() > 0){
+                        //display what the user typed in the tv
+                        mustHaveThreeTv.setText("\u2713 " + musthave);
+                        mustHavesEditText.setText("");
+                        //mustHaveThree = mstHaveThree;
+
+                    }
+                    if (mstHaveOne.length() > 0 && mstHaveTwo.length() > 0 && mstHaveThree.length() > 0){
+                        //inform user that no more must haves cn be added
+                        Toast.makeText(getActivity(), "Only 3 must haves can be added",
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
                 break;
         }
 

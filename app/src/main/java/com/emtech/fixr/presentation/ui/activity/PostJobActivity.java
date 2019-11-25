@@ -146,7 +146,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
 
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
-                //.addToBackStack(TUTOR_LIST_FRAGMENT_TAG )
+                .addToBackStack("PostJobFragment")
                 .replace(R.id.post_job_fragment_container, postJobFragment)
                 .commit();
     }
@@ -178,7 +178,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
 
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
-                //.addToBackStack(TUTOR_LIST_FRAGMENT_TAG )
+                .addToBackStack("PostJobDateFragment")
                 .replace(R.id.post_job_fragment_container, jobDateFragment)
                 .commit();
     }
@@ -193,7 +193,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
 
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
-                //.addToBackStack(TUTOR_LIST_FRAGMENT_TAG )
+                .addToBackStack("PostJobBudgetFragment")
                 .replace(R.id.post_job_fragment_container, jobBudgetFragment)
                 .commit();
 
@@ -202,7 +202,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
 
     //post job fragment callback
     @Override
-    public void jobPostDataCallback(int userId, String jobTitle, String jobDesc,
+    public void jobPostDataCallback(int userId, String jobTitle, String jobDesc, String jobLocation,
+                                    String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                     File file, int categoryId, PostJobActivity postJobActivityInstance) {
         //pDialog.setMessage("Posting job details ...");
         //showDialog();
@@ -211,7 +212,12 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         setUpJobDateFragment();
         //post details to local db and get the id of that record to keep updating with more
         //input from the user
-        //postJobActivityViewModel.postJob(userId, jobTitle, jobDesc,file, categoryId, postJobActivityInstance);
+        //postJobActivityViewModel.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+          //              mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
+        Log.e(LOG_TAG, "Job details: userid = " + userId+ ", job title = "+ jobTitle+
+                        ", job desc = " +jobDesc+", job location = "+jobLocation+ ", musthaveone = "
+                        +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
+                mustHaveThree+ ", isJobRemote = " +isJobRemote+ ", file = " +file+", categoryid = " +categoryId);
 
     }
 

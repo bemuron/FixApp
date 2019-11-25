@@ -14,5 +14,7 @@
     <color name="input_register_hint">#5e6266</color>
     <color name="btn_login">#26ae90</color>
     <color name="btn_login_bg">#eceef1</color>
+    <color name="save">#13B408</color>
     <color name="bg_circle_default">#666666</color>
+    <color name="row_activated">#e0e0e0</color>
 </resources>
