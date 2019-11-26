@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.emtech.fixr.AppExecutors;
 import com.emtech.fixr.data.database.Category;
+import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.APIUrl;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
@@ -64,6 +65,7 @@ public class PostFixAppJob {
      * Starts an intent service to post the job.
      */
     public void startPostJobService(int userId, String jobTitle, String jobDesc, String jobLocation,
+                                    String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                     File file, int categoryId, PostJobActivity postJobActivityInstance) {
 
         postJobActivity = postJobActivityInstance;
@@ -75,6 +77,10 @@ public class PostFixAppJob {
         jobBundle.putString("jobTitle", jobTitle);
         jobBundle.putString("jobDesc", jobDesc);
         jobBundle.putString("jobLocation", jobLocation);
+        jobBundle.putString("mustHaveOne", mustHaveOne);
+        jobBundle.putString("mustHaveTwo", mustHaveTwo);
+        jobBundle.putString("mustHaveThree", mustHaveThree);
+        jobBundle.putInt("isJobRemote", isJobRemote);
         jobBundle.putSerializable("filePath", file);
         jobBundle.putInt("categoryId", categoryId);
         intentToPost.putExtras(jobBundle);
@@ -84,7 +90,8 @@ public class PostFixAppJob {
     }
 
     //retrofit call to post the job details to the server
-    public void postJobDetails(int userId, String jobTitle, String jobDesc, String jobLocation,
+    public void postJobDetails(int userId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                               String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                File file, int categoryId){
 
         //Map is used to multipart the file using okhttp3.RequestBody
@@ -100,8 +107,8 @@ public class PostFixAppJob {
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<Result> call = service.postJob(userId, jobTitle, jobDesc, jobLocation,
-                fileToUpload, fileName, categoryId);
+        Call<Result> call = service.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, fileToUpload, fileName, categoryId);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<Result>() {
@@ -111,8 +118,10 @@ public class PostFixAppJob {
                 if (!response.body().getError()) {
                     Log.d(LOG_TAG, response.body().getMessage());
 
+                    int job_id = response.body().getJob().getJob_id();
+
                     //send data to parent activity
-                    jobPostedCallBack.onJobPosted(true, response.body().getMessage());
+                    jobPostedCallBack.onJobPosted(true, response.body().getMessage(), job_id);
 
                 }
             }
@@ -122,7 +131,7 @@ public class PostFixAppJob {
                 //print out any error we may get
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
-                jobPostedCallBack.onJobPosted(false, t.getMessage());
+                jobPostedCallBack.onJobPosted(false, t.getMessage(), 0);
             }
         });
 
@@ -132,7 +141,7 @@ public class PostFixAppJob {
      * The interface that receives whether the job was posted or not
      */
     public interface JobPostedCallBack {
-        void onJobPosted(Boolean isJobPosted, String message);
+        void onJobPosted(Boolean isJobPosted, String message, int job_id);
     }
 
 }

@@ -219,6 +219,9 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
         totalBudgetEt.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (count > 0) {
+                    estTotBudgetTv.setText("UGX." + s);
+                }
 
             }
 
@@ -227,11 +230,11 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
                 if (count > 0) {
                     estTotBudgetTv.setText("UGX." + s);
                 }
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                    estTotBudgetTv.setText("UGX." + s);
 
             }
         });

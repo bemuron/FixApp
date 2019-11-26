@@ -175,9 +175,10 @@ public class FixAppRepository {
     }
 
     public void postJobService(int userId, String jobTitle, String jobDesc, String jobLocation,
+                               String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                File file, int categoryId, PostJobActivity postJobActivity){
-        mPostFixAppJob.startPostJobService(userId, jobTitle, jobDesc, jobLocation,
-                file, categoryId, postJobActivity);
+        mPostFixAppJob.startPostJobService(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, file, categoryId, postJobActivity);
     }
 
     //method to call service to login user

@@ -51,7 +51,7 @@
     <string name="price_per_hr">Price per hour</string>
     <string name="title_summary_budget">Estimated budget;</string>
     <string name="budget_default_value">UGX.0</string>
-    <string name="title_add_job_must_haves">Add must haves</string>
+    <string name="title_add_job_must_haves">\u002B Add must haves</string>
     <string name="switch_ask_job_remote">Can this task be completed remotely?</string>
     <string name="job_location_hint">Job Location e.g Kireka, Kampala</string>
     <string name="sort_job_time_instruction">Don\'t worry you can sort out the exact time with the tasker later</string>
@@ -65,4 +65,5 @@
     <string name="job_must_haves_eg_two">\u2713 Should be able to work late</string>
     <string name="must_haves_hint">What they must have or do</string>
     <string name="add_must_have">Add</string>
+    <string name="save_must_have">Save</string>
 </resources>

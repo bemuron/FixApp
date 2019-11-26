@@ -51,7 +51,7 @@ public class Job {
     private Date completed_on;
 
 
-    public Job(String name, String description, String location, String image1, String image2,
+    /*public Job(String name, String description, String location, String image1, String image2,
                String image3, int posted_by, int category_id, Date posted_on,
                int job_status, int completed_by, Date completed_on) {
         this.name = name;
@@ -84,7 +84,7 @@ public class Job {
         this.job_status = job_status;
         this.completed_by = completed_by;
         this.completed_on = completed_on;
-    }
+    }*/
 
     public int getJob_id() {
         return job_id;
@@ -140,5 +140,53 @@ public class Job {
 
     public Date getCompleted_on() {
         return completed_on;
+    }
+
+    public void setJob_id(int job_id) {
+        this.job_id = job_id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setImage1(String image1) {
+        this.image1 = image1;
+    }
+
+    public void setImage2(String image2) {
+        this.image2 = image2;
+    }
+
+    public void setImage3(String image3) {
+        this.image3 = image3;
+    }
+
+    public void setPosted_by(int posted_by) {
+        this.posted_by = posted_by;
+    }
+
+    public void setCategory_id(int category_id) {
+        this.category_id = category_id;
+    }
+
+    public void setPosted_on(Date posted_on) {
+        this.posted_on = posted_on;
+    }
+
+    public void setJob_status(int job_status) {
+        this.job_status = job_status;
+    }
+
+    public void setCompleted_by(int completed_by) {
+        this.completed_by = completed_by;
+    }
+
+    public void setCompleted_on(Date completed_on) {
+        this.completed_on = completed_on;
     }
 }

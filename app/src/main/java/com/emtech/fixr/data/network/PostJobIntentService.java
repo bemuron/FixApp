@@ -48,11 +48,18 @@ public class PostJobIntentService extends IntentService {
             int userId = jobBundle.getInt("userId");
             String jobTitle = jobBundle.getString("jobTitle");
             String jobDesc = jobBundle.getString("jobDesc");
+            String jobLocation = jobBundle.getString("jobLocation");
+            String mustHaveOne = jobBundle.getString("mustHaveOne");
+            String mustHaveTwo = jobBundle.getString("mustHaveTwo");
+            String mustHaveThree = jobBundle.getString("mustHaveThree");
+            int isJobRemote = jobBundle.getInt("isJobRemote");
             File file = (File) jobBundle.getSerializable("filePath");
             int categoryId = jobBundle.getInt("categoryId");
 
             //pass the job details to the method to be posted to the server: finally
-            postFixAppJob.postJobDetails(userId, jobTitle, jobDesc,file, categoryId);
+            postFixAppJob.postJobDetails(userId, jobTitle, jobDesc, jobLocation,
+                    mustHaveOne, mustHaveTwo,
+                    mustHaveThree, isJobRemote, file, categoryId);
         }else{
             Log.e(LOG_TAG, "Job details empty");
         }

@@ -1,5 +1,6 @@
 package com.emtech.fixr.data.network;
 
+import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.models.User;
 import com.google.gson.annotations.SerializedName;
 
@@ -13,10 +14,14 @@ public class Result {
     @SerializedName("user")
     private User user;
 
-    public Result(Boolean error, String message, User user) {
+    @SerializedName("job")
+    private Job job;
+
+    public Result(Boolean error, String message, User user, Job job) {
         this.error = error;
         this.message = message;
         this.user = user;
+        this.job = job;
     }
 
 
@@ -32,4 +37,7 @@ public class Result {
         return user;
     }
 
+    public Job getJob() {
+        return job;
+    }
 }
