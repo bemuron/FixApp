@@ -174,9 +174,10 @@ public class FixAppRepository {
         mFetchCategories.startFetchCategoryService();
     }
 
-    public void postJobService(int userId, String jobTitle, String jobDesc,
+    public void postJobService(int userId, String jobTitle, String jobDesc, String jobLocation,
                                File file, int categoryId, PostJobActivity postJobActivity){
-        mPostFixAppJob.startPostJobService(userId, jobTitle, jobDesc, file, categoryId, postJobActivity);
+        mPostFixAppJob.startPostJobService(userId, jobTitle, jobDesc, jobLocation,
+                file, categoryId, postJobActivity);
     }
 
     //method to call service to login user

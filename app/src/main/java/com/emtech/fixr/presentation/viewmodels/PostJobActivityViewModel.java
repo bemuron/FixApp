@@ -21,8 +21,9 @@ public class PostJobActivityViewModel extends ViewModel {
     }
 
     //call repository method to handle posting data to server
-    public void postJob(int userId, String jobTitle, String jobDesc,
+    public void postJob(int userId, String jobTitle, String jobDesc, String jobLocation,
                         File file, int categoryId, PostJobActivity postJobActivity){
-        mRepository.postJobService(userId, jobTitle, jobDesc, file, categoryId, postJobActivity);
+        mRepository.postJobService(userId, jobTitle, jobDesc, jobLocation,
+                file, categoryId, postJobActivity);
     }
 }

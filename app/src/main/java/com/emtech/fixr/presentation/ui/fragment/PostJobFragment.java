@@ -25,9 +25,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +64,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
     private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 55;
     private static final int SELECT_IMAGE_REQUEST_CODE =25 ;
     private EditText jobTitleEditText;
-    private EditText jobDescEditText;
+    private EditText jobDescEditText, jobLocationEditText;
     private ImageView jobImage1, jobImage2, jobImage3;
     private ProgressDialog pDialog;
     private Button postButton;
@@ -72,6 +74,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
     private ScrollView layoutBottomSheet;
     private BottomSheetBehavior sheetBehavior;
     private String categoryName, mediaPath, currentJobImage = null;
+    private Switch jobLocationSwitch;
 
     public PostJobFragment(){
 
@@ -111,7 +114,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
 
     // Container Activity must implement this interface
     public interface OnPostButtonListener {
-        void jobPostDataCallback(int userId, String jobTitle, String jobDesc,
+        void jobPostDataCallback(int userId, String jobTitle, String jobDesc, String jobLocation,
                                         File file, int categoryId, PostJobActivity postJobActivity);
     }
 
@@ -141,6 +144,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
         jobMustHaves.setOnClickListener(this);
         jobTitleEditText = view.findViewById(R.id.edit_text_job_title);
         jobDescEditText = view.findViewById(R.id.edit_text_job_desc);
+        jobLocationEditText = view.findViewById(R.id.edit_text_job_location);
         jobImage1 = view.findViewById(R.id.job_image1);
         jobImage1.setOnClickListener(this);
         jobImage2 = view.findViewById(R.id.job_image2);
@@ -149,10 +153,16 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
         jobImage3.setOnClickListener(this);
         postButton = view.findViewById(R.id.continue_one);
         postButton.setOnClickListener(this);
-        //postButton.setVisibility(View.INVISIBLE);
-        //jobImage1 = (ImageView) view.findViewById(R.id.)
-        //radgrp = (RadioGroup) view.findViewById(R.id.radiogroup);
-        //hint = view.findViewById(R.id.hintId);
+        jobLocationSwitch = view.findViewById(R.id.job_location_switch);
+        jobLocationSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            if (isChecked) {
+                jobLocationEditText.setVisibility(View.GONE);
+
+            } else {
+                jobLocationEditText.setVisibility(View.VISIBLE);
+            }
+
+        });
     }
 
     //handle bottom sheet state
@@ -213,6 +223,12 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
             //return false;
         }
 
+        String jobLocation = jobLocationEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(jobDesc)) {
+            jobLocationEditText.setError("Job location is required");
+            //return false;
+        }
+
         //Map is used to multipart the file using okhttp3.RequestBody
         if (mediaPath != null) {
             file = new File(mediaPath);
@@ -220,7 +236,8 @@ public class PostJobFragment extends Fragment implements View.OnClickListener{
             if (!jobTitle.isEmpty() && !jobDesc.isEmpty() && file.exists()) {
 
                 //send data to parent activity to be posted to the server
-                mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, file, categoryId, PostJobActivity.getInstance());
+                mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, jobLocation,
+                        file, categoryId, PostJobActivity.getInstance());
             }
         }
     }

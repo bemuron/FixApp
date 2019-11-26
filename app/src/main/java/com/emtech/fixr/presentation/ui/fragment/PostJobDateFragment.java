@@ -92,8 +92,6 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
         //inflate the views
         setUpWidgetViews(view);
 
-        //handle checkbox changes
-        //onCheckboxClicked(view);
         return view;
     }
 
@@ -153,34 +151,6 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
         //update the edit text view with the time selected
         jobDateEt.setText(sdf.format(myCalendar.getTime()));
         continueButton.setEnabled(true);
-    }
-
-    //get changes on the time checkboxes
-    public void onCheckboxClicked(View view){
-        // Is the view now checked?
-        boolean checked = ((CheckBox) view).isChecked();
-        switch(view.getId()){
-            case R.id.checkbox_morning_time:
-                if (checked){
-                    morningTimeSelected = getResources().getString(R.string.check_box_morning);
-                }
-                break;
-            case R.id.checkbox_midday_time:
-                if (checked){
-                    middaySelected = getResources().getString(R.string.check_box_midday);
-                }
-                break;
-            case R.id.checkbox_afternoon_time:
-                if (checked){
-                    afternoonSelected = getResources().getString(R.string.check_box_afternoon);
-                }
-                break;
-            case R.id.checkbox_evening_time:
-                if (checked){
-                    eveningSelected = getResources().getString(R.string.check_box_evening);
-                }
-                break;
-        }
     }
 
     //method to get what user has filled in

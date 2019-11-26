@@ -20,6 +20,9 @@ public class Job {
     @ColumnInfo(name = "description")
     private String description;
 
+    @ColumnInfo(name = "location")
+    private String location;
+
     @ColumnInfo(name = "image1")
     private String image1;
 
@@ -39,7 +42,7 @@ public class Job {
     private Date posted_on;
 
     @ColumnInfo(name = "job_status")
-    private int job_status; // 1 - open, 2 - in progress, 3 - complete
+    private int job_status; // 0 - draft, 1 - open, 2 - in progress, 3 - complete
 
     @ColumnInfo(name = "completed_by")
     private int completed_by; //professional's id
@@ -48,11 +51,12 @@ public class Job {
     private Date completed_on;
 
 
-    public Job(String name, String description, String image1, String image2,
+    public Job(String name, String description, String location, String image1, String image2,
                String image3, int posted_by, int category_id, Date posted_on,
                int job_status, int completed_by, Date completed_on) {
         this.name = name;
         this.description = description;
+        this.location = location;
         this.image1 = image1;
         this.image2 = image2;
         this.image3 = image3;
@@ -64,12 +68,13 @@ public class Job {
         this.completed_on = completed_on;
     }
 
-    public Job(int job_id, String name, String description, String image1,
+    public Job(int job_id, String name, String description, String location, String image1,
                String image2, String image3, int posted_by, int category_id,
                Date posted_on, int job_status, int completed_by, Date completed_on) {
         this.job_id = job_id;
         this.name = name;
         this.description = description;
+        this.location = location;
         this.image1 = image1;
         this.image2 = image2;
         this.image3 = image3;
@@ -91,6 +96,14 @@ public class Job {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getImage1() {
