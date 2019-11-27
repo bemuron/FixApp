@@ -34,7 +34,7 @@ public class PostFixAppJob {
 
     // LiveData storing the latest downloaded weather forecasts
     private final AppExecutors mExecutors;
-    JobPostedCallBack jobPostedCallBack;
+    JobCreatedCallBack jobCreatedCallBack;
     public PostJobActivity postJobActivity;
 
     // For Singleton instantiation
@@ -69,7 +69,7 @@ public class PostFixAppJob {
                                     File file, int categoryId, PostJobActivity postJobActivityInstance) {
 
         postJobActivity = postJobActivityInstance;
-        jobPostedCallBack = postJobActivity;
+        jobCreatedCallBack = postJobActivity;
         Intent intentToPost = new Intent(mContext, PostJobIntentService.class);
 
         Bundle jobBundle = new Bundle();
@@ -121,7 +121,7 @@ public class PostFixAppJob {
                     int job_id = response.body().getJob().getJob_id();
 
                     //send data to parent activity
-                    jobPostedCallBack.onJobPosted(true, response.body().getMessage(), job_id);
+                    jobCreatedCallBack.onJobCreated(true, response.body().getMessage(), job_id);
 
                 }
             }
@@ -131,7 +131,108 @@ public class PostFixAppJob {
                 //print out any error we may get
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
-                jobPostedCallBack.onJobPosted(false, t.getMessage(), 0);
+                jobCreatedCallBack.onJobCreated(false, t.getMessage(), 0);
+            }
+        });
+
+    }
+
+    //retrofit call to post the job details to the server when an image is not added by the user
+    public void postJobDetailsWithoutImage(int userId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                               String mustHaveTwo, String mustHaveThree, int isJobRemote, int categoryId){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.postJobWithoutImage(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, categoryId);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+
+                    int job_id = response.body().getJob().getJob_id();
+
+                    //send data to parent activity
+                    jobCreatedCallBack.onJobCreated(true, response.body().getMessage(), job_id);
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                jobCreatedCallBack.onJobCreated(false, t.getMessage(), 0);
+            }
+        });
+
+    }
+
+    //retrofit call to update the job details with the budget
+    public void updateBudget(int jobId, String totalBudget, String pricePerHr, String totalHrs, String estTotalBudget){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateJobBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+            }
+        });
+
+    }
+
+    //retrofit call to update the job details with the date and time
+    public void updateDateTime(int jobId, String jobDate, String jobTime){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateJobDateTime(jobId, jobDate, jobTime);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
             }
         });
 
@@ -140,8 +241,8 @@ public class PostFixAppJob {
     /**
      * The interface that receives whether the job was posted or not
      */
-    public interface JobPostedCallBack {
-        void onJobPosted(Boolean isJobPosted, String message, int job_id);
+    public interface JobCreatedCallBack {
+        void onJobCreated(Boolean isJobPosted, String message, int job_id);
     }
 
 }

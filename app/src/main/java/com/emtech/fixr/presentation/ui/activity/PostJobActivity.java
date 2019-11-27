@@ -30,7 +30,7 @@ import com.emtech.fixr.utilities.InjectorUtils;
 import java.io.File;
 
 public class PostJobActivity extends AppCompatActivity implements PostJobFragment.OnPostButtonListener,
-        PostFixAppJob.JobPostedCallBack,PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
+        PostFixAppJob.JobCreatedCallBack,PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
         PostJobDateFragment.OnJobDateFragmentInteractionListener{
     private static final String LOG_TAG = PostJobActivity.class.getSimpleName();
     private PostJobActivityViewModel postJobActivityViewModel;
@@ -39,6 +39,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     private ScrollView layoutBottomSheet;
     private BottomSheetBehavior sheetBehavior;
     public static PostJobActivity postJobActivity;
+    private int jobCreatedId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -221,15 +222,19 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
 
     }
 
+    //the job was created
+    //job id has been returned
+    //or not
     @Override
-    public void onJobPosted(Boolean isJobPosted, String message, int job_id) {
-        if (isJobPosted){
+    public void onJobCreated(Boolean isJobCreated, String message, int job_id) {
+        if (isJobCreated){
             hideDialog();
+            jobCreatedId = job_id;
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
             //go back to home activity
-            Intent intent = new Intent(PostJobActivity.this, HomeActivity.class);
+            /*Intent intent = new Intent(PostJobActivity.this, HomeActivity.class);
             startActivity(intent);
-            this.finish();
+            this.finish();*/
         }else{
             //if the job wasnt posted, display error message
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
@@ -263,6 +268,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     @Override
     public void onJobBudgetFragmentInteraction(String totalBudget, String estTotBudget,
                                                String pricePerHr, String totalHrs) {
+        //send data to the server to update the job details
+
         if (pricePerHr == null && totalHrs == null){
             Log.e(LOG_TAG, "From job budget frag: total budget = "+totalBudget);
             Log.e(LOG_TAG, "From job budget frag: est tot budget = "+estTotBudget);

@@ -56,10 +56,18 @@ public class PostJobIntentService extends IntentService {
             File file = (File) jobBundle.getSerializable("filePath");
             int categoryId = jobBundle.getInt("categoryId");
 
-            //pass the job details to the method to be posted to the server: finally
-            postFixAppJob.postJobDetails(userId, jobTitle, jobDesc, jobLocation,
-                    mustHaveOne, mustHaveTwo,
-                    mustHaveThree, isJobRemote, file, categoryId);
+            //check if the user didn't add an image
+            if (file == null){
+                //pass the job details to the method to be posted to the server: finally
+                postFixAppJob.postJobDetailsWithoutImage(userId, jobTitle, jobDesc, jobLocation,
+                        mustHaveOne, mustHaveTwo,
+                        mustHaveThree, isJobRemote, categoryId);
+            }else {
+                //pass the job details to the method to be posted to the server: finally
+                postFixAppJob.postJobDetails(userId, jobTitle, jobDesc, jobLocation,
+                        mustHaveOne, mustHaveTwo,
+                        mustHaveThree, isJobRemote, file, categoryId);
+            }
         }else{
             Log.e(LOG_TAG, "Job details empty");
         }
