@@ -176,6 +176,81 @@ public class PostFixAppJob {
 
     }
 
+    //retrofit call to post the job details to the server
+    public void updateJobDetails(int jobId, int userId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                               String mustHaveTwo, String mustHaveThree, int isJobRemote,
+                               File file, int categoryId){
+
+        //Map is used to multipart the file using okhttp3.RequestBody
+        //File file = new File(mediaPath);
+
+        //parsing any media file
+        RequestBody requestBody = RequestBody.create(MediaType.parse("*image/*"), file);
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+        RequestBody fileName = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateJob(jobId, userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, fileToUpload, fileName, categoryId);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+            }
+        });
+
+    }
+
+    //retrofit call to update the job details to the server when an image is not added by the user
+    public void updateJobDetailsWithoutImage(int jobId, int userId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                           String mustHaveTwo, String mustHaveThree, int isJobRemote, int categoryId){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateJobWithoutImage(jobId, userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, categoryId);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+            }
+        });
+
+    }
+
     //retrofit call to update the job details with the budget
     public void updateBudget(int jobId, String totalBudget, String pricePerHr, String totalHrs, String estTotalBudget){
 

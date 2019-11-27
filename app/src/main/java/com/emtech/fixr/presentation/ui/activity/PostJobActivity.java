@@ -213,8 +213,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         setUpJobDateFragment();
         //post details to local db and get the id of that record to keep updating with more
         //input from the user
-        //postJobActivityViewModel.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-          //              mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
+        postJobActivityViewModel.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                        mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
         Log.e(LOG_TAG, "Job details: userid = " + userId+ ", job title = "+ jobTitle+
                         ", job desc = " +jobDesc+", job location = "+jobLocation+ ", musthaveone = "
                         +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
