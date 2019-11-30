@@ -2,6 +2,7 @@ package com.emtech.fixr.data;
 
 import android.arch.lifecycle.LiveData;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -195,6 +196,42 @@ public class FixAppRepository {
     //calls service
     public void registerFixAppUser(String name, String date_of_birth, String gender, String email, String password){
         mRegisterUser.startRegisterUserService(name, date_of_birth, gender, email, password);
+    }
+
+    //update job details async task when image is attached
+    public static class UpdateJobDetailsTask extends AsyncTask<String, Float, Long>
+    {
+        public UpdateJobDetailsTaskListener mListener;
+
+        public interface UpdateJobDetailsTaskListener
+        {
+            public void onUpdateFinish();
+            public void onUpdateProgress(float progress);
+        }
+
+        @Override
+        protected Long doInBackground(String... arg0)
+        {
+            //start downloading
+
+            return 0L; //return download size
+        }
+
+        protected void onProgressUpdate(Float... progress)
+        {
+            if(mListener != null)
+            {
+                mListener.onUpdateProgress(progress[0]);
+            }
+        }
+
+        protected void onPostExecute(Long result)
+        {
+            if(mListener != null)
+            {
+                mListener.onUpdateFinish();
+            }
+        }
     }
 
 }

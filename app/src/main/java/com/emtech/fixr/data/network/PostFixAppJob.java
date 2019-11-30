@@ -177,9 +177,9 @@ public class PostFixAppJob {
     }
 
     //retrofit call to post the job details to the server
-    public void updateJobDetails(int jobId, int userId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+    public void updateJobDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
                                String mustHaveTwo, String mustHaveThree, int isJobRemote,
-                               File file, int categoryId){
+                               File file){
 
         //Map is used to multipart the file using okhttp3.RequestBody
         //File file = new File(mediaPath);
@@ -194,8 +194,8 @@ public class PostFixAppJob {
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<Result> call = service.updateJob(jobId, userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, fileToUpload, fileName, categoryId);
+        Call<Result> call = service.updateJob(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, fileToUpload, fileName);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<Result>() {
@@ -219,16 +219,16 @@ public class PostFixAppJob {
     }
 
     //retrofit call to update the job details to the server when an image is not added by the user
-    public void updateJobDetailsWithoutImage(int jobId, int userId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
-                                           String mustHaveTwo, String mustHaveThree, int isJobRemote, int categoryId){
+    public void updateJobDetailsWithoutImage(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                           String mustHaveTwo, String mustHaveThree, int isJobRemote){
 
         //Defining retrofit api service*/
         //APIService service = retrofit.create(APIService.class);
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<Result> call = service.updateJobWithoutImage(jobId, userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, categoryId);
+        Call<Result> call = service.updateJobWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<Result>() {
@@ -252,7 +252,7 @@ public class PostFixAppJob {
     }
 
     //retrofit call to update the job details with the budget
-    public void updateBudget(int jobId, String totalBudget, String pricePerHr, String totalHrs, String estTotalBudget){
+    public void updateBudget(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget){
 
         //Defining retrofit api service*/
         //APIService service = retrofit.create(APIService.class);
