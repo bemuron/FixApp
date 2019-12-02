@@ -2,6 +2,7 @@ package com.emtech.fixr.presentation.ui.activity;
 
 import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.app.MyApplication;
+import com.emtech.fixr.data.FixAppRepository;
 import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.presentation.ui.fragment.PostJobBudgetFragment;
@@ -29,6 +31,8 @@ import com.emtech.fixr.utilities.InjectorUtils;
 
 import java.io.File;
 
+import static com.emtech.fixr.utilities.InjectorUtils.provideRepository;
+
 public class PostJobActivity extends AppCompatActivity implements PostJobFragment.OnPostButtonListener,
         PostFixAppJob.JobCreatedCallBack,PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
         PostJobDateFragment.OnJobDateFragmentInteractionListener{
@@ -39,7 +43,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     private ScrollView layoutBottomSheet;
     private BottomSheetBehavior sheetBehavior;
     public static PostJobActivity postJobActivity;
-    private int jobCreatedId;
+    private int jobCreatedId = 0;
+    private FixAppRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         setupActionBar();
 
         postJobActivity = this;
+
+        repository = provideRepository(getApplicationContext());
 
         // session manager
         session = new SessionManager(getApplicationContext());
@@ -197,7 +204,6 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                 .addToBackStack("PostJobBudgetFragment")
                 .replace(R.id.post_job_fragment_container, jobBudgetFragment)
                 .commit();
-
     }
 
 
@@ -211,10 +217,20 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         //call the viewmodel method to send the job to the server
         Log.d(LOG_TAG, "Passing job details to view model");
         setUpJobDateFragment();
-        //post details to local db and get the id of that record to keep updating with more
-        //input from the user
-        postJobActivityViewModel.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                        mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
+        //if job id is > 0 we are updating the job, else its at the default
+        // state of 0 - posting fresh details
+        if (jobCreatedId > 0) {
+            //we are updating the existing job details
+            repository.getJobUpdateDetails(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                    mustHaveThree, isJobRemote, file);
+            Log.e(LOG_TAG, "Inside job posted callback job id = "+jobCreatedId);
+
+        }else {
+            //post details to local db and get the id of that record to keep updating with more
+            //input from the user
+            postJobActivityViewModel.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                    mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
+        }
         Log.e(LOG_TAG, "Job details: userid = " + userId+ ", job title = "+ jobTitle+
                         ", job desc = " +jobDesc+", job location = "+jobLocation+ ", musthaveone = "
                         +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
@@ -229,6 +245,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     public void onJobCreated(Boolean isJobCreated, String message, int job_id) {
         if (isJobCreated){
             hideDialog();
+            Log.e(LOG_TAG, "New job Id = "+job_id);
             jobCreatedId = job_id;
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
             //go back to home activity
@@ -236,6 +253,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             startActivity(intent);
             this.finish();*/
         }else{
+            jobCreatedId = 0;
+            Log.e(LOG_TAG, "something isnt right job id = "+job_id);
             //if the job wasnt posted, display error message
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
         }

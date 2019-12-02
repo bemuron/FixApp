@@ -52,6 +52,7 @@ public class FixAppRepository {
     private UsersDao mUsersDao;
     private Cursor mUserDetail;
     private int mCount;
+    public UpdateJobDetailsTaskListener mListener;
 
     private FixAppRepository(CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
                                PostFixAppJob postFixAppJob, RegisterUser registerUser,
@@ -198,40 +199,105 @@ public class FixAppRepository {
         mRegisterUser.startRegisterUserService(name, date_of_birth, gender, email, password);
     }
 
-    //update job details async task when image is attached
-    public static class UpdateJobDetailsTask extends AsyncTask<String, Float, Long>
-    {
-        public UpdateJobDetailsTaskListener mListener;
+    //method to get updated job details and pass them to the
+    //Async task to post to the db
+    //this one is called when the image is attached too
+    public void getJobUpdateDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                     String mustHaveTwo, String mustHaveThree, int isJobRemote,
+                                     File file){
 
-        public interface UpdateJobDetailsTaskListener
-        {
-            public void onUpdateFinish();
-            public void onUpdateProgress(float progress);
+        //call async task to post job update details
+        new UpdateJobDetailsTask(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, file, mListener).execute();
+
+    }
+
+    //update job details async task when image is attached
+    public class UpdateJobDetailsTask extends AsyncTask<Void, Void, Void>
+    {
+        private UpdateJobDetailsTaskListener mListener;
+        private int jobId, isJobRemote;
+        private String jobTitle, jobDesc,jobLocation, mustHaveOne, mustHaveTwo, mustHaveThree;
+        private File file;
+
+        public UpdateJobDetailsTask(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                    String mustHaveTwo, String mustHaveThree, int isJobRemote,
+                                    File file, UpdateJobDetailsTaskListener listener){
+            this.jobId = jobId;
+            this.jobTitle = jobTitle;
+            this.jobDesc = jobDesc;
+            this.jobLocation = jobLocation;
+            this.mustHaveOne = mustHaveOne;
+            this.mustHaveTwo = mustHaveTwo;
+            this.mustHaveThree = mustHaveThree;
+            this.isJobRemote = isJobRemote;
+            this.file = file;
+            this.mListener = listener;
         }
 
         @Override
-        protected Long doInBackground(String... arg0)
+        protected Void doInBackground(Void... arg0)
         {
-            //start downloading
+            //call method to update details
+            mPostFixAppJob.updateJobDetails(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                    mustHaveThree, isJobRemote, file);
 
-            return 0L; //return download size
+            return null;
         }
 
-        protected void onProgressUpdate(Float... progress)
-        {
-            if(mListener != null)
-            {
-                mListener.onUpdateProgress(progress[0]);
-            }
-        }
-
-        protected void onPostExecute(Long result)
+        protected void onPostExecute(Void result)
         {
             if(mListener != null)
             {
                 mListener.onUpdateFinish();
             }
         }
+    }
+
+    //update job details async task when image is attached
+    public class UpdateJobDetailsWithouImageTask extends AsyncTask<Void, Void, Void>
+    {
+        private UpdateJobDetailsTaskListener mListener;
+        private int jobId, isJobRemote;
+        private String jobTitle, jobDesc,jobLocation, mustHaveOne, mustHaveTwo, mustHaveThree;
+        private File file;
+
+        public UpdateJobDetailsWithouImageTask(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                              String mustHaveTwo, String mustHaveThree,
+                                              int isJobRemote, UpdateJobDetailsTaskListener listener){
+            this.jobId = jobId;
+            this.jobTitle = jobTitle;
+            this.jobDesc = jobDesc;
+            this.jobLocation = jobLocation;
+            this.mustHaveOne = mustHaveOne;
+            this.mustHaveTwo = mustHaveTwo;
+            this.mustHaveThree = mustHaveThree;
+            this.isJobRemote = isJobRemote;
+            this.mListener = listener;
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0)
+        {
+            //call method to update details
+            mPostFixAppJob.updateJobDetailsWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                    mustHaveThree, isJobRemote);
+
+            return null;
+        }
+
+        protected void onPostExecute(Void result)
+        {
+            if(mListener != null)
+            {
+                mListener.onUpdateFinish();
+            }
+        }
+    }
+
+    //interface to communicate job details update status to activity
+    public interface UpdateJobDetailsTaskListener {
+        public void onUpdateFinish();
     }
 
 }

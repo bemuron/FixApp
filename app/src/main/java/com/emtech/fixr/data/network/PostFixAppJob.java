@@ -177,6 +177,7 @@ public class PostFixAppJob {
     }
 
     //retrofit call to post the job details to the server
+    //when image is attached
     public void updateJobDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
                                String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                File file){
