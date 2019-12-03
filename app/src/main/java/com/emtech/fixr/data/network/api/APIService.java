@@ -54,12 +54,11 @@ public interface APIService {
             @Field("is_job_remote") int is_job_remote,
             @Field("category_id") int category_id);
 
-    //updating a job
+    //updating a job with an image attached
     @Multipart
     @POST("public/updateJob/{job_id}")
     Call<Result> updateJob(
             @Path("job_id") int job_id,
-            @Part("posted_by") int posted_by,
             @Part("job_title") String job_title,
             @Part("description") String description,
             @Part("location") String location,
@@ -68,23 +67,20 @@ public interface APIService {
             @Part("must_have_three") String must_have_three,
             @Part("is_job_remote") int is_job_remote,
             @Part MultipartBody.Part file,
-            @Part("name") RequestBody name,
-            @Part("category_id") int category_id);
+            @Part("name") RequestBody name);
 
     //updating a job without an image
     @FormUrlEncoded
     @POST("public/updateJobWithoutImage/{job_id}")
     Call<Result> updateJobWithoutImage(
             @Path("job_id") int job_id,
-            @Field("posted_by") int posted_by,
             @Field("job_title") String job_title,
             @Field("description") String description,
             @Field("location") String location,
             @Field("must_have_one") String must_have_one,
             @Field("must_have_two") String must_have_two,
             @Field("must_have_three") String must_have_three,
-            @Field("is_job_remote") int is_job_remote,
-            @Field("category_id") int category_id);
+            @Field("is_job_remote") int is_job_remote);
 
     //updating job date time
     @FormUrlEncoded
@@ -99,10 +95,10 @@ public interface APIService {
     @POST("public/updateJobBudget/{job_id}")
     Call<Result> updateJobBudget(
             @Path("job_id") int job_id,
-            @Field("total_budget") String total_budget,
-            @Field("price_per_hr") String price_per_hr,
-            @Field("total_hrs") String total_hrs,
-            @Field("est_tot_budget") String est_tot_budget);
+            @Field("total_budget") int total_budget,
+            @Field("price_per_hr") int price_per_hr,
+            @Field("total_hrs") int total_hrs,
+            @Field("est_tot_budget") int est_tot_budget);
 
     //the login/signing call
     @FormUrlEncoded

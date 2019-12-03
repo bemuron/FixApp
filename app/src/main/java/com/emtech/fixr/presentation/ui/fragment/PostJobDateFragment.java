@@ -2,6 +2,8 @@ package com.emtech.fixr.presentation.ui.fragment;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
@@ -220,8 +223,14 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
         //boolean checked = ((CheckBox) view).isChecked();
         switch (view.getId()) {
             case R.id.continue_two:
-                //send the data to PostJobActivity to be posted to the server
-                getUserInput();
+                //check for internet connectivity
+                if (isNetworkAvailable()) {
+                    //send the data to PostJobActivity to be posted to the server
+                    getUserInput();
+                }else{
+                    Toast.makeText(getActivity(),"Try checking your internet connection",
+                            Toast.LENGTH_LONG).show();
+                }
                 break;
 
             case R.id.job_date_edit_text:
@@ -269,5 +278,13 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
     public interface OnJobDateFragmentInteractionListener{
         // TODO: Update argument type and name
         void onJobDateFragmentInteraction(String date, String timeOfDay);
+    }
+
+    //method to check for internet connection
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

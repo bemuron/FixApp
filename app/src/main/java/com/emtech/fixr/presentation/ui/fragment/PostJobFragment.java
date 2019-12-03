@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -271,7 +273,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener,
     }
 
     //method to get what user has filled in
-    public  void getJobDetails(String image_pos) {
+    public  void getJobDetails() {
         String jobTitle = jobTitleEditText.getText().toString().trim();
         if (TextUtils.isEmpty(jobTitle)) {
             jobTitleEditText.setError("Job Title is required");
@@ -362,8 +364,14 @@ public class PostJobFragment extends Fragment implements View.OnClickListener,
 
         switch (view.getId()){
             case R.id.continue_one:
-                //send the data to PostJobActivity to be posted to the server
-                getJobDetails("job_image1");
+                //check for internet connectivity
+                if (isNetworkAvailable()) {
+                    //send the data to PostJobActivity to be posted to the server
+                    getJobDetails();
+                }else{
+                    Toast.makeText(getActivity(),"Try checking your internet connection",
+                            Toast.LENGTH_LONG).show();
+                }
                 break;
 
             case R.id.job_image1:
@@ -593,6 +601,14 @@ public class PostJobFragment extends Fragment implements View.OnClickListener,
                 }
             }
         }
+    }
+
+    //method to check for internet connection
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     private void showDialog() {

@@ -1,6 +1,8 @@
 package com.emtech.fixr.presentation.ui.fragment;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +18,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emtech.fixr.R;
 
@@ -168,17 +171,22 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
     // the server
     private void onButtonClickedOnTotalBudget(){
         postJobButton.setOnClickListener(view -> {
-            //make sure total hours have been entered
-            totalBudget = totalBudgetEt.getText().toString().trim();
-            if (TextUtils.isEmpty(totalBudget)) {
-                totalBudgetEt.setError("Total budget is required");
-            }
-            if (!totalBudget.isEmpty()){
+            //check for internet connectivity
+            if (isNetworkAvailable()) {
+                //make sure total hours have been entered
+                totalBudget = totalBudgetEt.getText().toString().trim();
+                if (TextUtils.isEmpty(totalBudget)) {
+                    totalBudgetEt.setError("Total budget is required");
+                }
+                if (!totalBudget.isEmpty()){
 
-                mListener.onJobBudgetFragmentInteraction(totalBudget,
-                        estTotBudgetTv.getText().toString(),null,null);
+                    mListener.onJobBudgetFragmentInteraction(totalBudget,
+                            estTotBudgetTv.getText().toString(),null,null);
+                }
+            }else{
+                Toast.makeText(getActivity(),"Try checking your internet connection",
+                        Toast.LENGTH_LONG).show();
             }
-
         });
     }
 
@@ -189,22 +197,27 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
         postJobButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //make sure price per hour have been entered
-                String pricePerHour = perHourEt.getText().toString().trim();
-                if (TextUtils.isEmpty(pricePerHour)) {
-                    perHourEt.setError("Price per hour is required");
+                //check for internet connectivity
+                if (isNetworkAvailable()) {
+                    //make sure price per hour have been entered
+                    String pricePerHour = perHourEt.getText().toString().trim();
+                    if (TextUtils.isEmpty(pricePerHour)) {
+                        perHourEt.setError("Price per hour is required");
+                    }
+                    //make sure total hours have been entered
+                    String totalHours = totHrsEt.getText().toString().trim();
+                    if (TextUtils.isEmpty(totalHours)) {
+                        totHrsEt.setError("Total hours required");
+                    }
+                    if (!pricePerHour.isEmpty() && !totalHours.isEmpty()){
+                        //if all is ok, send the input to the parent activity
+                        mListener.onJobBudgetFragmentInteraction(null,
+                                estTotBudgetTv.getText().toString(),pricePerHour,totalHours);
+                    }
+                }else{
+                    Toast.makeText(getActivity(),"Try checking your internet connection",
+                            Toast.LENGTH_LONG).show();
                 }
-                //make sure total hours have been entered
-                String totalHours = totHrsEt.getText().toString().trim();
-                if (TextUtils.isEmpty(totalHours)) {
-                    totHrsEt.setError("Total hours required");
-                }
-                if (!pricePerHour.isEmpty() && !totalHours.isEmpty()){
-                    //if all is ok, send the input to the parent activity
-                    mListener.onJobBudgetFragmentInteraction(null,
-                            estTotBudgetTv.getText().toString(),pricePerHour,totalHours);
-                }
-
             }
         });
     }
@@ -301,5 +314,13 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
     public interface OnJobBudgetFragmentInteractionListener {
         void onJobBudgetFragmentInteraction(String totalBudget, String estTotBudget,
                                             String pricePerHr, String totalHrs);
+    }
+
+    //method to check for internet connection
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
