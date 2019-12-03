@@ -300,7 +300,7 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     //callback from the login user service

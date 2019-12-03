@@ -199,7 +199,7 @@ public class FixAppRepository {
         mRegisterUser.startRegisterUserService(name, date_of_birth, gender, email, password);
     }
 
-    //method to get updated job details and pass them to the
+    //method to receive updated job details from activity and pass them to the
     //Async task to post to the db
     //this one is called when the image is attached too
     public void getJobUpdateDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
@@ -209,6 +209,36 @@ public class FixAppRepository {
         //call async task to post job update details
         new UpdateJobDetailsTask(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                 mustHaveThree, isJobRemote, file, mListener).execute();
+
+    }
+
+    //method to receive updated job details from activity and pass them to the
+    //Async task to post to the db
+    //this one is called when the image is attached too
+    public void getJobUpdateDetailsWithoutImage(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                    String mustHaveTwo, String mustHaveThree, int isJobRemote){
+
+        //call async task to post job update details
+        new UpdateJobDetailsWithouImageTask(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, mListener).execute();
+
+    }
+
+    //method to receive updated job date and time from activity and pass them to the
+    //Async task to post to the db
+    public void getJobUpdateDateTime(int jobId, String jobDate, String jobTime){
+
+        //call async task to post job update details
+        new UpdateJobDateTimeTask(jobId, jobDate, jobTime, mListener).execute();
+
+    }
+
+    //method to receive updated job budget from activity and pass them to the
+    //Async task to post to the db
+    public void getJobBudgetUpdate(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget){
+
+        //call async task to post job update details
+        new UpdateJobBudgetTask(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget, mListener).execute();
 
     }
 
@@ -282,6 +312,72 @@ public class FixAppRepository {
             //call method to update details
             mPostFixAppJob.updateJobDetailsWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                     mustHaveThree, isJobRemote);
+
+            return null;
+        }
+
+        protected void onPostExecute(Void result)
+        {
+            if(mListener != null)
+            {
+                mListener.onUpdateFinish();
+            }
+        }
+    }
+
+    //update job details date and time
+    public class UpdateJobDateTimeTask extends AsyncTask<Void, Void, Void>
+    {
+        private UpdateJobDetailsTaskListener mListener;
+        private int jobId;
+        private String jobDate,jobTime;
+
+        public UpdateJobDateTimeTask(int jobId, String jobDate, String jobTime, UpdateJobDetailsTaskListener listener){
+            this.jobId = jobId;
+            this.jobDate = jobDate;
+            this.jobTime = jobTime;
+            this.mListener = listener;
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0)
+        {
+            //call method to update details
+            mPostFixAppJob.updateDateTime(jobId, jobDate, jobTime);
+
+            return null;
+        }
+
+        protected void onPostExecute(Void result)
+        {
+            if(mListener != null)
+            {
+                mListener.onUpdateFinish();
+            }
+        }
+    }
+
+    //update job budget
+    public class UpdateJobBudgetTask extends AsyncTask<Void, Void, Void>
+    {
+        private UpdateJobDetailsTaskListener mListener;
+        private int jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget;
+
+        public UpdateJobBudgetTask(int jobId, int totalBudget, int pricePerHr, int totalHrs,
+                               int estTotalBudget, UpdateJobDetailsTaskListener listener){
+            this.jobId = jobId;
+            this.totalBudget = totalBudget;
+            this.pricePerHr = pricePerHr;
+            this.totalHrs = totalHrs;
+            this.estTotalBudget = estTotalBudget;
+            this.mListener = listener;
+        }
+
+        @Override
+        protected Void doInBackground(Void... arg0)
+        {
+            //call method to update details
+            mPostFixAppJob.updateBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget);
 
             return null;
         }

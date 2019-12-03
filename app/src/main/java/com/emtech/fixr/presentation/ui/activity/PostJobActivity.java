@@ -224,6 +224,11 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             repository.getJobUpdateDetails(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                     mustHaveThree, isJobRemote, file);
             Log.e(LOG_TAG, "Inside job posted callback job id = "+jobCreatedId);
+            //if the file is null, then we are updating the details without an image attached
+            if (file == null){
+                repository.getJobUpdateDetailsWithoutImage(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                        mustHaveThree, isJobRemote);
+            }
 
         }else {
             //post details to local db and get the id of that record to keep updating with more
@@ -288,11 +293,30 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     public void onJobBudgetFragmentInteraction(String totalBudget, String estTotBudget,
                                                String pricePerHr, String totalHrs) {
         //send data to the server to update the job details
+        int totBudget = Integer.parseInt(totalBudget);
+        int estBudget = Integer.parseInt(estTotBudget);
+        int perHrPrice = Integer.parseInt(pricePerHr);
+        int totHrs = Integer.parseInt(totalHrs);
 
-        if (pricePerHr == null && totalHrs == null){
+        if (perHrPrice != 0 && totHrs != 0){
+            //at this point we expect the job id to be present no matter the case
+            if (jobCreatedId > 0) {
+                //we are updating the existing job details
+                repository.getJobBudgetUpdate(jobCreatedId, 0, perHrPrice, totHrs, estBudget);
+            }else{
+                Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
+            }
             Log.e(LOG_TAG, "From job budget frag: total budget = "+totalBudget);
             Log.e(LOG_TAG, "From job budget frag: est tot budget = "+estTotBudget);
-        }else if (totalBudget == null){
+        }
+        if (totBudget != 0){
+            //at this point we expect the job id to be present no matter the case
+            if (jobCreatedId > 0) {
+                //we are updating the existing job details
+                repository.getJobBudgetUpdate(jobCreatedId, totBudget, 0, 0, estBudget);
+            }else{
+                Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
+            }
             Log.e(LOG_TAG, "From job budget frag: price per hour = "+pricePerHr);
             Log.e(LOG_TAG, "From job budget frag: total hrs = "+totalHrs);
             Log.e(LOG_TAG, "From job budget frag: est tot budget = "+estTotBudget);
@@ -305,9 +329,23 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     @Override
     public void onJobDateFragmentInteraction(String jobDate, String timeSelected) {
         if (timeSelected == null) {
+            //at this point we expect the job id to be present no matter the case
+            if (jobCreatedId > 0) {
+                //we are updating the existing job details
+                repository.getJobUpdateDateTime(jobCreatedId, jobDate, null);
+            }else{
+                Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
+            }
             setUpJobBudgetFragment();
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }else{
+            //at this point we expect the job id to be present no matter the case
+            if (jobCreatedId > 0) {
+                //we are updating the existing job details
+                repository.getJobUpdateDateTime(jobCreatedId, jobDate, timeSelected);
+            }else{
+                Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
+            }
             setUpJobBudgetFragment();
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }
