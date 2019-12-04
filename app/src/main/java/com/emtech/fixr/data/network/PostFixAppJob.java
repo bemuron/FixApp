@@ -35,6 +35,7 @@ public class PostFixAppJob {
     // LiveData storing the latest downloaded weather forecasts
     private final AppExecutors mExecutors;
     JobCreatedCallBack jobCreatedCallBack;
+    JobUpdatedCallBack jobUpdatedCallBack;
     public PostJobActivity postJobActivity;
 
     // For Singleton instantiation
@@ -205,6 +206,10 @@ public class PostFixAppJob {
 
                 if (!response.body().getError()) {
                     Log.d(LOG_TAG, response.body().getMessage());
+                    //send response data to the repository
+                    //success
+                    jobUpdatedCallBack.onJobUpdated(true, response.body().getMessage(),
+                            "basicsWithImage");
 
                 }
             }
@@ -214,6 +219,9 @@ public class PostFixAppJob {
                 //print out any error we may get
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
+                //send response data to the repository
+                jobUpdatedCallBack.onJobUpdated(false, "Job details not updated",
+                        "basicsWithImage");
             }
         });
 
@@ -238,6 +246,10 @@ public class PostFixAppJob {
 
                 if (!response.body().getError()) {
                     Log.d(LOG_TAG, response.body().getMessage());
+                    //send response data to the repository
+                    //success
+                    jobUpdatedCallBack.onJobUpdated(true, response.body().getMessage(),
+                            "basicsWithoutImage");
 
                 }
             }
@@ -247,6 +259,9 @@ public class PostFixAppJob {
                 //print out any error we may get
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
+                //send response data to the repository
+                jobUpdatedCallBack.onJobUpdated(false, "Job details not updated",
+                        "basicsWithoutImage");
             }
         });
 
@@ -269,6 +284,10 @@ public class PostFixAppJob {
 
                 if (!response.body().getError()) {
                     Log.d(LOG_TAG, response.body().getMessage());
+                    //send response data to the repository
+                    //success
+                    jobUpdatedCallBack.onJobUpdated(true, response.body().getMessage(),
+                            "budget");
 
                 }
             }
@@ -278,6 +297,9 @@ public class PostFixAppJob {
                 //print out any error we may get
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
+                //send response data to the repository
+                jobUpdatedCallBack.onJobUpdated(false, "Job details not updated",
+                        "budget");
             }
         });
 
@@ -301,6 +323,11 @@ public class PostFixAppJob {
                 if (!response.body().getError()) {
                     Log.d(LOG_TAG, response.body().getMessage());
 
+                    //send response data to the repository
+                    //success
+                    jobUpdatedCallBack.onJobUpdated(true, response.body().getMessage(),
+                            "dateTime");
+
                 }
             }
 
@@ -309,9 +336,11 @@ public class PostFixAppJob {
                 //print out any error we may get
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
+                //send response data to the repository
+                jobUpdatedCallBack.onJobUpdated(false, "Job details not updated",
+                        "dateTime");
             }
         });
-
     }
 
     /**
@@ -319,6 +348,15 @@ public class PostFixAppJob {
      */
     public interface JobCreatedCallBack {
         void onJobCreated(Boolean isJobPosted, String message, int job_id);
+    }
+
+    /**
+     * The interface that receives whether the job was updated or not
+     * send the info to the repository method which then send the message
+     * to the activity which called the update method
+     */
+    public interface JobUpdatedCallBack {
+        void onJobUpdated(Boolean isJobUpdated, String message, String jobSection);
     }
 
 }

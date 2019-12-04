@@ -151,6 +151,7 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
             totHrsTv.setVisibility(View.GONE);
             onButtonClickedOnTotalBudget();
             realTimeTotBudgetEtChange();
+            estTotBudgetTv.setText(totalBudgetEt.getText().toString().trim());
 
         }else if (budgetTypeSelected.equals("Hourly rate")){
             isHourlyChecked = true;
@@ -163,6 +164,7 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
             onButtonClickedOnHourlyBudget();
             realTimeTotHrsEtChange();
             realTimeTotBudgetEtChange();
+            calculateTotalBudget(perHourPrice, hoursTotal);
         }
     }
 
@@ -181,7 +183,7 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
                 if (!totalBudget.isEmpty()){
 
                     mListener.onJobBudgetFragmentInteraction(totalBudget,
-                            estTotBudgetTv.getText().toString(),null,null);
+                            estTotBudgetTv.getText().toString(),"0","0");
                 }
             }else{
                 Toast.makeText(getActivity(),"Try checking your internet connection",
@@ -190,7 +192,7 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
         });
     }
 
-    //handle click on the post job button when the user has selected total budget option
+    //handle click on the post job button when the user has selected hourly budget option
     //it will mainly transfer the input to the parent activity to be posted to
     // the server
     private void onButtonClickedOnHourlyBudget(){
@@ -211,7 +213,7 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
                     }
                     if (!pricePerHour.isEmpty() && !totalHours.isEmpty()){
                         //if all is ok, send the input to the parent activity
-                        mListener.onJobBudgetFragmentInteraction(null,
+                        mListener.onJobBudgetFragmentInteraction("0",
                                 estTotBudgetTv.getText().toString(),pricePerHour,totalHours);
                     }
                 }else{

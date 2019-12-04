@@ -35,7 +35,7 @@ import static com.emtech.fixr.utilities.InjectorUtils.provideRepository;
 
 public class PostJobActivity extends AppCompatActivity implements PostJobFragment.OnPostButtonListener,
         PostFixAppJob.JobCreatedCallBack,PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
-        PostJobDateFragment.OnJobDateFragmentInteractionListener{
+        PostJobDateFragment.OnJobDateFragmentInteractionListener, FixAppRepository.UpdateJobDetailsTaskListener{
     private static final String LOG_TAG = PostJobActivity.class.getSimpleName();
     private PostJobActivityViewModel postJobActivityViewModel;
     private SessionManager session;
@@ -45,6 +45,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     public static PostJobActivity postJobActivity;
     private int jobCreatedId = 0;
     private FixAppRepository repository;
+    private boolean isUpdated;
+    private String updateResponseMessage, jobDetailsSection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -212,8 +214,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     public void jobPostDataCallback(int userId, String jobTitle, String jobDesc, String jobLocation,
                                     String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                     File file, int categoryId, PostJobActivity postJobActivityInstance) {
-        //pDialog.setMessage("Posting job details ...");
-        //showDialog();
+        pDialog.setMessage("Posting job details ...");
+        showDialog();
         //call the viewmodel method to send the job to the server
         //Log.d(LOG_TAG, "Passing job details to view model");
 
@@ -223,13 +225,37 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             //we are updating the existing job details
             repository.getJobUpdateDetails(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                     mustHaveThree, isJobRemote, file);
+            //checking the response status from the server
+            if (jobDetailsSection.equals("basicsWithImage")){
+                if (isUpdated) {
+                    hideDialog();
+                    Log.e(LOG_TAG, "Job details updated successfully = " + jobCreatedId);
+                    Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
+                    //go to the next section
+                    setUpJobDateFragment();
+                }else {
+                    hideDialog();
+                    Log.e(LOG_TAG, "Job date time not updated");
+                }
+            }
             Log.e(LOG_TAG, "Inside job posted callback job id = "+jobCreatedId);
-            setUpJobDateFragment();
             //if the file is null, then we are updating the details without an image attached
             if (file == null){
                 repository.getJobUpdateDetailsWithoutImage(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                         mustHaveThree, isJobRemote);
-                setUpJobDateFragment();
+                //checking the response status from the server
+                if (jobDetailsSection.equals("basicsWithoutImage")){
+                    if (isUpdated) {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job details updated successfully = " + jobCreatedId);
+                        Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
+                        //go to the next section
+                        setUpJobDateFragment();
+                    }else {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job date time not updated");
+                    }
+                }
             }
 
         }else {
@@ -295,9 +321,12 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     @Override
     public void onJobBudgetFragmentInteraction(String totalBudget, String estTotBudget,
                                                String pricePerHr, String totalHrs) {
+        pDialog.setMessage("Posting job details ...");
+        showDialog();
+
         //send data to the server to update the job details
         int totBudget = Integer.parseInt(totalBudget);
-        int estBudget = Integer.parseInt(estTotBudget);
+        int estBudget = Integer.parseInt(estTotBudget.substring(4));
         int perHrPrice = Integer.parseInt(pricePerHr);
         int totHrs = Integer.parseInt(totalHrs);
 
@@ -306,7 +335,19 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             if (jobCreatedId > 0) {
                 //we are updating the existing job details
                 repository.getJobBudgetUpdate(jobCreatedId, 0, perHrPrice, totHrs, estBudget);
+                //checking the response status from the server
+                if (jobDetailsSection.equals("budget")){
+                    if (isUpdated) {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
+                        Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
+                    }else {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job not posted");
+                    }
+                }
             }else{
+                hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
             }
             Log.e(LOG_TAG, "From job budget frag: total budget = "+totalBudget);
@@ -317,41 +358,87 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             if (jobCreatedId > 0) {
                 //we are updating the existing job details
                 repository.getJobBudgetUpdate(jobCreatedId, totBudget, 0, 0, estBudget);
+                //checking the response status from the server
+                if (jobDetailsSection.equals("budget")){
+                    if (isUpdated) {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
+                        Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
+                    }else {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job not posted");
+                    }
+                }
             }else{
+                hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
             }
             Log.e(LOG_TAG, "From job budget frag: price per hour = "+pricePerHr);
             Log.e(LOG_TAG, "From job budget frag: total hrs = "+totalHrs);
             Log.e(LOG_TAG, "From job budget frag: est tot budget = "+estTotBudget);
         }
-
     }
 
     //receive the user input from the job date fragment
     //cache it in the local db
     @Override
     public void onJobDateFragmentInteraction(String jobDate, String timeSelected) {
+        showDialog();
         if (timeSelected == null) {
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
                 //we are updating the existing job details
                 repository.getJobUpdateDateTime(jobCreatedId, jobDate, null);
+                //checking the response status from the server
+                if (jobDetailsSection.equals("dateTime")){
+                    if (isUpdated) {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
+                        Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
+                        //go to the next section
+                        setUpJobBudgetFragment();
+                    }else {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job date time not updated");
+                    }
+                }
             }else{
+                hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
             }
-            setUpJobBudgetFragment();
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }else{
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
                 //we are updating the existing job details
                 repository.getJobUpdateDateTime(jobCreatedId, jobDate, timeSelected);
+                //checking the response status from the server
+                if (jobDetailsSection.equals("dateTime")){
+                    if (isUpdated) {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
+                        Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
+                        //go to the next section
+                        setUpJobBudgetFragment();
+                    }else {
+                        hideDialog();
+                        Log.e(LOG_TAG, "Job date time not updated");
+                    }
+                }
             }else{
+                hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
             }
-            setUpJobBudgetFragment();
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }
 
+    }
+
+    //receive the response from the repository on whether the job details have been updated or not
+    @Override
+    public void onUpdateFinish(Boolean isJobUpdated, String message, String jobSection) {
+        isUpdated = isJobUpdated;
+        updateResponseMessage = message;
+        jobDetailsSection = jobSection;
     }
 }

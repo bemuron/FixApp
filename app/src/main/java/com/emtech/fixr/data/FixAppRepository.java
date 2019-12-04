@@ -36,7 +36,7 @@ import retrofit2.Response;
  * and {@link CategoriesDao}
  */
 
-public class FixAppRepository {
+public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     private static final String LOG_TAG = FixAppRepository.class.getSimpleName();
 
     // For Singleton instantiation
@@ -52,6 +52,8 @@ public class FixAppRepository {
     private UsersDao mUsersDao;
     private Cursor mUserDetail;
     private int mCount;
+    private boolean isUpdated;
+    private String updateResponseMessage, jobDetailsSection;
     public UpdateJobDetailsTaskListener mListener;
 
     private FixAppRepository(CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
@@ -242,6 +244,14 @@ public class FixAppRepository {
 
     }
 
+    @Override
+    public void onJobUpdated(Boolean isJobUpdated, String message, String jobSection) {
+        isUpdated = isJobUpdated;
+        updateResponseMessage = message;
+        jobDetailsSection = jobSection;
+
+    }
+
     //update job details async task when image is attached
     public class UpdateJobDetailsTask extends AsyncTask<Void, Void, Void>
     {
@@ -279,7 +289,8 @@ public class FixAppRepository {
         {
             if(mListener != null)
             {
-                mListener.onUpdateFinish();
+                if (jobDetailsSection.equals("basicsWithImage"))
+                    mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
             }
         }
     }
@@ -290,7 +301,6 @@ public class FixAppRepository {
         private UpdateJobDetailsTaskListener mListener;
         private int jobId, isJobRemote;
         private String jobTitle, jobDesc,jobLocation, mustHaveOne, mustHaveTwo, mustHaveThree;
-        private File file;
 
         public UpdateJobDetailsWithouImageTask(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
                                               String mustHaveTwo, String mustHaveThree,
@@ -320,7 +330,8 @@ public class FixAppRepository {
         {
             if(mListener != null)
             {
-                mListener.onUpdateFinish();
+                if (jobDetailsSection.equals("basicsWithoutImage"))
+                mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
             }
         }
     }
@@ -352,7 +363,8 @@ public class FixAppRepository {
         {
             if(mListener != null)
             {
-                mListener.onUpdateFinish();
+                if (jobDetailsSection.equals("dateTime"))
+                    mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
             }
         }
     }
@@ -386,14 +398,15 @@ public class FixAppRepository {
         {
             if(mListener != null)
             {
-                mListener.onUpdateFinish();
+                if (jobDetailsSection.equals("budget"))
+                    mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
             }
         }
     }
 
     //interface to communicate job details update status to activity
     public interface UpdateJobDetailsTaskListener {
-        public void onUpdateFinish();
+        void onUpdateFinish(Boolean isJobUpdated, String message, String jobSection);
     }
 
 }
