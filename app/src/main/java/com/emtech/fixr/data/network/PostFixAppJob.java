@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.emtech.fixr.AppExecutors;
+import com.emtech.fixr.data.FixAppRepository;
 import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.data.network.api.APIService;
@@ -19,6 +20,7 @@ import com.emtech.fixr.models.Categories;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -29,13 +31,15 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.emtech.fixr.utilities.InjectorUtils.provideRepository;
+
 public class PostFixAppJob {
     private static final String LOG_TAG = PostFixAppJob.class.getSimpleName();
 
     // LiveData storing the latest downloaded weather forecasts
     private final AppExecutors mExecutors;
     JobCreatedCallBack jobCreatedCallBack;
-    JobUpdatedCallBack jobUpdatedCallBack;
+    static JobUpdatedCallBack jobUpdatedCallBack;
     public PostJobActivity postJobActivity;
 
     // For Singleton instantiation
@@ -262,44 +266,6 @@ public class PostFixAppJob {
                 //send response data to the repository
                 jobUpdatedCallBack.onJobUpdated(false, "Job details not updated",
                         "basicsWithoutImage");
-            }
-        });
-
-    }
-
-    //retrofit call to update the job details with the budget
-    public void updateBudget(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget){
-
-        //Defining retrofit api service*/
-        //APIService service = retrofit.create(APIService.class);
-        APIService service = new LocalRetrofitApi().getRetrofitService();
-
-        //defining the call
-        Call<Result> call = service.updateJobBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget);
-
-        //calling the com.emtech.retrofitexample.api
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, Response<Result> response) {
-
-                if (!response.body().getError()) {
-                    Log.d(LOG_TAG, response.body().getMessage());
-                    //send response data to the repository
-                    //success
-                    jobUpdatedCallBack.onJobUpdated(true, response.body().getMessage(),
-                            "budget");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                //print out any error we may get
-                //probably server connection
-                Log.e(LOG_TAG, t.getMessage());
-                //send response data to the repository
-                jobUpdatedCallBack.onJobUpdated(false, "Job details not updated",
-                        "budget");
             }
         });
 

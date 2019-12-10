@@ -336,7 +336,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                 //we are updating the existing job details
                 repository.getJobBudgetUpdate(jobCreatedId, 0, perHrPrice, totHrs, estBudget);
                 //checking the response status from the server
-                if (jobDetailsSection.equals("budget")){
+                /*if (jobDetailsSection.equals("budget")){
                     if (isUpdated) {
                         hideDialog();
                         Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
@@ -345,7 +345,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                         hideDialog();
                         Log.e(LOG_TAG, "Job not posted");
                     }
-                }
+                }*/
             }else{
                 hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
@@ -359,7 +359,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                 //we are updating the existing job details
                 repository.getJobBudgetUpdate(jobCreatedId, totBudget, 0, 0, estBudget);
                 //checking the response status from the server
-                if (jobDetailsSection.equals("budget")){
+                /*if (jobDetailsSection.equals("budget")){
                     if (isUpdated) {
                         hideDialog();
                         Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
@@ -368,7 +368,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                         hideDialog();
                         Log.e(LOG_TAG, "Job not posted");
                     }
-                }
+                }*/
             }else{
                 hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
@@ -387,10 +387,12 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         if (timeSelected == null) {
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
+                //call async task to post job update details
+                //new FixAppRepository.UpdateJobDateTimeTask(this, jobCreatedId, jobDate, null).execute();
                 //we are updating the existing job details
                 repository.getJobUpdateDateTime(jobCreatedId, jobDate, null);
                 //checking the response status from the server
-                if (jobDetailsSection.equals("dateTime")){
+                /*if (jobDetailsSection.equals("dateTime")){
                     if (isUpdated) {
                         hideDialog();
                         Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
@@ -401,7 +403,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                         hideDialog();
                         Log.e(LOG_TAG, "Job date time not updated");
                     }
-                }
+                }*/
             }else{
                 hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
@@ -412,8 +414,10 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             if (jobCreatedId > 0) {
                 //we are updating the existing job details
                 repository.getJobUpdateDateTime(jobCreatedId, jobDate, timeSelected);
+                //call async task to post job update details
+                //new FixAppRepository.UpdateJobDateTimeTask(this, jobCreatedId, jobDate, timeSelected).execute();
                 //checking the response status from the server
-                if (jobDetailsSection.equals("dateTime")){
+                /*if (jobDetailsSection.equals("dateTime")){
                     if (isUpdated) {
                         hideDialog();
                         Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
@@ -424,7 +428,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                         hideDialog();
                         Log.e(LOG_TAG, "Job date time not updated");
                     }
-                }
+                }*/
             }else{
                 hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
@@ -432,6 +436,34 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }
 
+    }
+
+    //method to update UI after job update date time without time completes
+    public void updateUiAfterJobDateUpdate(Boolean isJobUpdated, String message, String jobSection){
+        //if (jobDetailsSection.equals("dateTime")){
+            if (isJobUpdated) {
+                hideDialog();
+                Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                //go to the next section
+                setUpJobBudgetFragment();
+            }else {
+                hideDialog();
+                Log.e(LOG_TAG, "Job date time not updated");
+            }
+        //}
+    }
+
+    //method to update UI after job update date time without time completes
+    public void updateUiAfterJobBudgetUpdate(Boolean isJobUpdated, String message, String jobSection){
+        if (isJobUpdated) {
+            hideDialog();
+            Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }else {
+            hideDialog();
+            Log.e(LOG_TAG, "Job not posted");
+        }
     }
 
     //receive the response from the repository on whether the job details have been updated or not

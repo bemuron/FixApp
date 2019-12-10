@@ -15,20 +15,28 @@ import com.emtech.fixr.data.network.FetchCategories;
 import com.emtech.fixr.data.network.LoginUser;
 import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.data.network.RegisterUser;
+import com.emtech.fixr.data.network.Result;
+import com.emtech.fixr.data.network.api.APIService;
+import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.FixAppCategory;
 import com.emtech.fixr.models.User;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.emtech.fixr.presentation.ui.activity.PostJobActivity.postJobActivity;
 
 /**
  * the FixAppRepository is a singleton.
@@ -45,15 +53,16 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     private CategoriesDao mCategoryDao;
     private AppExecutors mExecutors;
     private FetchCategories mFetchCategories;
-    private PostFixAppJob mPostFixAppJob;
+    private static PostFixAppJob mPostFixAppJob;
     private LoginUser mLoginUser;
     private RegisterUser mRegisterUser;
     private boolean mInitialized = false;
     private UsersDao mUsersDao;
     private Cursor mUserDetail;
     private int mCount;
-    private boolean isUpdated;
-    private String updateResponseMessage, jobDetailsSection;
+    private static boolean isUpdated;
+    private static String updateResponseMessage;
+    private static String jobDetailsSection;
     public UpdateJobDetailsTaskListener mListener;
 
     private FixAppRepository(CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
@@ -231,7 +240,8 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     public void getJobUpdateDateTime(int jobId, String jobDate, String jobTime){
 
         //call async task to post job update details
-        new UpdateJobDateTimeTask(jobId, jobDate, jobTime, mListener).execute();
+       // new UpdateJobDateTimeTask(jobId, jobDate, jobTime).execute();
+        mExecutors.diskIO().execute(() -> updateDateTime(jobId, jobDate, jobTime));
 
     }
 
@@ -240,10 +250,11 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     public void getJobBudgetUpdate(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget){
 
         //call async task to post job update details
-        new UpdateJobBudgetTask(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget, mListener).execute();
-
+        //new UpdateJobBudgetTask(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget, mListener).execute();
+        mExecutors.diskIO().execute(() -> updateBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget));
     }
 
+    //interface method from PostFixAppJob to get the status of the job details update or post
     @Override
     public void onJobUpdated(Boolean isJobUpdated, String message, String jobSection) {
         isUpdated = isJobUpdated;
@@ -337,71 +348,161 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     }
 
     //update job details date and time
-    public class UpdateJobDateTimeTask extends AsyncTask<Void, Void, Void>
+    public static class UpdateJobDateTimeTask extends AsyncTask<Void, Void, Boolean>
     {
+        private WeakReference<PostJobActivity> activityWeakReference;
         private UpdateJobDetailsTaskListener mListener;
         private int jobId;
         private String jobDate,jobTime;
 
-        public UpdateJobDateTimeTask(int jobId, String jobDate, String jobTime, UpdateJobDetailsTaskListener listener){
+        //only retain a weak reference to the activity
+        public UpdateJobDateTimeTask(PostJobActivity context, int jobId, String jobDate,
+                                     String jobTime){
+            activityWeakReference = new WeakReference<>(context);
             this.jobId = jobId;
             this.jobDate = jobDate;
             this.jobTime = jobTime;
-            this.mListener = listener;
+            //this.mListener = listener;
         }
 
         @Override
-        protected Void doInBackground(Void... arg0)
+        protected Boolean doInBackground(Void... arg0)
         {
-            //call method to update details
-            mPostFixAppJob.updateDateTime(jobId, jobDate, jobTime);
-
-            return null;
+            try {
+                //call method to update details
+                return true;//updateDateTime(jobId, jobDate, jobTime);
+            }catch(Exception e){
+                Log.e(LOG_TAG, e.getMessage());
+                Log.e(LOG_TAG, "JOB DateTime update failed");
+                return false;
+            }
         }
 
-        protected void onPostExecute(Void result)
+        protected void onPostExecute(Boolean success)
         {
-            if(mListener != null)
+            //get a reference to the activity if its still there
+            PostJobActivity postJobActivity = activityWeakReference.get();
+            if (postJobActivity == null || postJobActivity.isFinishing())return;
+
+            if (success) {
+                updateResponseMessage = "Job details updated";
+                jobDetailsSection = "dateTime";
+            }else{
+                updateResponseMessage = "Could not update job details";
+                jobDetailsSection = "dateTime";
+            }
+
+            //call activity method to update UI
+            postJobActivity.updateUiAfterJobDateUpdate(success, updateResponseMessage, jobDetailsSection);
+            Log.e(LOG_TAG, "isUpdated value in postExecute JobDateTime = "+ success);
+            Log.e(LOG_TAG, "isUpdated value in postExecute JobDateTime = "+ isUpdated);
+            Log.e(LOG_TAG, "isUpdated value in postExecute updateResponseMessage = "+ updateResponseMessage);
+            Log.e(LOG_TAG, "isUpdated value in postExecute jobDetailsSection = "+ jobDetailsSection);
+
+            /*if(mListener != null)
             {
                 if (jobDetailsSection.equals("dateTime"))
                     mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
-            }
+            }*/
         }
     }
 
-    //update job budget
-    public class UpdateJobBudgetTask extends AsyncTask<Void, Void, Void>
-    {
-        private UpdateJobDetailsTaskListener mListener;
-        private int jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget;
+    //retrofit call to update the job details with the budget
+    public void updateBudget(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget){
 
-        public UpdateJobBudgetTask(int jobId, int totalBudget, int pricePerHr, int totalHrs,
-                               int estTotalBudget, UpdateJobDetailsTaskListener listener){
-            this.jobId = jobId;
-            this.totalBudget = totalBudget;
-            this.pricePerHr = pricePerHr;
-            this.totalHrs = totalHrs;
-            this.estTotalBudget = estTotalBudget;
-            this.mListener = listener;
-        }
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
 
-        @Override
-        protected Void doInBackground(Void... arg0)
-        {
-            //call method to update details
-            mPostFixAppJob.updateBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget);
+        //defining the call
+        Call<Result> call = service.updateJobBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget);
 
-            return null;
-        }
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
 
-        protected void onPostExecute(Void result)
-        {
-            if(mListener != null)
-            {
-                if (jobDetailsSection.equals("budget"))
-                    mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+                    //send response data to the repository
+                    //success
+                    postJobActivity.updateUiAfterJobBudgetUpdate(true, response.body().getMessage(),
+                            "budget");
+                }else{
+                    updateResponseMessage = response.body().getMessage();
+                }
             }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                postJobActivity.updateUiAfterJobBudgetUpdate(false, updateResponseMessage,
+                        "budget");
+            }
+        });
+
+    }
+
+    //retrofit calls to perform actual posting of data
+    //retrofit call to update the job details with the date and time
+    private void updateDateTime(int jobId, String jobDate, String jobTime){
+        String mysqlDate = null;
+        //convert the date coming in to the one mysql expects
+        SimpleDateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
+        
+        try{
+            Date d = sdf.parse(jobDate);
+            mysqlDate = mysqlDateFormat.format(d);
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
+        Log.e(LOG_TAG, mysqlDate);
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateJobDateTime(jobId, mysqlDate, jobTime);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+
+                    //send response data to the postjobactivity
+                    //success
+                    postJobActivity.updateUiAfterJobDateUpdate(true, response.body().getMessage(), "dateTime");
+                    /*isUpdated = true;
+                    updateResponseMessage = response.body().getMessage();
+                    jobDetailsSection = "dateTime";*/
+                    Log.e(LOG_TAG, "DateTime Retrofit call success. isUpdated = "+ isUpdated);
+
+                }else{
+                    updateResponseMessage = response.body().getMessage();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+
+                postJobActivity.updateUiAfterJobDateUpdate(false, updateResponseMessage, "dateTime");
+                /*isUpdated = false;
+                updateResponseMessage = "job details not updated";
+                jobDetailsSection = "dateTime";*/
+                Log.e(LOG_TAG, "DateTime Retrofit call success. isUpdated = "+ isUpdated);
+            }
+        });
     }
 
     //interface to communicate job details update status to activity
