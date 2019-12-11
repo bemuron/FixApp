@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
@@ -217,9 +218,9 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
                                      String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                      File file){
 
-        //call async task to post job update details
-        new UpdateJobDetailsTask(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, file, mListener).execute();
+        //call retrofit in background to post job update details
+        mExecutors.diskIO().execute(() -> updateJobDetails(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, file) );
 
     }
 
@@ -229,9 +230,9 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     public void getJobUpdateDetailsWithoutImage(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
                                     String mustHaveTwo, String mustHaveThree, int isJobRemote){
 
-        //call async task to post job update details
-        new UpdateJobDetailsWithouImageTask(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, mListener).execute();
+        //call retrofit in background to post job update details
+        mExecutors.diskIO().execute(() -> updateJobDetailsWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote));
 
     }
 
@@ -331,7 +332,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         protected Void doInBackground(Void... arg0)
         {
             //call method to update details
-            mPostFixAppJob.updateJobDetailsWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+            updateJobDetailsWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                     mustHaveThree, isJobRemote);
 
             return null;
@@ -405,6 +406,98 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
                     mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
             }*/
         }
+    }
+
+    //retrofit call to post the job details to the server
+    //when image is attached
+    public void updateJobDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                 String mustHaveTwo, String mustHaveThree, int isJobRemote,
+                                 File file){
+
+        //Map is used to multipart the file using okhttp3.RequestBody
+        //File file = new File(mediaPath);
+
+        //parsing any media file
+        RequestBody requestBody = RequestBody.create(MediaType.parse("*image/*"), file);
+        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
+        RequestBody fileName = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateJob(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, fileToUpload, fileName);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+                    //send response data to postjobactivity
+                    //success
+                    postJobActivity.updateUiAfterJobDetailsWithoutImage(true,
+                            response.body().getMessage(),"basicsWithImage");
+                }else{
+                    updateResponseMessage = response.body().getMessage();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                //send response data to the postjobactivity
+                postJobActivity.updateUiAfterJobDetailsWithoutImage(true,
+                        updateResponseMessage,"basicsWithImage");
+            }
+        });
+
+    }
+
+    //retrofit call to update the job details to the server when an image is not added by the user
+    public void updateJobDetailsWithoutImage(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                             String mustHaveTwo, String mustHaveThree, int isJobRemote){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateJobWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                if (!response.body().getError()) {
+                    Log.d(LOG_TAG, response.body().getMessage());
+                    //send response data to postjobactivity
+                    //success
+                    postJobActivity.updateUiAfterJobDetailsWithoutImage(true,
+                            response.body().getMessage(),"basicsWithoutImage");
+                }else{
+                    updateResponseMessage = response.body().getMessage();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                //send response data to postjobactivity
+                postJobActivity.updateUiAfterJobDetailsWithoutImage(true,
+                        updateResponseMessage,"basicsWithoutImage");
+            }
+        });
+
     }
 
     //retrofit call to update the job details with the budget

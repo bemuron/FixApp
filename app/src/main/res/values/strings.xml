@@ -66,4 +66,7 @@
     <string name="must_haves_hint">What they must have or do</string>
     <string name="add_must_have">Add</string>
     <string name="save_must_have">Save</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

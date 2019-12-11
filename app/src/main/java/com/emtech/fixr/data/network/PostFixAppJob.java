@@ -231,46 +231,6 @@ public class PostFixAppJob {
 
     }
 
-    //retrofit call to update the job details to the server when an image is not added by the user
-    public void updateJobDetailsWithoutImage(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
-                                           String mustHaveTwo, String mustHaveThree, int isJobRemote){
-
-        //Defining retrofit api service*/
-        //APIService service = retrofit.create(APIService.class);
-        APIService service = new LocalRetrofitApi().getRetrofitService();
-
-        //defining the call
-        Call<Result> call = service.updateJobWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote);
-
-        //calling the com.emtech.retrofitexample.api
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, Response<Result> response) {
-
-                if (!response.body().getError()) {
-                    Log.d(LOG_TAG, response.body().getMessage());
-                    //send response data to the repository
-                    //success
-                    jobUpdatedCallBack.onJobUpdated(true, response.body().getMessage(),
-                            "basicsWithoutImage");
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                //print out any error we may get
-                //probably server connection
-                Log.e(LOG_TAG, t.getMessage());
-                //send response data to the repository
-                jobUpdatedCallBack.onJobUpdated(false, "Job details not updated",
-                        "basicsWithoutImage");
-            }
-        });
-
-    }
-
     //retrofit call to update the job details with the date and time
     public void updateDateTime(int jobId, String jobDate, String jobTime){
 

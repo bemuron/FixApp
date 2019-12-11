@@ -7,6 +7,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,16 +19,21 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.app.MyApplication;
 import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.helpers.SessionManager;
+import com.emtech.fixr.presentation.ui.fragment.BrowseJobsFragment;
+import com.emtech.fixr.presentation.ui.fragment.DashboardFragment;
+import com.emtech.fixr.presentation.ui.fragment.MyJobsFragment;
+import com.emtech.fixr.presentation.ui.fragment.MyProfileFragment;
+import com.emtech.fixr.presentation.ui.fragment.PaymentHistoryFragment;
 import com.emtech.fixr.presentation.viewmodels.HomeActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.HomeViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
@@ -160,7 +166,7 @@ public class HomeActivity extends AppCompatActivity
             else showLoading();
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -175,7 +181,7 @@ public class HomeActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -300,30 +306,60 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+    //this method displays the screen/fragment the user has selected using the navigation bar
+    //its called in the onNavigationItemSelected() method
+    private void displaySelectedScreen(int itemId) {
+
+        //creating fragment object
+        Fragment fragment = null;
+
+        //initializing the fragment object which is selected
+        switch (itemId) {
+            case R.id.post_job:
+                //should take user to main page with categories
+                break;
+            case R.id.my_jobs:
+                fragment = new MyJobsFragment();
+
+                break;
+            case R.id.browse_jobs:
+                fragment = new BrowseJobsFragment();
+
+                break;
+            case R.id.my_profile:
+                fragment = new MyProfileFragment();
+
+                break;
+            case R.id.dashboard:
+                fragment = new DashboardFragment();
+
+                break;
+            case R.id.payment_history:
+                fragment = new PaymentHistoryFragment();
+
+                break;
+            case R.id.settings:
+
+                break;
+        }
+        //replacing the fragment
+        if (fragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.nav_drawer_fragments_container, fragment);
+            ft.commit();
+        }
+
+        DrawerLayout drawer =  findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.post_job) {
-            // Handle the camera action
-        } else if (id == R.id.my_jobs) {
-
-        } else if (id == R.id.browse_jobs) {
-
-        } else if (id == R.id.my_profile) {
-
-        } else if (id == R.id.dashboard) {
-
-        } else if (id == R.id.payment_history) {
-
-        }else if (id == R.id.settings) {
-
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
+        //calling the method displayselectedscreen and passing the id of selected menu
+        displaySelectedScreen(id);
         return true;
     }
 

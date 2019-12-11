@@ -21,6 +21,12 @@
       - that there is a gap between the bottom of the screen and the EdgeEffect. Set           -
       - clipToPadding to "false" again and observe how the gap is gone.                        -
       - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <FrameLayout
+        android:id="@+id/nav_drawer_fragments_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
