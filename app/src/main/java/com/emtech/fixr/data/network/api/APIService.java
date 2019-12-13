@@ -20,6 +20,23 @@ public interface APIService {
     @GET("public/categories")
     Call<Categories> getCategories();
 
+    //the login/signing call
+    @FormUrlEncoded
+    @POST("public/login")
+    Call<Result> userLogin(
+            @Field("email") String email,
+            @Field("password") String password);
+
+    //The register call
+    @FormUrlEncoded
+    @POST("public/register")
+    Call<Result> createUser(
+            @Field("name") String name,
+            @Field("date_of_birth") String date_of_birth,
+            @Field("gender") String gender,
+            @Field("email") String email,
+            @Field("password") String password);
+
     //getting category images
     @GET("public/messages/{image}")
     Call<Result> getMessages(@Path("image") String image);
@@ -100,23 +117,6 @@ public interface APIService {
             @Field("total_hrs") int total_hrs,
             @Field("est_tot_budget") int est_tot_budget);
 
-    //the login/signing call
-    @FormUrlEncoded
-    @POST("public/login")
-    Call<Result> userLogin(
-            @Field("email") String email,
-            @Field("password") String password);
-
-    //The register call
-    @FormUrlEncoded
-    @POST("public/register")
-    Call<Result> createUser(
-            @Field("name") String name,
-            @Field("date_of_birth") String date_of_birth,
-            @Field("gender") String gender,
-            @Field("email") String email,
-            @Field("password") String password);
-
     //uploading user job image
     @Multipart
     @POST("uploadUserJobImage/{user_id}")
@@ -124,6 +124,36 @@ public interface APIService {
             @Path("user_id") int user_id,
             @Part MultipartBody.Part file,
             @Part("name") RequestBody name);
+
+    //getting the jobs this user is still creating
+    @GET("public/getDraftJobs/{user_id}")
+    Call<Result> getDraftJobs(
+            @Path("user_id") int user_id);
+
+    //getting the details of a single draft job this user is still creating
+    @GET("public/getDraftJobDetails/{job_id}")
+    Call<Result> getDraftJobDetails(
+            @Path("user_id") int job_id);
+
+    //getting the jobs this user has posted
+    @GET("public/getPostedJobs/{user_id}")
+    Call<Result> getPostedJobs(
+            @Path("user_id") int user_id);
+
+    //getting the jobs this user has been
+    @GET("public/getAssignedJobs/{user_id}")
+    Call<Result> getAssignedJobs(
+            @Path("user_id") int user_id);
+
+    //getting the jobs this user is still creating
+    @GET("public/getOffersMadeJobs/{user_id}")
+    Call<Result> getOffersMadeJobs(
+            @Path("user_id") int user_id);
+
+    //getting the jobs this user has completed
+    @GET("public/getJobsCompleted/{user_id}")
+    Call<Result> getJobsCompleted(
+            @Path("user_id") int user_id);
 
     /*
     //The register call

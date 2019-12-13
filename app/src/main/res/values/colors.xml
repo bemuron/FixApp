@@ -17,4 +17,10 @@
     <color name="save">#13B408</color>
     <color name="bg_circle_default">#666666</color>
     <color name="row_activated">#e0e0e0</color>
+    <color name="draft_job">#FF6F6F</color>
+    <color name="completed_job">#13B408</color><!--jobs this user has completed-->
+    <color name="assigned_job">#004fcc</color><!--jobs this user has been given-->
+    <color name="offered_job">#C46210</color><!--offers this user has made for a job-->
+    <color name="posted_job">#FFA500</color><!--jobs this user has posted-->
+
 </resources>

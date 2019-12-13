@@ -42,7 +42,7 @@ public class Job {
     private Date posted_on;
 
     @ColumnInfo(name = "job_status")
-    private int job_status; // 0 - draft, 1 - open, 2 - in progress, 3 - complete
+    private int job_status; // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete
 
     @ColumnInfo(name = "completed_by")
     private int completed_by; //professional's id
