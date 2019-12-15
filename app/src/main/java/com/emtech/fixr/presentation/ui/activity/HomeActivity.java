@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -22,6 +23,7 @@ import android.support.v7.widget.Toolbar;
 import android.support.v4.app.Fragment;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 
@@ -42,7 +44,9 @@ import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        CategoriesAdapter.CategoriesAdapterOnItemClickHandler{
+        CategoriesAdapter.CategoriesAdapterOnItemClickHandler, MyJobsFragment.OnMyJobsInteractionListener,
+        MyProfileFragment.OnMyProfileInteractionListener,PaymentHistoryFragment.OnPaymentHistoryInteractionListener,
+        DashboardFragment.OnDashboardInteractionListener,BrowseJobsFragment.OnBrowseJobsInteractionListener{
 
     private CategoriesAdapter mCategoriesAdapter;
     private RecyclerView mRecyclerView;
@@ -51,6 +55,7 @@ public class HomeActivity extends AppCompatActivity
     private ProgressBar mLoadingIndicator;
     private SessionManager session;
     private String userRole;
+    private FrameLayout navDrawerFragmentContainer;
     private int userId;
 
    // private CategoryGridAdapter categoryGridAdapter;
@@ -64,6 +69,7 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("Post a job");
 
         // session manager
         session = new SessionManager(getApplicationContext());
@@ -175,6 +181,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+        navDrawerFragmentContainer = findViewById(R.id.nav_drawer_fragments_container);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -226,6 +233,31 @@ public class HomeActivity extends AppCompatActivity
         mRecyclerView.setVisibility(View.INVISIBLE);
         // Finally, show the loading indicator
         mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onDashboardInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onMyjobsInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onMyProfileInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onPaymentHistoryInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onBrowseJobsInteraction(Uri uri) {
+
     }
 
     /**
@@ -317,24 +349,30 @@ public class HomeActivity extends AppCompatActivity
         switch (itemId) {
             case R.id.post_job:
                 //should take user to main page with categories
+                navDrawerFragmentContainer.setVisibility(View.GONE);
                 break;
             case R.id.my_jobs:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new MyJobsFragment();
 
                 break;
             case R.id.browse_jobs:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new BrowseJobsFragment();
 
                 break;
             case R.id.my_profile:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new MyProfileFragment();
 
                 break;
             case R.id.dashboard:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new DashboardFragment();
 
                 break;
             case R.id.payment_history:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new PaymentHistoryFragment();
 
                 break;

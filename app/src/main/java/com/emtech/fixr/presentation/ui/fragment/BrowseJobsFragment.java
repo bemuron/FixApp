@@ -14,7 +14,7 @@ import com.emtech.fixr.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link BrowseJobsFragment.OnFragmentInteractionListener} interface
+ * {@link OnBrowseJobsInteractionListener} interface
  * to handle interaction events.
  * Use the {@link BrowseJobsFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -30,7 +30,7 @@ public class BrowseJobsFragment extends Fragment {
     private String mParam2;
     private View view;
 
-    private OnFragmentInteractionListener mListener;
+    private OnBrowseJobsInteractionListener mListener;
 
     public BrowseJobsFragment() {
         // Required empty public constructor
@@ -81,15 +81,15 @@ public class BrowseJobsFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onBrowseJobsInteraction(uri);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnBrowseJobsInteractionListener) {
+            mListener = (OnBrowseJobsInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -112,8 +112,8 @@ public class BrowseJobsFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnBrowseJobsInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onBrowseJobsInteraction(Uri uri);
     }
 }
