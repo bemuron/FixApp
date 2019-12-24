@@ -2,6 +2,7 @@ package com.emtech.fixr.data.network.api;
 
 import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.models.Categories;
+import com.emtech.fixr.models.UserJobs;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -115,7 +116,8 @@ public interface APIService {
             @Field("total_budget") int total_budget,
             @Field("price_per_hr") int price_per_hr,
             @Field("total_hrs") int total_hrs,
-            @Field("est_tot_budget") int est_tot_budget);
+            @Field("est_tot_budget") int est_tot_budget,
+            @Field("job_status") int job_status);
 
     //uploading user job image
     @Multipart
@@ -125,35 +127,28 @@ public interface APIService {
             @Part MultipartBody.Part file,
             @Part("name") RequestBody name);
 
-    //getting the jobs this user is still creating
-    @GET("public/getDraftJobs/{user_id}")
-    Call<Result> getDraftJobs(
+    //getting all the jobs associated with this user based on the status they have chosen
+    // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete
+    @GET("public/getJobsByStatus/{user_id}")
+    Call<Result> getJobsByStatus(
+            @Path("user_id") int user_id,
+            @Field("status") int status);
+
+    //getting the details of a job
+    @GET("public/getJobDetailsByStatus/{job_id}")
+    Call<Result> getJobDetailsByStatus(
+            @Path("job_id") int job_id);
+
+    //getting all the jobs by and for this user
+    // not status based
+    @GET("public/getAllJobsForUser/{user_id}")
+    Call<UserJobs> getAllJobsForUser(
             @Path("user_id") int user_id);
 
-    //getting the details of a single draft job this user is still creating
-    @GET("public/getDraftJobDetails/{job_id}")
-    Call<Result> getDraftJobDetails(
-            @Path("user_id") int job_id);
-
-    //getting the jobs this user has posted
-    @GET("public/getPostedJobs/{user_id}")
-    Call<Result> getPostedJobs(
-            @Path("user_id") int user_id);
-
-    //getting the jobs this user has been
-    @GET("public/getAssignedJobs/{user_id}")
-    Call<Result> getAssignedJobs(
-            @Path("user_id") int user_id);
-
-    //getting the jobs this user is still creating
-    @GET("public/getOffersMadeJobs/{user_id}")
-    Call<Result> getOffersMadeJobs(
-            @Path("user_id") int user_id);
-
-    //getting the jobs this user has completed
-    @GET("public/getJobsCompleted/{user_id}")
-    Call<Result> getJobsCompleted(
-            @Path("user_id") int user_id);
+    //getting the details of a job minus status
+    @GET("public/getJobDetails/{job_id}")
+    Call<Result> getJobDetails(
+            @Path("job_id") int job_id);
 
     /*
     //The register call

@@ -25,6 +25,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan">
+        <activity android:name=".presentation.ui.activity.JobDetailsActivity"></activity>
         <!-- Log in Activity -->
         <activity
             android:name=".presentation.ui.activity.LoginActivity"
@@ -41,7 +42,7 @@
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"></activity>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.ui.activity.PostJobActivity"
             android:label="@string/title_activity_post_job"

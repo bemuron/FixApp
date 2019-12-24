@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/padding_list_row"
     android:paddingLeft="?listPreferredItemPaddingLeft"
     android:paddingStart="?listPreferredItemPaddingLeft"
@@ -12,28 +12,18 @@
     android:paddingEnd="?listPreferredItemPaddingRight"
     android:paddingTop="@dimen/padding_list_row">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingRight="@dimen/margin_padding_xnormal"
-        android:paddingEnd="@dimen/margin_padding_xnormal"
-        android:paddingLeft="@dimen/margin_padding_xnormal"
-        android:paddingStart="@dimen/margin_padding_xnormal"
-        android:layout_toLeftOf="@id/my_jobs_job_container"
-        android:layout_toStartOf="@id/my_jobs_job_container"
-        android:contentDescription="@string/app_name"
-        android:scaleType="centerInside"/>
-
     <LinearLayout
         android:id="@+id/my_jobs_job_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="true"
         android:orientation="vertical"
+        android:paddingLeft="72dp"
         android:paddingRight="@dimen/padding_list_row">
 
         <TextView
             android:id="@+id/my_jobs_job_title"
-            android:text="Issue Name"
+            android:text="Job Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="1"
@@ -81,11 +71,29 @@
 
     </LinearLayout>
 
+    <RelativeLayout
+        android:id="@+id/icon_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/icon_front"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/icon_profile"
+                android:layout_width="@dimen/icon_width_height"
+                android:layout_height="@dimen/icon_width_height" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/job_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:textColor="@color/draft_job"

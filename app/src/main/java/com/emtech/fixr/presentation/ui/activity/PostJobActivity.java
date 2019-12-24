@@ -262,7 +262,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             this.finish();*/
         }else{
             jobCreatedId = 0;
-            Log.e(LOG_TAG, "something isnt right job id = "+job_id);
+            Log.e(LOG_TAG, "something isn't right job id = "+job_id);
             //if the job wasnt posted, display error message
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
         }
@@ -292,6 +292,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     //receive the user input from the job budget fragment
     //store in the local db if there is no network connection *** up for debate
     //otherwise get everything the user put in and upload to the db
+    //change status of the job to 1 - posted from the default 0 -draft
     @Override
     public void onJobBudgetFragmentInteraction(String totalBudget, String estTotBudget,
                                                String pricePerHr, String totalHrs) {
@@ -308,18 +309,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
                 //we are updating the existing job details
-                repository.getJobBudgetUpdate(jobCreatedId, 0, perHrPrice, totHrs, estBudget);
-                //checking the response status from the server
-                /*if (jobDetailsSection.equals("budget")){
-                    if (isUpdated) {
-                        hideDialog();
-                        Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
-                        Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
-                    }else {
-                        hideDialog();
-                        Log.e(LOG_TAG, "Job not posted");
-                    }
-                }*/
+                repository.getJobBudgetUpdate(jobCreatedId, 0, perHrPrice, totHrs, estBudget, 1);
             }else{
                 hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
@@ -331,18 +321,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
                 //we are updating the existing job details
-                repository.getJobBudgetUpdate(jobCreatedId, totBudget, 0, 0, estBudget);
-                //checking the response status from the server
-                /*if (jobDetailsSection.equals("budget")){
-                    if (isUpdated) {
-                        hideDialog();
-                        Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
-                        Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
-                    }else {
-                        hideDialog();
-                        Log.e(LOG_TAG, "Job not posted");
-                    }
-                }*/
+                repository.getJobBudgetUpdate(jobCreatedId, totBudget, 0, 0, estBudget, 1);
             }else{
                 hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);

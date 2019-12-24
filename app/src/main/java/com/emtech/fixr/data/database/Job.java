@@ -39,7 +39,7 @@ public class Job {
     private int category_id;
 
     @ColumnInfo(name = "posted_on")
-    private Date posted_on;
+    private String posted_on;
 
     @ColumnInfo(name = "job_status")
     private int job_status; // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete
@@ -48,7 +48,25 @@ public class Job {
     private int completed_by; //professional's id
 
     @ColumnInfo(name = "completed_on")
-    private Date completed_on;
+    private String completed_on;
+
+    @ColumnInfo(name = "job_date")
+    private String job_date;
+
+    @ColumnInfo(name = "job_time")
+    private String job_time;
+
+    @ColumnInfo(name = "total_budget")
+    private String total_budget;
+
+    @ColumnInfo(name = "price_per_hr")
+    private String price_per_hr;
+
+    @ColumnInfo(name = "total_hrs")
+    private String total_hrs;
+
+    @ColumnInfo(name = "est_tot_budget")
+    private String est_tot_budget;
 
 
     /*public Job(String name, String description, String location, String image1, String image2,
@@ -126,7 +144,7 @@ public class Job {
         return category_id;
     }
 
-    public Date getPosted_on() {
+    public String getPosted_on() {
         return posted_on;
     }
 
@@ -138,7 +156,7 @@ public class Job {
         return completed_by;
     }
 
-    public Date getCompleted_on() {
+    public String getCompleted_on() {
         return completed_on;
     }
 
@@ -174,7 +192,7 @@ public class Job {
         this.category_id = category_id;
     }
 
-    public void setPosted_on(Date posted_on) {
+    public void setPosted_on(String posted_on) {
         this.posted_on = posted_on;
     }
 
@@ -186,7 +204,55 @@ public class Job {
         this.completed_by = completed_by;
     }
 
-    public void setCompleted_on(Date completed_on) {
+    public void setCompleted_on(String completed_on) {
         this.completed_on = completed_on;
+    }
+
+    public String getJob_date() {
+        return job_date;
+    }
+
+    public void setJob_date(String job_date) {
+        this.job_date = job_date;
+    }
+
+    public String getJob_time() {
+        return job_time;
+    }
+
+    public void setJob_time(String job_time) {
+        this.job_time = job_time;
+    }
+
+    public String getTotal_budget() {
+        return total_budget;
+    }
+
+    public void setTotal_budget(String total_budget) {
+        this.total_budget = total_budget;
+    }
+
+    public String getPrice_per_hr() {
+        return price_per_hr;
+    }
+
+    public void setPrice_per_hr(String price_per_hr) {
+        this.price_per_hr = price_per_hr;
+    }
+
+    public String getTotal_hrs() {
+        return total_hrs;
+    }
+
+    public void setTotal_hrs(String total_hrs) {
+        this.total_hrs = total_hrs;
+    }
+
+    public String getEst_tot_budget() {
+        return est_tot_budget;
+    }
+
+    public void setEst_tot_budget(String est_tot_budget) {
+        this.est_tot_budget = est_tot_budget;
     }
 }

@@ -9,9 +9,11 @@ import android.widget.Toast;
 import com.emtech.fixr.AppExecutors;
 import com.emtech.fixr.data.database.CategoriesDao;
 import com.emtech.fixr.data.database.Category;
+import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.data.database.UsersDao;
 import com.emtech.fixr.data.network.FixAppNetworkDataSource;
 import com.emtech.fixr.data.network.FetchCategories;
+import com.emtech.fixr.data.network.GetMyJobs;
 import com.emtech.fixr.data.network.LoginUser;
 import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.data.network.RegisterUser;
@@ -22,10 +24,14 @@ import com.emtech.fixr.models.FixAppCategory;
 import com.emtech.fixr.models.User;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +60,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     private CategoriesDao mCategoryDao;
     private AppExecutors mExecutors;
     private FetchCategories mFetchCategories;
+    private GetMyJobs mGetMyJobs;
     private static PostFixAppJob mPostFixAppJob;
     private LoginUser mLoginUser;
     private RegisterUser mRegisterUser;
@@ -68,13 +75,14 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
 
     private FixAppRepository(CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
                                PostFixAppJob postFixAppJob, RegisterUser registerUser,
-                             LoginUser loginUser, AppExecutors executors) {
+                             LoginUser loginUser, GetMyJobs getMyJobs, AppExecutors executors) {
         mUsersDao = usersDao;
         mCategoryDao = categoryDao;
         mFetchCategories = fetchCategories;
         mPostFixAppJob = postFixAppJob;
         mRegisterUser = registerUser;
         mLoginUser = loginUser;
+        mGetMyJobs = getMyJobs;
         mExecutors = executors;
         LiveData<Category[]> fixAppCategories = mFetchCategories.getCurrentCategories();
 
@@ -101,12 +109,12 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     public synchronized static FixAppRepository getInstance(
             CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
             PostFixAppJob postFixAppJob, RegisterUser registerUser, LoginUser loginUser,
-            AppExecutors executors) {
+            GetMyJobs getMyJobs, AppExecutors executors) {
         Log.d(LOG_TAG, "Getting the repository");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new FixAppRepository(categoryDao, usersDao, fetchCategories,
-                        postFixAppJob, registerUser, loginUser, executors);
+                        postFixAppJob, registerUser, loginUser, getMyJobs, executors);
                 Log.d(LOG_TAG, "Made new repository");
             }
         }
@@ -136,6 +144,11 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     public LiveData<List<Category>> getAllCategories(){
         initializeData();
         return mCategoryDao.getAllCategories();
+    }
+
+    public LiveData<List<Job>> getAllJobs(int user_id){
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetJobs(user_id));
+        return mGetMyJobs.getJobsForUser();
     }
 
     public Cursor getUser(){
@@ -243,16 +256,15 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         //call async task to post job update details
        // new UpdateJobDateTimeTask(jobId, jobDate, jobTime).execute();
         mExecutors.diskIO().execute(() -> updateDateTime(jobId, jobDate, jobTime));
-
     }
 
     //method to receive updated job budget from activity and pass them to the
     //Async task to post to the db
-    public void getJobBudgetUpdate(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget){
+    public void getJobBudgetUpdate(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget, int jobStatus){
 
         //call async task to post job update details
         //new UpdateJobBudgetTask(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget, mListener).execute();
-        mExecutors.diskIO().execute(() -> updateBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget));
+        mExecutors.diskIO().execute(() -> updateBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget, jobStatus));
     }
 
     //interface method from PostFixAppJob to get the status of the job details update or post
@@ -262,150 +274,6 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         updateResponseMessage = message;
         jobDetailsSection = jobSection;
 
-    }
-
-    //update job details async task when image is attached
-    public class UpdateJobDetailsTask extends AsyncTask<Void, Void, Void>
-    {
-        private UpdateJobDetailsTaskListener mListener;
-        private int jobId, isJobRemote;
-        private String jobTitle, jobDesc,jobLocation, mustHaveOne, mustHaveTwo, mustHaveThree;
-        private File file;
-
-        public UpdateJobDetailsTask(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
-                                    String mustHaveTwo, String mustHaveThree, int isJobRemote,
-                                    File file, UpdateJobDetailsTaskListener listener){
-            this.jobId = jobId;
-            this.jobTitle = jobTitle;
-            this.jobDesc = jobDesc;
-            this.jobLocation = jobLocation;
-            this.mustHaveOne = mustHaveOne;
-            this.mustHaveTwo = mustHaveTwo;
-            this.mustHaveThree = mustHaveThree;
-            this.isJobRemote = isJobRemote;
-            this.file = file;
-            this.mListener = listener;
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0)
-        {
-            //call method to update details
-            mPostFixAppJob.updateJobDetails(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                    mustHaveThree, isJobRemote, file);
-
-            return null;
-        }
-
-        protected void onPostExecute(Void result)
-        {
-            if(mListener != null)
-            {
-                if (jobDetailsSection.equals("basicsWithImage"))
-                    mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
-            }
-        }
-    }
-
-    //update job details async task when image is attached
-    public class UpdateJobDetailsWithouImageTask extends AsyncTask<Void, Void, Void>
-    {
-        private UpdateJobDetailsTaskListener mListener;
-        private int jobId, isJobRemote;
-        private String jobTitle, jobDesc,jobLocation, mustHaveOne, mustHaveTwo, mustHaveThree;
-
-        public UpdateJobDetailsWithouImageTask(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
-                                              String mustHaveTwo, String mustHaveThree,
-                                              int isJobRemote, UpdateJobDetailsTaskListener listener){
-            this.jobId = jobId;
-            this.jobTitle = jobTitle;
-            this.jobDesc = jobDesc;
-            this.jobLocation = jobLocation;
-            this.mustHaveOne = mustHaveOne;
-            this.mustHaveTwo = mustHaveTwo;
-            this.mustHaveThree = mustHaveThree;
-            this.isJobRemote = isJobRemote;
-            this.mListener = listener;
-        }
-
-        @Override
-        protected Void doInBackground(Void... arg0)
-        {
-            //call method to update details
-            updateJobDetailsWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                    mustHaveThree, isJobRemote);
-
-            return null;
-        }
-
-        protected void onPostExecute(Void result)
-        {
-            if(mListener != null)
-            {
-                if (jobDetailsSection.equals("basicsWithoutImage"))
-                mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
-            }
-        }
-    }
-
-    //update job details date and time
-    public static class UpdateJobDateTimeTask extends AsyncTask<Void, Void, Boolean>
-    {
-        private WeakReference<PostJobActivity> activityWeakReference;
-        private UpdateJobDetailsTaskListener mListener;
-        private int jobId;
-        private String jobDate,jobTime;
-
-        //only retain a weak reference to the activity
-        public UpdateJobDateTimeTask(PostJobActivity context, int jobId, String jobDate,
-                                     String jobTime){
-            activityWeakReference = new WeakReference<>(context);
-            this.jobId = jobId;
-            this.jobDate = jobDate;
-            this.jobTime = jobTime;
-            //this.mListener = listener;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... arg0)
-        {
-            try {
-                //call method to update details
-                return true;//updateDateTime(jobId, jobDate, jobTime);
-            }catch(Exception e){
-                Log.e(LOG_TAG, e.getMessage());
-                Log.e(LOG_TAG, "JOB DateTime update failed");
-                return false;
-            }
-        }
-
-        protected void onPostExecute(Boolean success)
-        {
-            //get a reference to the activity if its still there
-            PostJobActivity postJobActivity = activityWeakReference.get();
-            if (postJobActivity == null || postJobActivity.isFinishing())return;
-
-            if (success) {
-                updateResponseMessage = "Job details updated";
-                jobDetailsSection = "dateTime";
-            }else{
-                updateResponseMessage = "Could not update job details";
-                jobDetailsSection = "dateTime";
-            }
-
-            //call activity method to update UI
-            postJobActivity.updateUiAfterJobDateUpdate(success, updateResponseMessage, jobDetailsSection);
-            Log.e(LOG_TAG, "isUpdated value in postExecute JobDateTime = "+ success);
-            Log.e(LOG_TAG, "isUpdated value in postExecute JobDateTime = "+ isUpdated);
-            Log.e(LOG_TAG, "isUpdated value in postExecute updateResponseMessage = "+ updateResponseMessage);
-            Log.e(LOG_TAG, "isUpdated value in postExecute jobDetailsSection = "+ jobDetailsSection);
-
-            /*if(mListener != null)
-            {
-                if (jobDetailsSection.equals("dateTime"))
-                    mListener.onUpdateFinish(isUpdated, updateResponseMessage, jobDetailsSection);
-            }*/
-        }
     }
 
     //retrofit call to post the job details to the server
@@ -501,14 +369,14 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     }
 
     //retrofit call to update the job details with the budget
-    public void updateBudget(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget){
+    public void updateBudget(int jobId, int totalBudget, int pricePerHr, int totalHrs, int estTotalBudget, int jobStatus){
 
         //Defining retrofit api service*/
         //APIService service = retrofit.create(APIService.class);
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<Result> call = service.updateJobBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget);
+        Call<Result> call = service.updateJobBudget(jobId, totalBudget, pricePerHr, totalHrs, estTotalBudget, jobStatus);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<Result>() {

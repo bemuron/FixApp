@@ -1,15 +1,31 @@
 package com.emtech.fixr.presentation.ui.fragment;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.emtech.fixr.R;
+import com.emtech.fixr.data.database.Job;
+import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
+import com.emtech.fixr.presentation.ui.activity.HomeActivity;
+import com.emtech.fixr.presentation.viewmodels.HomeActivityViewModel;
+import com.emtech.fixr.presentation.viewmodels.HomeViewModelFactory;
+import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
+import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
+import com.emtech.fixr.utilities.InjectorUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,15 +35,17 @@ import com.emtech.fixr.R;
  * Use the {@link MyJobsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MyJobsFragment extends Fragment {
+public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobsListAdapterListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String USER_ID = "userId";
+    private RecyclerView recyclerView;
+    private int mPosition = RecyclerView.NO_POSITION;
+    private List<Job> jobList = new ArrayList<Job>();
+    private MyJobsActivityViewModel mViewModel;
+    private Job job;
+    private MyJobsListAdapter jobsAdapter;
+    private int mUserId;
     private View view;
 
     private OnMyJobsInteractionListener mListener;
@@ -40,16 +58,14 @@ public class MyJobsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param userId This user's ID.
      * @return A new instance of fragment BrowseJobsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MyJobsFragment newInstance(String param1, String param2) {
+    public static MyJobsFragment newInstance(int userId) {
         MyJobsFragment fragment = new MyJobsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(USER_ID, userId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -57,10 +73,22 @@ public class MyJobsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mUserId = getArguments().getInt(USER_ID);
         }
+
+        MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity().getApplicationContext());
+        mViewModel = ViewModelProviders.of
+                (this, factory).get(MyJobsActivityViewModel.class);
+
+        mViewModel.getAllJobsForUser(mUserId).observe(this, userJobsList -> {
+            jobList = userJobsList;
+            //mCategoriesAdapter.swapForecast(userJobsList);
+
+            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+            recyclerView.smoothScrollToPosition(mPosition);
+        });
     }
 
     @Override
@@ -78,13 +106,6 @@ public class MyJobsFragment extends Fragment {
         getActivity().setTitle("My Jobs");
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onMyjobsInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -96,10 +117,38 @@ public class MyJobsFragment extends Fragment {
         }
     }
 
+    public void getAllWidgets(View view){
+        recyclerView = view.findViewById(R.id.my_jobs_recycler_view);
+    }
+
+    //setting up the recycler view adapter
+    private void setAdapter()
+    {
+        jobsAdapter = new MyJobsListAdapter(getActivity(), jobList,this);
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+        recyclerView.setAdapter(jobsAdapter);
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onJobRowClicked(int position) {
+        Job job = jobList.get(position);
+        jobList.set(position, job);
+        if (mListener != null) {
+            //master detail flow callback
+            //send to the parent activity then call the activity to display details
+            mListener.onMyjobsInteraction(job.getJob_id(), job.getName());
+        }
+
     }
 
     /**
@@ -113,7 +162,6 @@ public class MyJobsFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnMyJobsInteractionListener {
-        // TODO: Update argument type and name
-        void onMyjobsInteraction(Uri uri);
+        void onMyjobsInteraction(int jobID, String jobName);
     }
 }

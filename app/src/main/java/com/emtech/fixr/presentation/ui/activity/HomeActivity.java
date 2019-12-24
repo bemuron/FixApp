@@ -240,8 +240,13 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
+    //callback from MyJobsFragment, launch activity to display job selected details
     @Override
-    public void onMyjobsInteraction(Uri uri) {
+    public void onMyjobsInteraction(int jobID, String jobName) {
+        Intent intent = new Intent(this, JobDetailsActivity.class);
+        intent.putExtra("jobID", jobID);
+        intent.putExtra("jobName", jobName);
+        startActivity(intent);
 
     }
 
@@ -353,7 +358,7 @@ public class HomeActivity extends AppCompatActivity
                 break;
             case R.id.my_jobs:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = new MyJobsFragment();
+                fragment = MyJobsFragment.newInstance(userId);
 
                 break;
             case R.id.browse_jobs:
