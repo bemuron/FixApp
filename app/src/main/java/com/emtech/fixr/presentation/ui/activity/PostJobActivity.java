@@ -222,17 +222,20 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         //if job id is > 0 we are updating the job, else its at the default
         // state of 0 - posting fresh details
         if (jobCreatedId > 0) {
+            hideDialog();
             //we are updating the existing job details
             repository.getJobUpdateDetails(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                     mustHaveThree, isJobRemote, file);
             Log.e(LOG_TAG, "Inside job posted callback job id = "+jobCreatedId);
             //if the file is null, then we are updating the details without an image attached
             if (file == null){
+                hideDialog();
                 repository.getJobUpdateDetailsWithoutImage(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                         mustHaveThree, isJobRemote);
             }
 
         }else {
+            hideDialog();
             //post details to local db and get the id of that record to keep updating with more
             //input from the user
             postJobActivityViewModel.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
@@ -308,6 +311,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         if (perHrPrice != 0 && totHrs != 0){
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
+                hideDialog();
                 //we are updating the existing job details
                 repository.getJobBudgetUpdate(jobCreatedId, 0, perHrPrice, totHrs, estBudget, 1);
             }else{
@@ -320,6 +324,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         if (totBudget != 0){
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
+                hideDialog();
                 //we are updating the existing job details
                 repository.getJobBudgetUpdate(jobCreatedId, totBudget, 0, 0, estBudget, 1);
             }else{

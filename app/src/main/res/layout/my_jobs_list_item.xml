@@ -56,7 +56,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
-            android:lines="1"
             android:textSize="@dimen/text_size_normal" />
 
         <TextView
@@ -98,6 +97,7 @@
         android:layout_alignParentEnd="true"
         android:textColor="@color/draft_job"
         android:textSize="@dimen/text_size_normal"
+        android:textStyle="bold"
         android:text="Draft"/>
 
 </RelativeLayout>

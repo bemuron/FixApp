@@ -1,7 +1,10 @@
 package com.emtech.fixr.presentation.adapters;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.view.HapticFeedbackConstants;
@@ -57,7 +60,7 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
             job_time = view.findViewById(R.id.my_jobs_time);
             job_amount = view.findViewById(R.id.my_jobs_amount);
             job_status = view.findViewById(R.id.job_status);
-            iconImp = view.findViewById(R.id.icon_star);
+            //iconImp = view.findViewById(R.id.icon_star);
             imgProfile = view.findViewById(R.id.icon_profile);
             jobContainer = view.findViewById(R.id.my_jobs_job_container);
             iconContainer = view.findViewById(R.id.icon_container);
@@ -93,12 +96,31 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
         Job job = jobList.get(position);
         int jobStatus;
 
+        //make these texts bold
+        SpannableStringBuilder location = new SpannableStringBuilder("Location: ");
+        SpannableStringBuilder date = new SpannableStringBuilder("Date: ");
+        SpannableStringBuilder currency = new SpannableStringBuilder("UGX. ");
+        SpannableStringBuilder time = new SpannableStringBuilder("Time: ");
+
+        location.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, location.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        date.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, date.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        currency.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, currency.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        time.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, time.length(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
         // displaying text view data
         holder.job_name.setText(job.getName());
-        holder.job_date.setText(job.getJob_date());
-        holder.job_location.setText(job.getLocation());
-        holder.job_time.setText(job.getJob_time());
-        holder.job_amount.setText(job.getEst_tot_budget());
+        holder.job_date.setText(date + job.getJob_date());
+        if (job.getIs_job_remote() == 0){
+            holder.job_location.setText(location + job.getLocation());
+        }else {
+            holder.job_location.setText(location + "Remote Job");
+        }
+        holder.job_time.setText(time + job.getJob_time());
+        holder.job_amount.setText(currency + job.getEst_tot_budget());
 
         // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete
         jobStatus = job.getJob_status();
@@ -119,6 +141,9 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
                 holder.job_status.setText("Complete");
                 break;
         }
+
+        // displaying the first letter of From in icon text
+        //holder.iconText.setText(tutor.getName().substring(0, 1));
 
         // change the row state to activated
         holder.itemView.setActivated(selectedItems.get(position, false));
@@ -155,6 +180,11 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
             //holder.imgProfile.setColorFilter(job.getColor());
             //holder.iconText.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void setList(List<Job> job) {
+        this.jobList = job;
+        notifyDataSetChanged();
     }
 
     @Override

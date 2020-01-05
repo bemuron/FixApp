@@ -1,9 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".presentation.ui.activity.JobDetailsActivity">
 
-</android.support.constraint.ConstraintLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/margin_padding_normal">
+
+    <TextView
+        android:id="@+id/JD_job_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="@dimen/text_size_large"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Wall mount my TV"/>
+
+    <TextView
+        android:id="@+id/JD_posted_by_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:text="Posted By;"/>
+
+    <TextView
+        android:id="@+id/JD_posted_by_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_tiny"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Bruno E"/>
+
+    <TextView
+        android:id="@+id/JD_posted_by_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_tiny"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:paddingBottom="@dimen/margin_padding_normal"
+        android:text="Tue, 31 OCT 12:31PM"/>
+
+    <!--<view
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="center_horizontal"
+        />-->
+
+    <TextView
+        android:id="@+id/JD_location_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Location;"/>
+
+    <TextView
+        android:id="@+id/JD_location_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_tiny"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:paddingBottom="@dimen/margin_padding_normal"
+        android:text="Kampala, Old Kampala"/>
+
+    <!--<view
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="1dp"
+        />-->
+
+    <TextView
+        android:id="@+id/JD_to_be_done_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Job To Be Done On;"/>
+
+    <TextView
+        android:id="@+id/JD_to_be_done_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_tiny"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="SAT, 01 NOV"/>
+
+    <TextView
+        android:id="@+id/JD_to_be_done_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:paddingBottom="@dimen/margin_padding_normal"
+        android:text="Midday (10am - 2pm)"/>
+
+    <!--<view
+        android:layout_width="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="1dp"
+        />-->
+
+    <TextView
+        android:id="@+id/JD_job_price_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:text="Job Price;"/>
+
+    <TextView
+        android:id="@+id/JD_job_price_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_tiny"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:layout_gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:paddingBottom="@dimen/margin_padding_normal"
+        android:text="UGX. 150,000"/>
+
+    <Button
+        android:id="@+id/JD_make_offer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:paddingTop="@dimen/margin_padding_tiny"
+        android:background="@color/save"
+        android:text="Make an Offer"/>
+
+    <TextView
+        android:id="@+id/JD_job_details_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:text="Details;"/>
+
+    <TextView
+        android:id="@+id/JD_job_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_tiny"
+        android:textSize="@dimen/text_size_xnormal"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="Job details"/>
+</LinearLayout>
+    </ScrollView>

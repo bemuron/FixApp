@@ -247,7 +247,6 @@ public class HomeActivity extends AppCompatActivity
         intent.putExtra("jobID", jobID);
         intent.putExtra("jobName", jobName);
         startActivity(intent);
-
     }
 
     @Override
@@ -362,8 +361,10 @@ public class HomeActivity extends AppCompatActivity
 
                 break;
             case R.id.browse_jobs:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = new BrowseJobsFragment();
+                Intent intent = new Intent(this, BrowseJobsActivity.class);
+                startActivity(intent);
+                //navDrawerFragmentContainer.setVisibility(View.VISIBLE);
+                //fragment = new BrowseJobsFragment();
 
                 break;
             case R.id.my_profile:

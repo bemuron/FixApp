@@ -10,12 +10,18 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
+import com.emtech.fixr.data.network.FetchCategories;
 import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
 import com.emtech.fixr.presentation.ui.activity.HomeActivity;
 import com.emtech.fixr.presentation.viewmodels.HomeActivityViewModel;
@@ -35,9 +41,9 @@ import java.util.List;
  * Use the {@link MyJobsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobsListAdapterListener {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobsListAdapterListener,
+        AdapterView.OnItemSelectedListener{
+    private static final String LOG_TAG = MyJobsFragment.class.getSimpleName();
     private static final String USER_ID = "userId";
     private RecyclerView recyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -46,7 +52,9 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
     private Job job;
     private MyJobsListAdapter jobsAdapter;
     private int mUserId;
-    private View view;
+    private TextView emptyView;
+    private Spinner jobsFilterSpinner;
+    private int statusJobDisplay;
 
     private OnMyJobsInteractionListener mListener;
 
@@ -77,6 +85,23 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
         if (getArguments() != null) {
             mUserId = getArguments().getInt(USER_ID);
         }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_my_jobs, container, false);
+
+        getAllWidgets(view);
+        setAdapter();
+        setSpinnerAdapter();
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity().getApplicationContext());
         mViewModel = ViewModelProviders.of
@@ -84,19 +109,12 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
         mViewModel.getAllJobsForUser(mUserId).observe(this, userJobsList -> {
             jobList = userJobsList;
-            //mCategoriesAdapter.swapForecast(userJobsList);
+            jobsAdapter.setList(userJobsList);
+            Log.e(LOG_TAG, "Jobs list size is " +jobList.size());
 
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             recyclerView.smoothScrollToPosition(mPosition);
         });
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_my_jobs, container, false);
-
-        return view;
     }
 
     @Override
@@ -119,6 +137,9 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
     public void getAllWidgets(View view){
         recyclerView = view.findViewById(R.id.my_jobs_recycler_view);
+        emptyView = view.findViewById(R.id.empty_jobs_list_view);
+        jobsFilterSpinner = view.findViewById(R.id.spinner_filter_jobs);
+        jobsFilterSpinner.setOnItemSelectedListener(this);
     }
 
     //setting up the recycler view adapter
@@ -131,6 +152,15 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(jobsAdapter);
+    }
+
+    //setting up jobs spinner adapter
+    public void setSpinnerAdapter() {
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<CharSequence> jobsFilterAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.jobs_filter_array, android.R.layout.simple_spinner_item);
+        jobsFilterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        jobsFilterSpinner.setAdapter(jobsFilterAdapter);
     }
 
     @Override
@@ -149,6 +179,62 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
             mListener.onMyjobsInteraction(job.getJob_id(), job.getName());
         }
 
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if ("All".equals(parent.getItemAtPosition(position))) {
+            loadSelectedJobs(5);
+            Log.e(LOG_TAG, "Displaying all jobs");
+        }else if ("Draft".equals(parent.getItemAtPosition(position))){
+            statusJobDisplay = 0;
+            loadSelectedJobs(0);
+            Log.e(LOG_TAG, "Draft jobs selected");
+        }else if ("Posted".equals(parent.getItemAtPosition(position))){
+            statusJobDisplay = 1;
+            loadSelectedJobs(1);
+            Log.e(LOG_TAG, "Posted jobs selected");
+        }else if ("Assigned".equals(parent.getItemAtPosition(position))){
+            statusJobDisplay = 2;
+            loadSelectedJobs(2);
+            Log.e(LOG_TAG, "Assigned jobs selected");
+        }else if ("Offers".equals(parent.getItemAtPosition(position))){
+            statusJobDisplay = 3;
+            loadSelectedJobs(3);
+            Log.e(LOG_TAG, "Offered jobs selected");
+        }else if ("Completed".equals(parent.getItemAtPosition(position))){
+            statusJobDisplay = 4;
+            loadSelectedJobs(4);
+            Log.e(LOG_TAG, "Completed jobs selected");
+        }
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
+
+    //method to load the jobs selected from the spinner dropdown
+    private void loadSelectedJobs(int status){
+        if (status == 5) {
+            mViewModel.getAllJobsForUser(mUserId).observe(this, userJobsList -> {
+                jobList = userJobsList;
+                jobsAdapter.setList(userJobsList);
+                Log.e(LOG_TAG, "Jobs list size is " + jobList.size());
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+            });
+        }else {
+            mViewModel.getAllJobsByStatus(mUserId, status).observe(this, userJobsByStatus -> {
+                jobsAdapter.setList(userJobsByStatus);
+                Log.e(LOG_TAG, "Jobs list size is " +jobList.size());
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+            });
+        }
     }
 
     /**

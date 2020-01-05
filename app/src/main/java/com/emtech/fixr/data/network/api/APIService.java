@@ -14,6 +14,7 @@ import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface APIService {
 
@@ -129,10 +130,10 @@ public interface APIService {
 
     //getting all the jobs associated with this user based on the status they have chosen
     // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete
-    @GET("public/getJobsByStatus/{user_id}")
-    Call<Result> getJobsByStatus(
+    @GET("public/getJobsByStatus/{user_id}/{status}")
+    Call<UserJobs> getJobsByStatus(
             @Path("user_id") int user_id,
-            @Field("status") int status);
+            @Path("status") int status);
 
     //getting the details of a job
     @GET("public/getJobDetailsByStatus/{job_id}")
@@ -147,7 +148,7 @@ public interface APIService {
 
     //getting the details of a job minus status
     @GET("public/getJobDetails/{job_id}")
-    Call<Result> getJobDetails(
+    Call<UserJobs> getJobDetails(
             @Path("job_id") int job_id);
 
     /*

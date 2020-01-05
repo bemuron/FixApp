@@ -68,6 +68,24 @@ public class Job {
     @ColumnInfo(name = "est_tot_budget")
     private String est_tot_budget;
 
+    @ColumnInfo(name = "must_have_one")
+    private String must_have_one;
+
+    @ColumnInfo(name = "must_have_two")
+    private String must_have_two;
+
+    @ColumnInfo(name = "must_have_three")
+    private String must_have_three;
+
+    @ColumnInfo(name = "is_job_remote")
+    private int is_job_remote;   // 0 - false (Job is not remote), 1 - true (Job is remote)
+
+    @ColumnInfo(name = "profile_pic")
+    private String profile_pic;
+
+    @ColumnInfo(name = "userName")
+    private String userName;
+
 
     /*public Job(String name, String description, String location, String image1, String image2,
                String image3, int posted_by, int category_id, Date posted_on,
@@ -254,5 +272,53 @@ public class Job {
 
     public void setEst_tot_budget(String est_tot_budget) {
         this.est_tot_budget = est_tot_budget;
+    }
+
+    public String getMust_have_one() {
+        return must_have_one;
+    }
+
+    public void setMust_have_one(String must_have_one) {
+        this.must_have_one = must_have_one;
+    }
+
+    public String getMust_have_two() {
+        return must_have_two;
+    }
+
+    public void setMust_have_two(String must_have_two) {
+        this.must_have_two = must_have_two;
+    }
+
+    public String getMust_have_three() {
+        return must_have_three;
+    }
+
+    public void setMust_have_three(String must_have_three) {
+        this.must_have_three = must_have_three;
+    }
+
+    public int getIs_job_remote() {
+        return is_job_remote;
+    }
+
+    public void setIs_job_remote(int is_job_remote) {
+        this.is_job_remote = is_job_remote;
+    }
+
+    public String getProfile_pic() {
+        return profile_pic;
+    }
+
+    public void setProfile_pic(String profile_pic) {
+        this.profile_pic = profile_pic;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 }
