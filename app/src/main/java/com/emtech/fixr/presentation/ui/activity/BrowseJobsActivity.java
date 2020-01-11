@@ -1,6 +1,7 @@
 package com.emtech.fixr.presentation.ui.activity;
 
 import android.app.SearchManager;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.GravityCompat;
@@ -9,22 +10,63 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.TextView;
 
 import com.emtech.fixr.R;
+import com.emtech.fixr.data.database.Job;
+import com.emtech.fixr.presentation.adapters.BrowseJobsAdapter;
+import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
 import com.emtech.fixr.presentation.ui.fragment.MyJobsFragment;
+import com.emtech.fixr.presentation.viewmodels.BrowseJobsActivityViewModel;
+import com.emtech.fixr.presentation.viewmodels.BrowseJobsViewModelFactory;
+import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
+import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
+import com.emtech.fixr.utilities.InjectorUtils;
 
-public class BrowseJobsActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class BrowseJobsActivity extends AppCompatActivity implements MyJobsListAdapter.MyJobsListAdapterListener,
+        AdapterView.OnItemSelectedListener{
     private static final String LOG_TAG = BrowseJobsActivity.class.getSimpleName();
+    private BrowseJobsActivityViewModel mViewModel;
+    private BrowseJobsAdapter jobsAdapter;
+    private int mPosition = RecyclerView.NO_POSITION;
+    private RecyclerView recyclerView;
+    private List<Job> jobList = new ArrayList<Job>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_browse_jobs);
         setupActionBar();
+
+        BrowseJobsViewModelFactory factory = InjectorUtils.provideBrowseJobsViewModelFactory(getApplicationContext());
+        mViewModel = ViewModelProviders.of
+                (this, factory).get(BrowseJobsActivityViewModel.class);
+
+        mViewModel.getBrowsedJobsLiveData().observe(this, browsedJobsList -> {
+            //jobList = userJobsList;
+            //jobsAdapter.setList(browsedJobsList);
+            jobsAdapter.submitList(browsedJobsList);
+            Log.e(LOG_TAG, "Browsed jobs list size is " +browsedJobsList.size());
+
+            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+            recyclerView.smoothScrollToPosition(mPosition);
+        });
+
+        getAllWidgets();
+        setAdapter();
 
         handleIntent(getIntent());
     }
@@ -35,6 +77,23 @@ public class BrowseJobsActivity extends AppCompatActivity {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+    }
+
+    //get the widgets
+    public void getAllWidgets(){
+        recyclerView = findViewById(R.id.browse_jobs_recycler_view);
+    }
+
+    //setting up the recycler view adapter
+    private void setAdapter()
+    {
+        jobsAdapter = new BrowseJobsAdapter(this);
+
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+        recyclerView.setAdapter(jobsAdapter);
     }
 
     @Override
@@ -61,6 +120,15 @@ public class BrowseJobsActivity extends AppCompatActivity {
             String query = intent.getStringExtra(SearchManager.QUERY);
             //showResults(query);
             Log.e(LOG_TAG, "Search query = "+query);
+            //send query to server to search
+            mViewModel.searchForJobs(query).observe(this, browsedJobsList -> {
+                //jobList = userJobsList;
+                //jobsAdapter.setList(browsedJobsList);
+                Log.e(LOG_TAG, "Browsed jobs list size is " +browsedJobsList.size());
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+            });
         }
     }
 
@@ -90,5 +158,22 @@ public class BrowseJobsActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
+
+    @Override
+    public void onJobRowClicked(int position) {
+        Job job = jobList.get(position);
+        jobList.set(position, job);
+
     }
 }

@@ -151,6 +151,17 @@ public interface APIService {
     Call<UserJobs> getJobDetails(
             @Path("job_id") int job_id);
 
+    //getting jobs for browsing
+    @GET("public/getJobsForBrowsing/{page}/{page_size}")
+    Call<UserJobs> browseAllJobs(
+            @Path("page") int page,
+            @Path("page_size") int page_size);
+
+    //getting jobs for browsing
+    @GET("public/searchJobs/{searchQuery}")
+    Call<UserJobs> searchForJobs(
+            @Path("searchQuery") String searchQuery);
+
     /*
     //The register call
     @FormUrlEncoded

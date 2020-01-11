@@ -27,6 +27,12 @@ public class UserJobs {
     //@SerializedName("jobDetails")
     private List<Job> jobsListByStatus;
 
+    //list of jobs for browsing
+    private List<Job> browsedJobsList;
+
+    //jobs browsed by query
+    private List<Job> searchResultsJobsList;
+
     public UserJobs() {
 
     }
@@ -57,6 +63,14 @@ public class UserJobs {
 
     public List<Job> getJobsListByStatus() {
         return jobsListByStatus;
+    }
+
+    public List<Job> getBrowsedJobsList() {
+        return browsedJobsList;
+    }
+
+    public List<Job> getSearchResultsJobsList() {
+        return searchResultsJobsList;
     }
 
     //LiveData<List<FixAppCategory>> getCategories();

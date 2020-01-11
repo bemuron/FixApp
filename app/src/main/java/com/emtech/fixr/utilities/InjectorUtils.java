@@ -28,6 +28,7 @@ import com.emtech.fixr.data.network.LoginUser;
 import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.data.network.RegisterUser;
 import com.emtech.fixr.models.UserJobs;
+import com.emtech.fixr.presentation.viewmodels.BrowseJobsViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.HomeViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.LoginRegistrationViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
@@ -115,6 +116,11 @@ public class InjectorUtils {
     public static MyJobsViewModelFactory provideMyJobsViewModelFactory(Context context) {
         FixAppRepository repository = provideRepository(context.getApplicationContext());
         return new MyJobsViewModelFactory(repository);
+    }
+
+    public static BrowseJobsViewModelFactory provideBrowseJobsViewModelFactory(Context context) {
+        FixAppRepository repository = provideRepository(context.getApplicationContext());
+        return new BrowseJobsViewModelFactory(repository);
     }
 
     /*
