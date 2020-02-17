@@ -1,10 +1,10 @@
 package com.emtech.fixr.presentation.viewmodels;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
-import android.arch.paging.LivePagedListBuilder;
-import android.arch.paging.PageKeyedDataSource;
-import android.arch.paging.PagedList;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.paging.LivePagedListBuilder;
+import androidx.paging.PageKeyedDataSource;
+import androidx.paging.PagedList;
 
 import com.emtech.fixr.data.FixAppRepository;
 import com.emtech.fixr.data.database.Job;
@@ -20,7 +20,8 @@ import java.util.List;
 public class BrowseJobsActivityViewModel extends ViewModel {
 
     //creating livedata for PagedList  and PagedKeyedDataSource
-    LiveData<PagedList<Job>> jobsPagedList;
+    LiveData<PagedList<Job>> jobsPagedList, searchResultsList;
+    //LiveData<BrowsedJobsDataSource> liveDataSource;
     LiveData<PageKeyedDataSource<Integer, Job>> liveDataSource;
 
     //private member variable to hold reference to the repository
@@ -45,18 +46,16 @@ public class BrowseJobsActivityViewModel extends ViewModel {
         //Building the paged list
         jobsPagedList = (new LivePagedListBuilder(browseJobsDataFactory, pagedListConfig))
                 .build();
+
+        /*jobsPagedList = new LivePagedListBuilder<>(liveDataSource, pagedListConfig)
+                //.setFetchExecutor(executor)
+                .build();*/
     }
 
     //a getter method for all the jobs.
     // This hides the implementation from the UI
     public LiveData<List<Job>> browseAllJobs(){
         return mRepository.browseAllJobs();
-    }
-
-    //a getter method to search jobs based on the query inserted by the user
-    // This hides the implementation from the UI
-    public LiveData<List<Job>> searchForJobs(String searchQuery){
-        return mRepository.searchForJobs(searchQuery);
     }
 
     public LiveData<PagedList<Job>> getBrowsedJobsLiveData() {

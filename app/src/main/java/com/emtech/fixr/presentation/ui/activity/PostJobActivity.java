@@ -1,19 +1,16 @@
 package com.emtech.fixr.presentation.ui.activity;
 
-import android.app.ProgressDialog;
-import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
@@ -39,7 +36,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     private static final String LOG_TAG = PostJobActivity.class.getSimpleName();
     private PostJobActivityViewModel postJobActivityViewModel;
     private SessionManager session;
-    private ProgressDialog pDialog;
+    private ProgressBar progressBar;
     private ScrollView layoutBottomSheet;
     private BottomSheetBehavior sheetBehavior;
     public static PostJobActivity postJobActivity;
@@ -71,9 +68,9 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         //it'll help us know when the app is in back ground or foreground
         getLifecycle().addObserver(new MyApplication());
 
-        // Progress dialog
-        pDialog = new ProgressDialog(PostJobActivity.this);
-        pDialog.setCancelable(false);
+        // Progress bar
+        progressBar = findViewById(R.id.post_job_progress_bar);
+        hideBar();
 
         PostJobViewModelFactory factory = InjectorUtils.providePostJobActivityViewModelFactory(this.getApplicationContext());
         postJobActivityViewModel = ViewModelProviders.of
@@ -214,28 +211,24 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     public void jobPostDataCallback(int userId, String jobTitle, String jobDesc, String jobLocation,
                                     String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
                                     File file, int categoryId, PostJobActivity postJobActivityInstance) {
-        pDialog.setMessage("Posting job details ...");
-        showDialog();
+        showBar();
         //call the viewmodel method to send the job to the server
         //Log.d(LOG_TAG, "Passing job details to view model");
 
         //if job id is > 0 we are updating the job, else its at the default
         // state of 0 - posting fresh details
         if (jobCreatedId > 0) {
-            hideDialog();
             //we are updating the existing job details
             repository.getJobUpdateDetails(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                     mustHaveThree, isJobRemote, file);
             Log.e(LOG_TAG, "Inside job posted callback job id = "+jobCreatedId);
             //if the file is null, then we are updating the details without an image attached
             if (file == null){
-                hideDialog();
                 repository.getJobUpdateDetailsWithoutImage(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                         mustHaveThree, isJobRemote);
             }
 
         }else {
-            hideDialog();
             //post details to local db and get the id of that record to keep updating with more
             //input from the user
             postJobActivityViewModel.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
@@ -255,7 +248,6 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     @Override
     public void onJobCreated(Boolean isJobCreated, String message, int job_id) {
         if (isJobCreated){
-            hideDialog();
             Log.e(LOG_TAG, "New job Id = "+job_id);
             jobCreatedId = job_id;
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
@@ -263,23 +255,26 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             /*Intent intent = new Intent(PostJobActivity.this, HomeActivity.class);
             startActivity(intent);
             this.finish();*/
+            hideBar();
         }else{
             jobCreatedId = 0;
             Log.e(LOG_TAG, "something isn't right job id = "+job_id);
             //if the job wasnt posted, display error message
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
+            hideBar();
         }
 
     }
 
-    private void showDialog() {
-        if (!pDialog.isShowing())
-            pDialog.show();
+    private void showBar() {
+        progressBar.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
-    private void hideDialog() {
-        if (pDialog.isShowing())
-            pDialog.dismiss();
+    private void hideBar() {
+        progressBar.setVisibility(View.INVISIBLE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     /**
@@ -299,8 +294,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     @Override
     public void onJobBudgetFragmentInteraction(String totalBudget, String estTotBudget,
                                                String pricePerHr, String totalHrs) {
-        pDialog.setMessage("Posting job details ...");
-        showDialog();
+        showBar();
 
         //send data to the server to update the job details
         int totBudget = Integer.parseInt(totalBudget);
@@ -311,11 +305,9 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         if (perHrPrice != 0 && totHrs != 0){
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
-                hideDialog();
                 //we are updating the existing job details
                 repository.getJobBudgetUpdate(jobCreatedId, 0, perHrPrice, totHrs, estBudget, 1);
             }else{
-                hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
             }
             Log.e(LOG_TAG, "From job budget frag: total budget = "+totalBudget);
@@ -324,11 +316,9 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         if (totBudget != 0){
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
-                hideDialog();
                 //we are updating the existing job details
                 repository.getJobBudgetUpdate(jobCreatedId, totBudget, 0, 0, estBudget, 1);
             }else{
-                hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
             }
             Log.e(LOG_TAG, "From job budget frag: price per hour = "+pricePerHr);
@@ -341,7 +331,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     //cache it in the local db
     @Override
     public void onJobDateFragmentInteraction(String jobDate, String timeSelected) {
-        showDialog();
+        showBar();
         if (timeSelected == null) {
             //at this point we expect the job id to be present no matter the case
             if (jobCreatedId > 0) {
@@ -352,18 +342,17 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                 //checking the response status from the server
                 /*if (jobDetailsSection.equals("dateTime")){
                     if (isUpdated) {
-                        hideDialog();
+                        hideBar();
                         Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
                         Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
                         //go to the next section
                         setUpJobBudgetFragment();
                     }else {
-                        hideDialog();
+                        hideBar();
                         Log.e(LOG_TAG, "Job date time not updated");
                     }
                 }*/
             }else{
-                hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
             }
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
@@ -377,18 +366,17 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
                 //checking the response status from the server
                 /*if (jobDetailsSection.equals("dateTime")){
                     if (isUpdated) {
-                        hideDialog();
+                        hideBar();
                         Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
                         Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
                         //go to the next section
                         setUpJobBudgetFragment();
                     }else {
-                        hideDialog();
+                        hideBar();
                         Log.e(LOG_TAG, "Job date time not updated");
                     }
                 }*/
             }else{
-                hideDialog();
                 Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
             }
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
@@ -399,16 +387,17 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     //method to update UI after job update details without image completes
     //go to next fragment
     public void updateUiAfterJobDetailsWithoutImage(Boolean isJobUpdated, String message, String jobSection){
+        hideBar();
         //checking the response status from the server
         if (jobDetailsSection.equals("basicsWithImage")){
             if (isJobUpdated) {
-                hideDialog();
+                //hideBar();
                 Log.e(LOG_TAG, "Job details updated successfully = " + jobCreatedId);
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
                 //go to the next section
                 setUpJobDateFragment();
             }else {
-                hideDialog();
+                //hideBar();
                 Log.e(LOG_TAG, "Job date time not updated");
             }
         }
@@ -416,13 +405,13 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         //checking the response status from the server
         if (jobDetailsSection.equals("basicsWithoutImage")){
             if (isJobUpdated) {
-                hideDialog();
+                //hideBar();
                 Log.e(LOG_TAG, "Job details updated successfully = " + jobCreatedId);
                 Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
                 //go to the next section
                 setUpJobDateFragment();
             }else {
-                hideDialog();
+                //hideBar();
                 Log.e(LOG_TAG, "Job details without image not updated");
             }
         }
@@ -430,15 +419,16 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
 
     //method to update UI after job update date time completes
     public void updateUiAfterJobDateUpdate(Boolean isJobUpdated, String message, String jobSection){
+        hideBar();
         //if (jobDetailsSection.equals("dateTime")){
             if (isJobUpdated) {
-                hideDialog();
+                //hideBar();
                 Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
                 //go to the next section
                 setUpJobBudgetFragment();
             }else {
-                hideDialog();
+                //hideBar();
                 Log.e(LOG_TAG, "Job date time not updated");
             }
         //}
@@ -446,12 +436,16 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
 
     //method to update UI after job update date time completes
     public void updateUiAfterJobBudgetUpdate(Boolean isJobUpdated, String message, String jobSection){
+        hideBar();
         if (isJobUpdated) {
-            hideDialog();
+            //hideBar();
             Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, HomeActivity.class);
+            startActivity(intent);
+            finish();
         }else {
-            hideDialog();
+            //hideBar();
             Log.e(LOG_TAG, message);
         }
     }

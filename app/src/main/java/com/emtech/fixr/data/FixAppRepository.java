@@ -1,16 +1,15 @@
 package com.emtech.fixr.data;
 
-import android.arch.lifecycle.LiveData;
+import androidx.lifecycle.LiveData;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.emtech.fixr.AppExecutors;
 import com.emtech.fixr.data.database.CategoriesDao;
 import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.data.database.UsersDao;
+import com.emtech.fixr.data.network.BrowsedJobsDataSource;
 import com.emtech.fixr.data.network.FixAppNetworkDataSource;
 import com.emtech.fixr.data.network.FetchCategories;
 import com.emtech.fixr.data.network.GetMyJobs;
@@ -20,18 +19,11 @@ import com.emtech.fixr.data.network.RegisterUser;
 import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
-import com.emtech.fixr.models.FixAppCategory;
 import com.emtech.fixr.models.User;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -60,6 +52,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     private CategoriesDao mCategoryDao;
     private AppExecutors mExecutors;
     private FetchCategories mFetchCategories;
+    private BrowsedJobsDataSource mBrowsedJobs;
     private GetMyJobs mGetMyJobs;
     private static PostFixAppJob mPostFixAppJob;
     private LoginUser mLoginUser;
@@ -75,7 +68,8 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
 
     private FixAppRepository(CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
                                PostFixAppJob postFixAppJob, RegisterUser registerUser,
-                             LoginUser loginUser, GetMyJobs getMyJobs, AppExecutors executors) {
+                             LoginUser loginUser, GetMyJobs getMyJobs,
+                             BrowsedJobsDataSource browsedJobsDataSource, AppExecutors executors) {
         mUsersDao = usersDao;
         mCategoryDao = categoryDao;
         mFetchCategories = fetchCategories;
@@ -83,6 +77,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         mRegisterUser = registerUser;
         mLoginUser = loginUser;
         mGetMyJobs = getMyJobs;
+        mBrowsedJobs = browsedJobsDataSource;
         mExecutors = executors;
         LiveData<Category[]> fixAppCategories = mFetchCategories.getCurrentCategories();
 
@@ -109,12 +104,13 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     public synchronized static FixAppRepository getInstance(
             CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
             PostFixAppJob postFixAppJob, RegisterUser registerUser, LoginUser loginUser,
-            GetMyJobs getMyJobs, AppExecutors executors) {
+            GetMyJobs getMyJobs, BrowsedJobsDataSource browsedJobsDataSource, AppExecutors executors) {
         Log.d(LOG_TAG, "Getting the repository");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new FixAppRepository(categoryDao, usersDao, fetchCategories,
-                        postFixAppJob, registerUser, loginUser, getMyJobs, executors);
+                        postFixAppJob, registerUser, loginUser, getMyJobs,
+                        browsedJobsDataSource, executors);
                 Log.d(LOG_TAG, "Made new repository");
             }
         }
@@ -132,9 +128,20 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         if (mInitialized) return;
         mInitialized = true;
 
-        if (isFetchNeeded()) {
+        mExecutors.diskIO().execute(() -> {
+            if (isFetchNeeded()) {
+                //startFetchWeatherService();
+                startFetchCategoryService();
+            }
+        });
+
+        /*if (isFetchNeeded()) {
             mExecutors.diskIO().execute(this::startFetchCategoryService);
-        }
+        }*/
+    }
+
+    public AppExecutors getExecutors(){
+        return mExecutors;
     }
 
     /**
@@ -170,15 +177,15 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     //getting all jobs for browsing
     public LiveData<List<Job>> browseAllJobs(){
         Log.d(LOG_TAG, "calling bg method to get all jobs for browsing");
-        mExecutors.diskIO().execute(() -> mGetMyJobs.BrowseJobs());
-        return mGetMyJobs.getJobsForBrowsing();
+        //mExecutors.diskIO().execute(() -> mGetMyJobs.BrowseJobs());
+        return mBrowsedJobs.getJobsForBrowsing();
     }
 
     //getting all jobs searched
     public LiveData<List<Job>> searchForJobs(String searchQuery){
         Log.d(LOG_TAG, "calling bg method to return all jobs searched for");
-        mExecutors.diskIO().execute(() -> mGetMyJobs.SearchJobs(searchQuery));
-        return mGetMyJobs.getSearchedJobs();
+        //mExecutors.diskIO().execute(() -> mGetMyJobs.SearchJobs(searchQuery));
+        return mBrowsedJobs.getSearchedJobs();
     }
 
     public Cursor getUser(){
@@ -216,6 +223,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     private boolean isFetchNeeded() {
         mExecutors.diskIO().execute(() ->
                 mCount = mCategoryDao.countCategoriesInDb());
+        Log.e(LOG_TAG, "Category count in db = "+mCount);
         return (mCount < 1);
     }
 

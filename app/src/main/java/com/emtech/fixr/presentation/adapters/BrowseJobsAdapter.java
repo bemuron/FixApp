@@ -1,12 +1,12 @@
 package com.emtech.fixr.presentation.adapters;
 
 import android.annotation.SuppressLint;
-import android.arch.paging.PagedListAdapter;
+import androidx.paging.PagedListAdapter;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -26,13 +26,11 @@ import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.helpers.CircleTransform;
 
-import java.util.List;
-
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.ItemViewHolder> {
 
-    private List<Job> jobList;
+    //private List<Job> jobList;
     private LayoutInflater inflater;
     private Context context;
     private BrowseJobsListAdapterListener listener;
@@ -40,6 +38,17 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
 
     // array used to perform multiple animation at once
     private SparseBooleanArray animationItemsIndex;
+
+    public BrowseJobsAdapter(Context context, BrowseJobsListAdapterListener listener){
+        super(DIFF_CALLBACK);
+        inflater = LayoutInflater.from(context);
+        this.context = context;
+        //this.jobList = jobs;
+        this.listener = listener;
+        selectedItems = new SparseBooleanArray();
+        animationItemsIndex = new SparseBooleanArray();
+
+    }
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
 
@@ -62,17 +71,6 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
         }
     }
 
-    public BrowseJobsAdapter(Context context){
-        super(DIFF_CALLBACK);
-        inflater = LayoutInflater.from(context);
-        this.context = context;
-        //this.jobList = jobs;
-        this.listener = listener;
-        selectedItems = new SparseBooleanArray();
-        animationItemsIndex = new SparseBooleanArray();
-
-    }
-
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -83,7 +81,7 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        Job job = jobList.get(position);
+        Job job = getItem(position);
         int jobStatus;
 
         //make these texts bold
@@ -175,12 +173,12 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
     /*public void setList(List<Job> job) {
         this.jobList = job;
         notifyDataSetChanged();
-    }*/
+    }
 
     @Override
     public long getItemId(int position) {
         return jobList.get(position).getJob_id();
-    }
+    }*/
 
     /*@Override
     public int getItemCount() {
@@ -196,7 +194,7 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
 
                 @SuppressLint("DiffUtilEquals")
                 @Override
-                public boolean areContentsTheSame(Job oldItem, Job newItem) {
+                public boolean areContentsTheSame(Job oldItem, @NonNull Job newItem) {
                     return oldItem.equals(newItem);
                 }
             };

@@ -157,10 +157,12 @@ public interface APIService {
             @Path("page") int page,
             @Path("page_size") int page_size);
 
-    //getting jobs for browsing
-    @GET("public/searchJobs/{searchQuery}")
+    //getting search results
+    @GET("public/searchJobs/{searchQuery}/{page}/{page_size}")
     Call<UserJobs> searchForJobs(
-            @Path("searchQuery") String searchQuery);
+            @Path("searchQuery") String searchQuery,
+            @Path("page") int page,
+            @Path("page_size") int page_size);
 
     /*
     //The register call

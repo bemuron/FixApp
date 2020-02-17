@@ -1,31 +1,20 @@
 package com.emtech.fixr.data.network;
 
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.emtech.fixr.AppExecutors;
-import com.emtech.fixr.data.FixAppRepository;
-import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.data.network.api.APIService;
-import com.emtech.fixr.data.network.api.APIUrl;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
-import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.models.User;
 import com.emtech.fixr.presentation.ui.activity.LoginActivity;
-import com.emtech.fixr.presentation.ui.fragment.PostJobFragment;
-import com.emtech.fixr.presentation.viewmodels.LoginRegisterActivityViewModel;
-import com.emtech.fixr.presentation.viewmodels.LoginRegistrationViewModelFactory;
-import com.emtech.fixr.utilities.InjectorUtils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginUser {
     private static final String LOG_TAG = LoginUser.class.getSimpleName();
@@ -104,33 +93,37 @@ public class LoginUser {
             public void onResponse(Call<Result> call, Response<Result> response) {
 
                 //if response body is not null, we have some data
-                //count what we have in the response
-                if (!response.body().getError()) {
-                    //Log.d(LOG_TAG, response.body().getMessage());
-                    //response.body().getUser();
+                if (response.body() != null) {
+                    //count what we have in the response
+                    if (!response.body().getError()) {
+                        //Log.d(LOG_TAG, response.body().getMessage());
+                        //response.body().getUser();
 
-                    // If the code reaches this point, we have successfully posted the job
-                    Log.d(LOG_TAG, "Successful login");
+                        // If the code reaches this point, we have successfully posted the job
+                        Log.d(LOG_TAG, "Successful login");
 
-                    //create new user object
-                    mFixappUser = new User();
-                    mFixappUser.setUser_id(response.body().getUser().getUser_id());
-                    mFixappUser.setEmail(response.body().getUser().getEmail());
-                    mFixappUser.setCreated_on(response.body().getUser().getCreated_on());
-                    mFixappUser.setRole(response.body().getUser().getRole());
-                    mFixappUser.setDescription(response.body().getUser().getDescription());
-                    mFixappUser.setPhone_number(response.body().getUser().getPhone_number());
-                    mFixappUser.setProfile_pic(response.body().getUser().getProfile_pic());
-                    mFixappUser.setDate_of_birth(response.body().getUser().getDate_of_birth());
-                    mFixappUser.setGender(response.body().getUser().getGender());
-                    mFixappUser.setName(response.body().getUser().getName());
-                    mFixappUser.setPassword(response.body().getUser().getPassword());
-                    Log.d(LOG_TAG, mFixappUser.getEmail() + " user email");
+                        //create new user object
+                        mFixappUser = new User();
+                        mFixappUser.setUser_id(response.body().getUser().getUser_id());
+                        mFixappUser.setEmail(response.body().getUser().getEmail());
+                        mFixappUser.setCreated_on(response.body().getUser().getCreated_on());
+                        mFixappUser.setRole(response.body().getUser().getRole());
+                        mFixappUser.setDescription(response.body().getUser().getDescription());
+                        mFixappUser.setPhone_number(response.body().getUser().getPhone_number());
+                        mFixappUser.setProfile_pic(response.body().getUser().getProfile_pic());
+                        mFixappUser.setDate_of_birth(response.body().getUser().getDate_of_birth());
+                        mFixappUser.setGender(response.body().getUser().getGender());
+                        mFixappUser.setName(response.body().getUser().getName());
+                        mFixappUser.setPassword(response.body().getUser().getPassword());
+                        Log.d(LOG_TAG, mFixappUser.getEmail() + " user email");
 
-                    //insert user to the local db
-                    //mRepository.insertUser(mFixappUser);
+                        //insert user to the local db
+                        //mRepository.insertUser(mFixappUser);
 
-                    successfulLoginCallBack.onLoginSuccessful(true, mFixappUser);
+                        successfulLoginCallBack.onLoginSuccessful(true, mFixappUser);
+                    }
+                }else{
+                    Log.e(LOG_TAG, "response.body() is null");
                 }
             }
 

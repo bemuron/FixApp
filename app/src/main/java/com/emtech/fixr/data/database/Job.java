@@ -1,11 +1,10 @@
 package com.emtech.fixr.data.database;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Index;
-import android.arch.persistence.room.PrimaryKey;
-
-import java.util.Date;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.Index;
+import androidx.room.PrimaryKey;
+import androidx.recyclerview.widget.DiffUtil;
 
 @Entity(tableName = "jobs", indices = {@Index(value = {"name"}, unique = true)})
 public class Job {

@@ -1,10 +1,10 @@
 package com.emtech.fixr.presentation.ui.activity;
 
 import android.app.ProgressDialog;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -19,7 +19,6 @@ import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.helpers.SessionManager;
-import com.emtech.fixr.models.User;
 import com.emtech.fixr.presentation.viewmodels.LoginRegisterActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.LoginRegistrationViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;

@@ -7,13 +7,20 @@
     android:orientation="vertical"
     tools:context=".presentation.ui.activity.BrowseJobsActivity">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/browse_jobs_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/margin_padding_normal"
-        android:layout_below="@id/separator_line"
         android:clipToPadding="false"
         android:scrollbars="vertical" />
+
+    <ProgressBar
+        android:id="@+id/browse_jobs_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:backgroundTint="@color/colorPrimary"
+        android:indeterminateTint="#ea4c88"/>
 
 </LinearLayout>

@@ -1,26 +1,16 @@
 package com.emtech.fixr.data.network;
 
-import android.app.ProgressDialog;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.emtech.fixr.AppExecutors;
-import com.emtech.fixr.data.FixAppRepository;
-import com.emtech.fixr.data.database.Category;
-import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.data.network.api.APIService;
-import com.emtech.fixr.data.network.api.APIUrl;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
-import com.emtech.fixr.models.Categories;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -28,10 +18,6 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-import static com.emtech.fixr.utilities.InjectorUtils.provideRepository;
 
 public class PostFixAppJob {
     private static final String LOG_TAG = PostFixAppJob.class.getSimpleName();

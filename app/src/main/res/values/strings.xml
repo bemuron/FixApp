@@ -73,6 +73,9 @@
     <string name="search_hint">Search jobs</string>
     <string name="settings_description">Search available jobs</string>
 
+    <string name="title_as_a_fixer">As a Fixer</string>
+    <string name="title_as_a_poster">As a Poster</string>
+
     <string-array name="jobs_filter_array">
         <item>All</item>
         <item>Draft</item>

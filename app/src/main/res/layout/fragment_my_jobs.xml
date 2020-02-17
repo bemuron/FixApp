@@ -54,7 +54,7 @@
         android:layout_below="@id/spinner_filter_jobs"
         android:background="#000000"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/my_jobs_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -70,5 +70,13 @@
         android:gravity="center"
         android:visibility="gone"
         android:text="@string/empty_posted_jobs_list" />
+
+    <ProgressBar
+        android:id="@+id/my_jobs_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:backgroundTint="@color/colorPrimary"
+        android:indeterminateTint="#ea4c88"/>
 
 </RelativeLayout>

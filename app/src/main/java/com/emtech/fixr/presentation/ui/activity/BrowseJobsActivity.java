@@ -1,46 +1,44 @@
 package com.emtech.fixr.presentation.ui.activity;
 
 import android.app.SearchManager;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.presentation.adapters.BrowseJobsAdapter;
-import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
-import com.emtech.fixr.presentation.ui.fragment.MyJobsFragment;
 import com.emtech.fixr.presentation.viewmodels.BrowseJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.BrowseJobsViewModelFactory;
-import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
-import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
+import com.emtech.fixr.presentation.viewmodels.SearchJobsActivityViewModel;
+import com.emtech.fixr.presentation.viewmodels.SearchJobsViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class BrowseJobsActivity extends AppCompatActivity implements MyJobsListAdapter.MyJobsListAdapterListener,
+public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsAdapter.BrowseJobsListAdapterListener,
         AdapterView.OnItemSelectedListener{
     private static final String LOG_TAG = BrowseJobsActivity.class.getSimpleName();
     private BrowseJobsActivityViewModel mViewModel;
+    private SearchJobsActivityViewModel viewModel;
     private BrowseJobsAdapter jobsAdapter;
+    private ProgressBar progressBar;
     private int mPosition = RecyclerView.NO_POSITION;
     private RecyclerView recyclerView;
     private List<Job> jobList = new ArrayList<Job>();
@@ -51,15 +49,23 @@ public class BrowseJobsActivity extends AppCompatActivity implements MyJobsListA
         setContentView(R.layout.activity_browse_jobs);
         setupActionBar();
 
+        // Progress bar
+        progressBar = findViewById(R.id.browse_jobs_progress_bar);
+        showBar();
+
         BrowseJobsViewModelFactory factory = InjectorUtils.provideBrowseJobsViewModelFactory(getApplicationContext());
         mViewModel = ViewModelProviders.of
                 (this, factory).get(BrowseJobsActivityViewModel.class);
 
+        SearchJobsViewModelFactory searchFactory = InjectorUtils.provideSearchJobsViewModelFactory(getApplicationContext());
+        viewModel = ViewModelProviders.of
+                (this, searchFactory).get(SearchJobsActivityViewModel.class);
+
         mViewModel.getBrowsedJobsLiveData().observe(this, browsedJobsList -> {
-            //jobList = userJobsList;
-            //jobsAdapter.setList(browsedJobsList);
+            jobList = browsedJobsList;
             jobsAdapter.submitList(browsedJobsList);
             Log.e(LOG_TAG, "Browsed jobs list size is " +browsedJobsList.size());
+            hideBar();
 
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             recyclerView.smoothScrollToPosition(mPosition);
@@ -87,7 +93,7 @@ public class BrowseJobsActivity extends AppCompatActivity implements MyJobsListA
     //setting up the recycler view adapter
     private void setAdapter()
     {
-        jobsAdapter = new BrowseJobsAdapter(this);
+        jobsAdapter = new BrowseJobsAdapter(this,this);
 
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -116,15 +122,16 @@ public class BrowseJobsActivity extends AppCompatActivity implements MyJobsListA
             //wordIntent.setData(intent.getData());
             //startActivity(wordIntent);
         } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            showBar();
             // handles a search query
             String query = intent.getStringExtra(SearchManager.QUERY);
             //showResults(query);
             Log.e(LOG_TAG, "Search query = "+query);
             //send query to server to search
-            mViewModel.searchForJobs(query).observe(this, browsedJobsList -> {
-                //jobList = userJobsList;
-                //jobsAdapter.setList(browsedJobsList);
-                Log.e(LOG_TAG, "Browsed jobs list size is " +browsedJobsList.size());
+            viewModel.searchForJobs(query).observe(this, searchResultsList -> {
+                jobsAdapter.submitList(searchResultsList);
+                Log.e(LOG_TAG, "search results list size is " +searchResultsList.size());
+                hideBar();
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
@@ -173,7 +180,23 @@ public class BrowseJobsActivity extends AppCompatActivity implements MyJobsListA
     @Override
     public void onJobRowClicked(int position) {
         Job job = jobList.get(position);
-        jobList.set(position, job);
 
+        Intent intent = new Intent(this, JobDetailsActivity.class);
+        intent.putExtra("jobID", job.getJob_id());
+        intent.putExtra("jobName", job.getName());
+        startActivity(intent);
+
+
+    }
+
+    private void showBar() {
+        progressBar.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void hideBar() {
+        progressBar.setVisibility(View.INVISIBLE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 }

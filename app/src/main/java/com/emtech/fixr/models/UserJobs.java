@@ -31,7 +31,10 @@ public class UserJobs {
     private List<Job> browsedJobsList;
 
     //jobs browsed by query
-    private List<Job> searchResultsJobsList;
+    private List<Job> jobSearchResults;
+
+    //number of pages
+    private int pages_count;
 
     public UserJobs() {
 
@@ -69,8 +72,12 @@ public class UserJobs {
         return browsedJobsList;
     }
 
-    public List<Job> getSearchResultsJobsList() {
-        return searchResultsJobsList;
+    public List<Job> getJobSearchResults() {
+        return jobSearchResults;
+    }
+
+    public int getPages_count() {
+        return pages_count;
     }
 
     //LiveData<List<FixAppCategory>> getCategories();

@@ -1,31 +1,28 @@
 package com.emtech.fixr.presentation.ui.fragment;
 
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
-import com.emtech.fixr.data.network.FetchCategories;
 import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
-import com.emtech.fixr.presentation.ui.activity.HomeActivity;
-import com.emtech.fixr.presentation.viewmodels.HomeActivityViewModel;
-import com.emtech.fixr.presentation.viewmodels.HomeViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
@@ -55,6 +52,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
     private TextView emptyView;
     private Spinner jobsFilterSpinner;
     private int statusJobDisplay;
+    private ProgressBar progressBar;
 
     private OnMyJobsInteractionListener mListener;
 
@@ -136,6 +134,10 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
     }
 
     public void getAllWidgets(View view){
+        // Progress bar
+        progressBar = view.findViewById(R.id.my_jobs_progress_bar);
+        showBar();
+
         recyclerView = view.findViewById(R.id.my_jobs_recycler_view);
         emptyView = view.findViewById(R.id.empty_jobs_list_view);
         jobsFilterSpinner = view.findViewById(R.id.spinner_filter_jobs);
@@ -184,25 +186,31 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if ("All".equals(parent.getItemAtPosition(position))) {
+            showBar();
             loadSelectedJobs(5);
             Log.e(LOG_TAG, "Displaying all jobs");
         }else if ("Draft".equals(parent.getItemAtPosition(position))){
+            showBar();
             statusJobDisplay = 0;
             loadSelectedJobs(0);
             Log.e(LOG_TAG, "Draft jobs selected");
         }else if ("Posted".equals(parent.getItemAtPosition(position))){
+            showBar();
             statusJobDisplay = 1;
             loadSelectedJobs(1);
             Log.e(LOG_TAG, "Posted jobs selected");
         }else if ("Assigned".equals(parent.getItemAtPosition(position))){
+            showBar();
             statusJobDisplay = 2;
             loadSelectedJobs(2);
             Log.e(LOG_TAG, "Assigned jobs selected");
         }else if ("Offers".equals(parent.getItemAtPosition(position))){
+            showBar();
             statusJobDisplay = 3;
             loadSelectedJobs(3);
             Log.e(LOG_TAG, "Offered jobs selected");
         }else if ("Completed".equals(parent.getItemAtPosition(position))){
+            showBar();
             statusJobDisplay = 4;
             loadSelectedJobs(4);
             Log.e(LOG_TAG, "Completed jobs selected");
@@ -222,6 +230,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
                 jobList = userJobsList;
                 jobsAdapter.setList(userJobsList);
                 Log.e(LOG_TAG, "Jobs list size is " + jobList.size());
+                hideBar();
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
@@ -233,8 +242,20 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
+                hideBar();
             });
         }
+    }
+
+    private void showBar() {
+        progressBar.setVisibility(View.VISIBLE);
+        getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void hideBar() {
+        progressBar.setVisibility(View.INVISIBLE);
+        getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     /**

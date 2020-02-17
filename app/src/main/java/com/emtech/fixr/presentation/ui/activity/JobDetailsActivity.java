@@ -1,19 +1,18 @@
 package com.emtech.fixr.presentation.ui.activity;
 
 import android.app.ProgressDialog;
-import android.arch.lifecycle.ViewModelProviders;
-import android.support.v7.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
-import com.emtech.fixr.presentation.ui.fragment.MyJobsFragment;
+import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
@@ -30,11 +29,20 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     private MyJobsActivityViewModel mViewModel;
     private Job job;
     private ProgressDialog pDialog;
+    private SessionManager session;
+    private int userId;
+    private String userRole;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job_details);
+        setupActionBar();
+
+        // session manager
+        session = new SessionManager(getApplicationContext());
+        userRole = session.getUserRole();
+        userId = session.getUserId();
 
         // Progress dialog
         pDialog = new ProgressDialog(this);
@@ -53,6 +61,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
                 (this, factory).get(MyJobsActivityViewModel.class);
 
         mViewModel.getJobDetails(job_id).observe(this, jobDetails -> {
+            clearViews();
 
             if (jobDetails != null) {
                 job = new Job();
@@ -84,6 +93,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
                 job.setUserName(jobDetails.getUserName());
                 Log.e(LOG_TAG, "Job details name is " + jobDetails.getName());
                 displayDetails();
+                //hideDialog();
             }else {
                 hideDialog();
                 Log.e(LOG_TAG, "Job details not retrieved");
@@ -91,6 +101,14 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
         });
 
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     //initialise the view widgets
@@ -108,7 +126,6 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
     //method to handle population of the views with the content
     private void displayDetails(){
-        hideDialog();
         jobTitleTV.setText(job.getName());
         postedByTV.setText(job.getUserName());
         timePostedTV.setText(job.getPosted_on());
@@ -116,8 +133,31 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         //toBeDoneDateTV.setText(job.getJob_date());
         formatDate();
         toBeDoneTimeTV.setText(job.getJob_time());
-        jobPriceTV.setText("UGX."+job.getEst_tot_budget());
+        jobPriceTV.setText("UGX." + job.getEst_tot_budget());
+        //if the current user is the one that posted this job
+        //give them the option of editing it
+        if (userId == job.getPosted_by()) {
+            //makeOfferButton.setBackgroundDrawable(null);
+            makeOfferButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            //makeOfferButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            makeOfferButton.setText("You posted this job. Edit it");
+        }
         jobDetailsET.setText(job.getDescription());
+        hideDialog();
+    }
+
+    //method to handle clearing of the views with the content
+    private void clearViews(){
+        showDialog();
+        jobTitleTV.setText("");
+        postedByTV.setText("");
+        timePostedTV.setText("");
+        locationTV.setText("");
+        //toBeDoneDateTV.setText(job.getJob_date());
+        formatDate();
+        toBeDoneTimeTV.setText("");
+        jobPriceTV.setText("");
+        jobDetailsET.setText("");
     }
 
     private void formatDate(){
@@ -151,9 +191,13 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.JD_make_offer:
+                if (userId == job.getPosted_by()) {
+
+                }
                 /**
                  * TODO
-                 * check if the user has a valid phone number registered
+                 * check if the user has a valid phone number registered, profile pic,
+                 * bank a/c(optional), billing address(optional)
                  * if cash is used then there should be a max number of transactions
                  * the user can make by cash before they have to pay the outstanding
                  * amount
@@ -162,6 +206,11 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
         }
     }
+
+    /*@Override
+    public void onBackPressed(){
+        clearViews();
+    }*/
 
     private void showDialog() {
         if (!pDialog.isShowing())

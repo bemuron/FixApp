@@ -1,19 +1,17 @@
 package com.emtech.fixr.presentation.viewmodels;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel;
 import android.database.Cursor;
 import android.util.Log;
 
 import com.emtech.fixr.data.FixAppRepository;
+import com.emtech.fixr.data.network.BrowsedJobsDataSource;
 import com.emtech.fixr.models.User;
 
 import java.util.HashMap;
 
-import static android.support.constraint.Constraints.TAG;
-
 public class LoginRegisterActivityViewModel extends ViewModel {
+    private static final String TAG = LoginRegisterActivityViewModel.class.getSimpleName();
     //private member variable to hold reference to the repository
     private FixAppRepository mRepository;
 

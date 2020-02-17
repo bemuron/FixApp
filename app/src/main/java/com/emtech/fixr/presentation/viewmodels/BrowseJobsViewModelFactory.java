@@ -1,7 +1,8 @@
 package com.emtech.fixr.presentation.viewmodels;
 
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import android.content.Context;
 
 import com.emtech.fixr.data.FixAppRepository;
 
@@ -12,6 +13,7 @@ import com.emtech.fixr.data.FixAppRepository;
 public class BrowseJobsViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
     private final FixAppRepository mRepository;
+    private Context context;
 
     public BrowseJobsViewModelFactory(FixAppRepository repository) {
         this.mRepository = repository;

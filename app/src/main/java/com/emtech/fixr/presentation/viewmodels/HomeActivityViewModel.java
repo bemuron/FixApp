@@ -1,9 +1,7 @@
 package com.emtech.fixr.presentation.viewmodels;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
 
 import com.emtech.fixr.data.FixAppRepository;
 import com.emtech.fixr.data.database.Category;

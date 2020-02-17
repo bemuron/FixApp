@@ -1,25 +1,19 @@
 package com.emtech.fixr.data.network;
 
-import android.app.ProgressDialog;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.RadioButton;
-import android.widget.Toast;
 
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import com.emtech.fixr.AppExecutors;
 import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.data.network.api.APIService;
-import com.emtech.fixr.data.network.api.APIUrl;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.Categories;
 

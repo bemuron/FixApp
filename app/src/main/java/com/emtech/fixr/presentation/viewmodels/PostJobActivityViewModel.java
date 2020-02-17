@@ -1,14 +1,11 @@
 package com.emtech.fixr.presentation.viewmodels;
 
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel;
 
 import com.emtech.fixr.data.FixAppRepository;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;
-
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 
 public class PostJobActivityViewModel extends ViewModel {
 

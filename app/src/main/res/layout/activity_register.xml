@@ -31,7 +31,7 @@
             android:textColor="@color/colorPrimaryDark"
             android:text="@string/register_on_fixapp"/>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -47,9 +47,9 @@
             android:inputType="textCapWords"
             android:textColor="@color/colorPrimaryDark"
             android:textColorHint="@color/colorPrimaryDark" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/register_last_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -65,9 +65,9 @@
                 android:inputType="textCapWords"
                 android:textColor="@color/colorPrimaryDark"
                 android:textColorHint="@color/colorPrimaryDark" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/register_dob"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -83,7 +83,7 @@
                 android:inputType="date"
                 android:textColor="@color/colorPrimaryDark"
                 android:textColorHint="@color/colorPrimaryDark" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/gender_title"
@@ -114,7 +114,7 @@
 
         </RadioGroup>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/register_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -130,9 +130,9 @@
             android:singleLine="true"
             android:textColor="@color/colorPrimaryDark"
             android:textColorHint="@color/colorPrimaryDark" />
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/register_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -148,7 +148,7 @@
             android:singleLine="true"
             android:textColor="@color/colorPrimaryDark"
             android:textColorHint="@color/colorPrimaryDark" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Login Button -->
 

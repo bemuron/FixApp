@@ -21,12 +21,14 @@ import android.content.Context;
 import com.emtech.fixr.data.FixAppRepository;
 import com.emtech.fixr.data.database.FixAppDatabase;
 import com.emtech.fixr.AppExecutors;
+import com.emtech.fixr.data.network.BrowsedJobsDataSource;
 import com.emtech.fixr.data.network.FetchCategories;
 import com.emtech.fixr.data.network.FixAppNetworkDataSource;
 import com.emtech.fixr.data.network.GetMyJobs;
 import com.emtech.fixr.data.network.LoginUser;
 import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.data.network.RegisterUser;
+import com.emtech.fixr.data.network.SearchJobsDataSource;
 import com.emtech.fixr.models.UserJobs;
 import com.emtech.fixr.presentation.viewmodels.BrowseJobsViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.HomeViewModelFactory;
@@ -34,6 +36,7 @@ import com.emtech.fixr.presentation.viewmodels.LoginRegistrationViewModelFactory
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.PostJobViewModelFactory;
+import com.emtech.fixr.presentation.viewmodels.SearchJobsViewModelFactory;
 
 import java.util.Date;
 
@@ -64,8 +67,14 @@ public class InjectorUtils {
 
         GetMyJobs getMyJobs = GetMyJobs.getInstance(context.getApplicationContext(), executors);
 
+        BrowsedJobsDataSource browsedJobsDataSource =
+                BrowsedJobsDataSource.getInstance();
+
+        //SearchJobsDataSource searchJobsDataSource =
+          //      SearchJobsDataSource.getInstance();
+
         return FixAppRepository.getInstance(database.categoriesDao(), database.usersDao(), fetchCategories,
-                fixAppJob, registerUser, loginUser, getMyJobs, executors);
+                fixAppJob, registerUser, loginUser, getMyJobs, browsedJobsDataSource, executors);
     }
 
     public static PostFixAppJob providePostFixAppJob(Context context) {
@@ -121,6 +130,11 @@ public class InjectorUtils {
     public static BrowseJobsViewModelFactory provideBrowseJobsViewModelFactory(Context context) {
         FixAppRepository repository = provideRepository(context.getApplicationContext());
         return new BrowseJobsViewModelFactory(repository);
+    }
+
+    public static SearchJobsViewModelFactory provideSearchJobsViewModelFactory(Context context) {
+        FixAppRepository repository = provideRepository(context.getApplicationContext());
+        return new SearchJobsViewModelFactory(repository);
     }
 
     /*

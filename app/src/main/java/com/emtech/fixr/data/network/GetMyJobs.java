@@ -1,21 +1,16 @@
 package com.emtech.fixr.data.network;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
 import com.emtech.fixr.AppExecutors;
-import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
-import com.emtech.fixr.models.Categories;
 import com.emtech.fixr.models.UserJobs;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -190,9 +185,10 @@ public class GetMyJobs {
             public void onResponse(Call<UserJobs> call, Response<UserJobs> response) {
 
                 //if response body is not null, we have some data
-                //count what we have in the response
-                if (!response.body().getError()) {
-                    Log.d(LOG_TAG, "JSON not null");
+                if (response.body() != null) {
+                    //count what we have in the response
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, "JSON not null");
 
                         job = new Job();
                         job.setCategory_id(response.body().getJobDetails().getCategory_id());
@@ -217,18 +213,21 @@ public class GetMyJobs {
                         job.setPosted_on(response.body().getJobDetails().getPosted_on());
                         job.setCompleted_on(response.body().getJobDetails().getCompleted_on());
 
-                    //add the profile pic of the user who posted the job
-                    job.setProfile_pic(response.body().getProfilePic());
+                        //add the profile pic of the user who posted the job
+                        job.setProfile_pic(response.body().getProfilePic());
 
-                    //add the name of the user who posted the job
-                    job.setUserName(response.body().getName());
+                        //add the name of the user who posted the job
+                        job.setUserName(response.body().getName());
 
-                    // When you are off of the main thread and want to update LiveData, use postValue.
-                    // It posts the update to the main thread.
-                    mJobDetails.postValue(job);
+                        // When you are off of the main thread and want to update LiveData, use postValue.
+                        // It posts the update to the main thread.
+                        mJobDetails.postValue(job);
 
-                    // If the code reaches this point, we have successfully performed our sync
-                    Log.d(LOG_TAG, "Successfully got all job details");
+                        // If the code reaches this point, we have successfully performed our sync
+                        Log.d(LOG_TAG, "Successfully got all job details");
+                    }
+                }else {
+                    Log.e(LOG_TAG, "response.body() is null");
                 }
             }
 
@@ -382,82 +381,6 @@ public class GetMyJobs {
                     Log.d(LOG_TAG, "Size of list: "+response.body().getBrowsedJobsList().size());
                     // If the code reaches this point, we have successfully performed our sync
                     Log.d(LOG_TAG, "Successfully got all jobs for browsing");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserJobs> call, Throwable t) {
-                //print out any error we may get
-                //probably server connection
-                Log.e(LOG_TAG, t.getMessage());
-            }
-        });
-
-    }
-
-    //method to get all jobs for browsing
-    public void SearchJobs(String searchQuery) {
-        Log.d(LOG_TAG, "Search for jobs started");
-
-        //Defining retrofit com.emtech.retrofitexample.api service
-        //APIService service = retrofit.create(APIService.class);
-        APIService service = new LocalRetrofitApi().getRetrofitService();
-
-        //defining the call
-        Call<UserJobs> call = service.searchForJobs(searchQuery);
-
-        //calling the com.emtech.retrofitexample.api
-        call.enqueue(new Callback<UserJobs>() {
-            @Override
-            public void onResponse(Call<UserJobs> call, Response<UserJobs> response) {
-
-                //if response body is not null, we have some data
-                //count what we have in the response
-                if (response.body() != null) {
-                    Log.d(LOG_TAG, "JSON not null");
-
-                    //clear the previous search list if it has content
-                    if (jobList != null) {
-                        jobList.clear();
-                    }
-
-                    for (int i = 0; i < response.body().getSearchResultsJobsList().size(); i++) {
-                        job = new Job();
-                        job.setCategory_id(response.body().getSearchResultsJobsList().get(i).getCategory_id());
-                        job.setJob_id(response.body().getSearchResultsJobsList().get(i).getJob_id());
-                        job.setPosted_by(response.body().getSearchResultsJobsList().get(i).getPosted_by());
-                        job.setName(response.body().getSearchResultsJobsList().get(i).getName());
-                        job.setDescription(response.body().getSearchResultsJobsList().get(i).getDescription());
-                        job.setMust_have_one(response.body().getSearchResultsJobsList().get(i).getMust_have_one());
-                        job.setMust_have_two(response.body().getSearchResultsJobsList().get(i).getMust_have_two());
-                        job.setMust_have_three(response.body().getSearchResultsJobsList().get(i).getMust_have_three());
-                        job.setIs_job_remote(response.body().getSearchResultsJobsList().get(i).getIs_job_remote());
-                        job.setLocation(response.body().getSearchResultsJobsList().get(i).getLocation());
-                        job.setImage1(response.body().getSearchResultsJobsList().get(i).getImage1());
-                        job.setJob_date(response.body().getSearchResultsJobsList().get(i).getJob_date());
-                        job.setJob_time(response.body().getSearchResultsJobsList().get(i).getJob_time());
-                        job.setTotal_budget(response.body().getSearchResultsJobsList().get(i).getTotal_budget());
-                        job.setPrice_per_hr(response.body().getSearchResultsJobsList().get(i).getPrice_per_hr());
-                        job.setTotal_hrs(response.body().getSearchResultsJobsList().get(i).getTotal_hrs());
-                        job.setEst_tot_budget(response.body().getSearchResultsJobsList().get(i).getEst_tot_budget());
-                        job.setJob_status(response.body().getSearchResultsJobsList().get(i).getJob_status());
-                        job.setCompleted_by(response.body().getSearchResultsJobsList().get(i).getCompleted_by());
-                        job.setPosted_on(response.body().getSearchResultsJobsList().get(i).getPosted_on());
-                        job.setCompleted_on(response.body().getSearchResultsJobsList().get(i).getCompleted_on());
-
-                        jobList.add(job);
-                    }
-
-                    //add the profile pic of the user who posted the job
-                    job.setProfile_pic(response.body().getProfilePic());
-
-                    // When you are off of the main thread and want to update LiveData, use postValue.
-                    // It posts the update to the main thread.
-                    mSearchedJobs.postValue(jobList);
-
-                    Log.d(LOG_TAG, "Size of list: "+response.body().getSearchResultsJobsList().size());
-                    // If the code reaches this point, we have successfully performed our sync
-                    Log.d(LOG_TAG, "Successfully got all jobs being searched for");
                 }
             }
 
