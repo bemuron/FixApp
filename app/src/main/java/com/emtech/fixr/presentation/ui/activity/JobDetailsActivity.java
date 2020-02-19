@@ -1,5 +1,7 @@
 package com.emtech.fixr.presentation.ui.activity;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 
 import androidx.fragment.app.DialogFragment;
@@ -25,7 +27,8 @@ import java.util.Date;
 import java.util.Locale;
 
 public class JobDetailsActivity extends AppCompatActivity implements View.OnClickListener,
-        MakeOfferDialogFragment.MakeOfferDialogListener {
+        MakeOfferDialogFragment.MakeOfferDialogListener
+        {
     private static final String LOG_TAG = JobDetailsActivity.class.getSimpleName();
     private TextView jobTitleTV, postedByTV, timePostedTV, locationTV,
             toBeDoneDateTV, toBeDoneTimeTV, jobPriceTV, jobDetailsET;
@@ -128,6 +131,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         jobPriceTV = findViewById(R.id.JD_job_price_content);
         jobDetailsET = findViewById(R.id.JD_job_details);
         makeOfferButton = findViewById(R.id.JD_make_offer);
+        makeOfferButton.setOnClickListener(this);
     }
 
     //method to handle population of the views with the content
@@ -142,12 +146,12 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         jobPriceTV.setText("UGX." + job.getEst_tot_budget());
         //if the current user is the one that posted this job
         //give them the option of editing it
-        if (userId == job.getPosted_by()) {
+        /*if (userId == job.getPosted_by()) {
             //makeOfferButton.setBackgroundDrawable(null);
             makeOfferButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             //makeOfferButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
             makeOfferButton.setText("You posted this job. Edit it");
-        }
+        }*/
         jobDetailsET.setText(job.getDescription());
         hideDialog();
     }
@@ -202,6 +206,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
                     //show the make offer dialog
                     showMakeOfferDialog();
                 }
+                showMakeOfferDialog();
                 /**
                  * TODO
                  * check if the user has a valid phone number registered, profile pic,
@@ -224,7 +229,14 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
     //this code instantiates the offer dialog fragment and shows it
     public void showMakeOfferDialog(){
-        dialogFragment = MakeOfferDialogFragment.newInstance(jobName, jobPoster);
+        //dialogFragment = new MakeOfferDialogFragment();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("MakeOfferDialogFragment");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(null);
+        DialogFragment dialogFragment = MakeOfferDialogFragment.newInstance(jobName, jobPoster);
         dialogFragment.show(getSupportFragmentManager(), "MakeOfferDialogFragment");
 
     }
@@ -241,7 +253,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
         // User touched the dialog's negative button
-        dialogFragment.getDialog().cancel();
+        //dialogFragment.getDialog().cancel();
     }
 
 

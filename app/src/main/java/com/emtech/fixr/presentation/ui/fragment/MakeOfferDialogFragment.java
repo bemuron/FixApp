@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
@@ -34,10 +35,6 @@ public class MakeOfferDialogFragment extends DialogFragment {
     private MakeOfferDialogListener mListener;
     private Toolbar toolbar;
 
-    public MakeOfferDialogFragment() {
-        // Required empty public constructor
-    }
-
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -56,6 +53,16 @@ public class MakeOfferDialogFragment extends DialogFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            jobName = getArguments().getString(JOB_NAME);
+            jobPoster = getArguments().getString(JOB_POSTER);
+        }
+    }
+
+    /*@NonNull
+    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         //super.onCreate(savedInstanceState);
         if (getArguments() != null) {
@@ -68,7 +75,7 @@ public class MakeOfferDialogFragment extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.fragment_make_offer_dialog, null))
+        builder.setView(inflater.inflate(R.layout.content_make_offer_dialog, null))
                 // Add action buttons
                 .setPositiveButton(R.string.send_offer, new DialogInterface.OnClickListener() {
                     @Override
@@ -85,19 +92,19 @@ public class MakeOfferDialogFragment extends DialogFragment {
                     }
                 });
         return builder.create();
-    }
+    }*/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
+        //super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_make_offer_dialog, container, false);
 
         toolbar = view.findViewById(R.id.toolbar);
 
         return view;
     }
-
+    /*
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -108,7 +115,7 @@ public class MakeOfferDialogFragment extends DialogFragment {
             dismiss();
             return true;
         });
-    }
+    }*/
 
     @Override
     public void onAttach(Context context) {
