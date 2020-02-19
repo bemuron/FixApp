@@ -129,7 +129,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
             mListener = (OnMyJobsInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement MakeOfferDialogListener");
         }
     }
 

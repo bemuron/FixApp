@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    tools:context=".presentation.ui.fragment.MakeOfferDialogFragment">
+
+    <TextView
+        android:id="@+id/offer_instructions1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/text_size_xnormal"
+        android:padding="@dimen/margin_padding_normal"
+        android:text="@string/offer_job_instructions" />
+
+    <TextView
+        android:id="@+id/offer_job_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/offer_instructions1"
+        android:textColor="@color/colorPrimaryDark"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_large"
+        android:text="Job Name" />
+
+    <TextView
+        android:id="@+id/offer_instructions2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/offer_job_name"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:text="@string/offer_job_poster_instructions" />
+
+    <TextView
+        android:id="@+id/offer_job_poster"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/offer_instructions2"
+        android:layout_toEndOf="@id/offer_instructions2"
+        android:layout_alignBaseline="@id/offer_instructions2"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/album_title"
+        android:text="Job Poster" />
+
+    <TextView
+        android:id="@+id/offer_instructions3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/offer_instructions2"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:text="@string/offer_how_much_instructions" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_offer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_padding_normal"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_below="@id/offer_instructions3">
+
+        <EditText
+            android:id="@+id/edit_text_offer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:inputType="number"
+            android:hint="@string/offer_amount_hint"
+            android:maxLines="1"
+            android:textColor="#000000"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/offer_instructions4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_input_offer"
+        android:textColor="@color/colorPrimaryDark"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:text="@string/offer_message_instructions" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_padding_normal"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:counterEnabled="true"
+        app:counterMaxLength="300"
+        android:layout_below="@id/offer_instructions4">
+
+        <EditText
+            android:id="@+id/edit_text_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:hint="@string/offer_message_hint"
+            android:maxLines="5"
+            android:inputType="textMultiLine"
+            android:scrollbars="vertical"
+            android:textColor="#000000"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!--<com.google.android.material.button.MaterialButton
+        android:id="@+id/button"
+        android:layout_below="@id/text_input_message"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Open dialog!" />-->
+
+    <Button
+        android:id="@+id/save_offer_button"
+        android:layout_below="@id/text_input_message"
+        android:padding="@dimen/margin_padding_normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/save"
+        android:textColor="@color/whiteTextColor"
+        android:text="@string/continue_button"/>
+
+</RelativeLayout>

@@ -97,7 +97,7 @@ public class BrowseJobsFragment extends Fragment {
             mListener = (OnBrowseJobsInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement MakeOfferDialogListener");
         }
     }
 

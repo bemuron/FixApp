@@ -1,6 +1,8 @@
 package com.emtech.fixr.presentation.ui.activity;
 
 import android.app.ProgressDialog;
+
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.helpers.SessionManager;
+import com.emtech.fixr.presentation.ui.fragment.MakeOfferDialogFragment;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
@@ -21,7 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class JobDetailsActivity extends AppCompatActivity implements View.OnClickListener {
+public class JobDetailsActivity extends AppCompatActivity implements View.OnClickListener,
+        MakeOfferDialogFragment.MakeOfferDialogListener {
     private static final String LOG_TAG = JobDetailsActivity.class.getSimpleName();
     private TextView jobTitleTV, postedByTV, timePostedTV, locationTV,
             toBeDoneDateTV, toBeDoneTimeTV, jobPriceTV, jobDetailsET;
@@ -30,8 +34,9 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     private Job job;
     private ProgressDialog pDialog;
     private SessionManager session;
+    private MakeOfferDialogFragment dialogFragment;
     private int userId;
-    private String userRole;
+    private String userRole, jobName, jobPoster;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +56,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         showDialog();
 
         int job_id = getIntent().getIntExtra("jobID", 0);
-        String jobName = getIntent().getStringExtra("jobName");
+        jobName = getIntent().getStringExtra("jobName");
 
         //initialise the views
         setUpWidgets();
@@ -91,6 +96,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
                 //add the name of the user who posted the job
                 job.setUserName(jobDetails.getUserName());
+                jobPoster = jobDetails.getUserName();
                 Log.e(LOG_TAG, "Job details name is " + jobDetails.getName());
                 displayDetails();
                 //hideDialog();
@@ -191,8 +197,10 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.JD_make_offer:
-                if (userId == job.getPosted_by()) {
-
+                //if the job poster is not the same as the fixer/jobber
+                if (userId != job.getPosted_by()) {
+                    //show the make offer dialog
+                    showMakeOfferDialog();
                 }
                 /**
                  * TODO
@@ -207,10 +215,35 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         }
     }
 
+
+
     /*@Override
     public void onBackPressed(){
         clearViews();
     }*/
+
+    //this code instantiates the offer dialog fragment and shows it
+    public void showMakeOfferDialog(){
+        dialogFragment = MakeOfferDialogFragment.newInstance(jobName, jobPoster);
+        dialogFragment.show(getSupportFragmentManager(), "MakeOfferDialogFragment");
+
+    }
+
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    //when the buttons on the dialog are clicked these are the methods called
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        // User touched the dialog's positive button
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+        dialogFragment.getDialog().cancel();
+    }
+
 
     private void showDialog() {
         if (!pDialog.isShowing())

@@ -76,6 +76,16 @@
     <string name="title_as_a_fixer">As a Fixer</string>
     <string name="title_as_a_poster">As a Poster</string>
 
+    <string name="send_offer">Send Offer</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="offer_job_instructions">You are making an offer to this job;</string>
+    <string name="offer_job_poster_instructions">Posted by;</string>
+    <string name="offer_how_much_instructions">How much are you offering to do this job at? (optional)</string>
+    <string name="offer_message_instructions">Write a brief message below to accompany your offer</string>
+    <string name="offer_amount_hint">Enter amount eg 250,000</string>
+    <string name="offer_message_hint">Breif message</string>
+
     <string-array name="jobs_filter_array">
         <item>All</item>
         <item>Draft</item>
@@ -84,4 +94,5 @@
         <item>Offers</item>
         <item>Completed</item>
     </string-array>
+
 </resources>

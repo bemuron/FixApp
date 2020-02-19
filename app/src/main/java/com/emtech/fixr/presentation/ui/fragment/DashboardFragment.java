@@ -92,7 +92,7 @@ public class DashboardFragment extends Fragment {
             mListener = (OnDashboardInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement MakeOfferDialogListener");
         }
     }
 
