@@ -133,7 +133,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
         }
     }
 
-    public void getAllWidgets(View view){
+    private void getAllWidgets(View view){
         // Progress bar
         progressBar = view.findViewById(R.id.my_jobs_progress_bar);
         showBar();

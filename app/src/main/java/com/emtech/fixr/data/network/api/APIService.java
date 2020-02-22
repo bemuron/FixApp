@@ -164,6 +164,26 @@ public interface APIService {
             @Path("page") int page,
             @Path("page_size") int page_size);
 
+    //posting an offer made for a job
+    @FormUrlEncoded
+    @POST("public/saveOffer")
+    Call<Result> saveOffer(
+            @Field("amount_offered") int amount_offered,
+            @Field("offer_message") String offer_message,
+            @Field("user_id") int user_id,
+            @Field("job_id") int job_id);
+
+    //updating an offer made for a job
+    @FormUrlEncoded
+    @POST("public/updateOffer")
+    Call<Result> updateOffer(
+            @Field("offer_id") int offer_id,
+            @Field("amount_offered") int amount_offered,
+            @Field("offer_message") String offer_message,
+            @Field("user_id") int user_id,
+            @Field("job_id") int job_id,
+            @Field("edit_count") int edit_count);
+
     /*
     //The register call
     @FormUrlEncoded

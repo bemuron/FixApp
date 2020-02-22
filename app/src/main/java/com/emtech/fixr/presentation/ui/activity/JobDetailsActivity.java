@@ -1,7 +1,7 @@
 package com.emtech.fixr.presentation.ui.activity;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import android.app.ProgressDialog;
 
 import androidx.fragment.app.DialogFragment;
@@ -20,6 +20,8 @@ import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.presentation.ui.fragment.MakeOfferDialogFragment;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
+import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
+import com.emtech.fixr.presentation.viewmodels.PostJobViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
 
 import java.text.SimpleDateFormat;
@@ -34,11 +36,12 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
             toBeDoneDateTV, toBeDoneTimeTV, jobPriceTV, jobDetailsET;
     private Button makeOfferButton;
     private MyJobsActivityViewModel mViewModel;
+    private PostJobActivityViewModel postJobActivityViewModel;
     private Job job;
     private ProgressDialog pDialog;
     private SessionManager session;
     private MakeOfferDialogFragment dialogFragment;
-    private int userId;
+    private int userId, job_id;
     private String userRole, jobName, jobPoster;
 
     @Override
@@ -58,11 +61,15 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         pDialog.setMessage("Fetching job details ...");
         showDialog();
 
-        int job_id = getIntent().getIntExtra("jobID", 0);
+        job_id = getIntent().getIntExtra("jobID", 0);
         jobName = getIntent().getStringExtra("jobName");
 
         //initialise the views
         setUpWidgets();
+
+        PostJobViewModelFactory factory1 = InjectorUtils.providePostJobActivityViewModelFactory(this.getApplicationContext());
+        postJobActivityViewModel = ViewModelProviders.of
+                (this, factory1).get(PostJobActivityViewModel.class);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this.getApplicationContext());
         mViewModel = ViewModelProviders.of
@@ -230,8 +237,8 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     //this code instantiates the offer dialog fragment and shows it
     public void showMakeOfferDialog(){
         //dialogFragment = new MakeOfferDialogFragment();
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag("MakeOfferDialogFragment");
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        Fragment prev = getSupportFragmentManager().findFragmentByTag("MakeOfferDialogFragment");
         if (prev != null) {
             ft.remove(prev);
         }
@@ -241,7 +248,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    // The dialog fragment receives a reference to this Activity through the
+            // The dialog fragment receives a reference to this Activity through the
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     //when the buttons on the dialog are clicked these are the methods called
@@ -256,6 +263,10 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         //dialogFragment.getDialog().cancel();
     }
 
+    @Override
+    public void returnOfferDetails(int amountOffered, String offerMessage) {
+        postJobActivityViewModel.saveOffer(amountOffered,offerMessage, userId, job_id);
+    }
 
     private void showDialog() {
         if (!pDialog.isShowing())

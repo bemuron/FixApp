@@ -12,11 +12,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.emtech.fixr.R;
+import com.google.android.material.textfield.TextInputEditText;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,13 +31,15 @@ import com.emtech.fixr.R;
  * create an instance of this fragment.
  */
 public class MakeOfferDialogFragment extends DialogFragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // the fragment initialization parameters
     private static final String JOB_NAME = "job_name";
     private static final String JOB_POSTER = "job_poster";
     private String jobName,jobPoster;
     private MakeOfferDialogListener mListener;
     private Toolbar toolbar;
+    private TextView jobNameTextView, jobPosterTextView;
+    //private EditText messageEditText;
+    private TextInputEditText offeredAmountET, messageEditText;
 
     /**
      * Use this factory method to create a new instance of
@@ -55,9 +61,22 @@ public class MakeOfferDialogFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FullScreenDialog);
         if (getArguments() != null) {
             jobName = getArguments().getString(JOB_NAME);
             jobPoster = getArguments().getString(JOB_POSTER);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            int width = ViewGroup.LayoutParams.MATCH_PARENT;
+            int height = ViewGroup.LayoutParams.MATCH_PARENT;
+            dialog.getWindow().setLayout(width, height);
+            dialog.getWindow().setWindowAnimations(R.style.AppTheme_Slide);
         }
     }
 
@@ -97,14 +116,14 @@ public class MakeOfferDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //super.onCreateView(inflater, container, savedInstanceState);
+        super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_make_offer_dialog, container, false);
 
-        toolbar = view.findViewById(R.id.toolbar);
+        getAllWidgets(view);
 
         return view;
     }
-    /*
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -112,10 +131,11 @@ public class MakeOfferDialogFragment extends DialogFragment {
         toolbar.setTitle("Make Offer");
         toolbar.inflateMenu(R.menu.make_offer_dialog);
         toolbar.setOnMenuItemClickListener(item -> {
+            getOfferDetails();
             dismiss();
             return true;
         });
-    }*/
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -134,6 +154,37 @@ public class MakeOfferDialogFragment extends DialogFragment {
         mListener = null;
     }
 
+    private void getAllWidgets(View view){
+        toolbar = view.findViewById(R.id.toolbar);
+        jobNameTextView = view.findViewById(R.id.offer_job_name);
+        jobNameTextView.setText(jobName);
+        jobPosterTextView = view.findViewById(R.id.offer_job_poster);
+        jobPosterTextView.setText(jobPoster);
+        messageEditText = view.findViewById(R.id.edit_text_message);
+        offeredAmountET = view.findViewById(R.id.edit_text_offer);
+
+    }
+
+    //method to get what user has filled in
+    public  void getOfferDetails() {
+        String offeredAmount = offeredAmountET.getText().toString().trim();
+        if (TextUtils.isEmpty(offeredAmount)) {
+            offeredAmountET.setError("Job Title is required");
+            //return false;
+        }
+
+        String offerMessage = messageEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(offerMessage)) {
+            messageEditText.setError("Job description is required");
+            //return false;
+        }
+
+        //convert the amount entered o integer
+        int amountOffered = Integer.parseInt(offeredAmount);
+
+        mListener.returnOfferDetails(amountOffered, offerMessage);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -148,6 +199,7 @@ public class MakeOfferDialogFragment extends DialogFragment {
      * implement this interface in order to receive event callbacks.
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface MakeOfferDialogListener {
+        public void returnOfferDetails(int offeredAmount, String offerMessage);
         public void onDialogPositiveClick(DialogFragment dialog);
         public void onDialogNegativeClick(DialogFragment dialog);
     }

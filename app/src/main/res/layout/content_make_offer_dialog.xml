@@ -65,10 +65,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/margin_padding_normal"
+        app:hintEnabled="true"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_below="@id/offer_instructions3">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_offer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,10 +97,11 @@
         android:padding="@dimen/margin_padding_normal"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         app:counterEnabled="true"
-        app:counterMaxLength="300"
+        app:counterMaxLength="100"
+        app:hintEnabled="true"
         android:layout_below="@id/offer_instructions4">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -111,16 +113,16 @@
             android:textColor="#000000"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!--<com.google.android.material.button.MaterialButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/button"
         android:layout_below="@id/text_input_message"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Open dialog!" />-->
+        android:layout_centerHorizontal="true"
+        android:text="Open dialog!" />
 
-    <Button
+    <!--<Button
         android:id="@+id/save_offer_button"
         android:layout_below="@id/text_input_message"
         android:padding="@dimen/margin_padding_normal"
@@ -128,6 +130,6 @@
         android:layout_height="wrap_content"
         android:background="@color/save"
         android:textColor="@color/whiteTextColor"
-        android:text="@string/continue_button"/>
+        android:text="@string/continue_button"/>-->
 
 </RelativeLayout>

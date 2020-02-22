@@ -167,27 +167,15 @@ public class PostFixAppJob {
 
     }
 
-    //retrofit call to post the job details to the server
-    //when image is attached
-    public void updateJobDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
-                               String mustHaveTwo, String mustHaveThree, int isJobRemote,
-                               File file){
-
-        //Map is used to multipart the file using okhttp3.RequestBody
-        //File file = new File(mediaPath);
-
-        //parsing any media file
-        RequestBody requestBody = RequestBody.create(MediaType.parse("*image/*"), file);
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
-        RequestBody fileName = RequestBody.create(MediaType.parse("text/plain"), file.getName());
+    //retrofit call to save the offer made for the job to the server
+    public void saveOffer(int amountOffered, String offerMessage, int userId, int jobId){
 
         //Defining retrofit api service*/
         //APIService service = retrofit.create(APIService.class);
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<Result> call = service.updateJob(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, fileToUpload, fileName);
+        Call<Result> call = service.saveOffer(amountOffered, offerMessage, userId, jobId);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<Result>() {

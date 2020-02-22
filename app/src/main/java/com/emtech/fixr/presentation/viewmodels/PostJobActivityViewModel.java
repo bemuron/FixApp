@@ -24,4 +24,15 @@ public class PostJobActivityViewModel extends ViewModel {
         mRepository.postJobService(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                 mustHaveThree, isJobRemote, file, categoryId, postJobActivity);
     }
+
+    //method to save the offer made by the user
+    public void saveOffer(int amountOffered, String offerMessage, int userId, int jobId){
+        mRepository.saveFixerOffer(amountOffered, offerMessage, userId, jobId);
+    }
+
+    //method to edit the offer made by the user
+    public void editOffer(int amountOffered, String offerMessage){
+
+
+    }
 }

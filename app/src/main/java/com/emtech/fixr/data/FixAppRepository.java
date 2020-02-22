@@ -246,6 +246,12 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
                 mustHaveThree, isJobRemote, file, categoryId, postJobActivity);
     }
 
+    //method to post the offer made by the potential fixer/tasker
+    public void saveFixerOffer(int amountOffered, String offerMessage, int userId, int jobId){
+        //call retrofit in background to post the offer for the job
+        mExecutors.diskIO().execute(() -> mPostFixAppJob.saveOffer(amountOffered, offerMessage, userId, jobId) );
+    }
+
     //method to call service to login user
     public void loginFixAppUser(String email, String password){
         mLoginUser.startLoginUserService(email, password);
