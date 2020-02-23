@@ -1,17 +1,28 @@
 package com.emtech.fixr.presentation.ui.activity;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProviders;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+
+import com.emtech.fixr.app.Config;
+import com.emtech.fixr.fcm.MyNotificationManager;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import com.google.android.material.navigation.NavigationView;
@@ -39,6 +50,7 @@ import com.emtech.fixr.presentation.ui.fragment.PaymentHistoryFragment;
 import com.emtech.fixr.presentation.viewmodels.HomeActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.HomeViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 
@@ -48,6 +60,10 @@ public class HomeActivity extends AppCompatActivity
         MyProfileFragment.OnMyProfileInteractionListener,PaymentHistoryFragment.OnPaymentHistoryInteractionListener,
         DashboardFragment.OnDashboardInteractionListener,BrowseJobsFragment.OnBrowseJobsInteractionListener{
 
+    private static final String TAG = HomeActivity.class.getSimpleName();
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private MyNotificationManager myNotificationManager;
     private CategoriesAdapter mCategoriesAdapter;
     private RecyclerView mRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -88,6 +104,25 @@ public class HomeActivity extends AppCompatActivity
         //we use this to associate the lifecycle observer(MyApplication) with this class(lifecycle owner)
         //it'll help us know when the app is in back ground or foreground
         getLifecycle().addObserver(new MyApplication());
+
+        /**
+         * Broadcast receiver calls in two scenarios
+         * 1. fcm registration is completed
+         * 2. when new push notification is received
+         * */
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                Log.e(TAG, "Broadcast receiver action: "+intent.getAction());
+                // checking for type intent filter
+                if (Config.REGISTRATION_COMPLETE.equals(intent.getAction())) {
+                    // fcm successfully registered
+                    // now subscribe to `global` topic to receive app wide notifications
+                    subscribeToGlobalTopic();
+                }
+            }
+        };
 
         /*
          * Using findViewById, we get a reference to our RecyclerView from xml. This allows us to
@@ -233,6 +268,34 @@ public class HomeActivity extends AppCompatActivity
         mRecyclerView.setVisibility(View.INVISIBLE);
         // Finally, show the loading indicator
         mLoadingIndicator.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * Showing notification with text only
+     */
+    private void showNotificationMessage(Context context, String title, String message, String timeStamp, Intent intent) {
+        myNotificationManager = new MyNotificationManager(context);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        myNotificationManager.showNotificationMessage(title, message, timeStamp, intent);
+    }
+
+    // subscribing to global topic
+    private void subscribeToGlobalTopic() {
+        Log.e(TAG, "Subscribing to global topic");
+        // [START subscribe_topics]
+        FirebaseMessaging.getInstance().subscribeToTopic(Config.TOPIC_GLOBAL)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        String msg = getString(R.string.msg_subscribed);
+                        if (!task.isSuccessful()) {
+                            msg = getString(R.string.msg_subscribe_failed);
+                        }
+                        Log.d(TAG, msg);
+                        //Toast.makeText(HomeActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+// [END subscribe_topics]
     }
 
     @Override

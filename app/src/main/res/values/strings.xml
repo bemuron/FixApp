@@ -86,6 +86,17 @@
     <string name="offer_amount_hint">Enter amount eg 250,000</string>
     <string name="offer_message_hint">Breif message</string>
 
+    <!--fcm-->
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <!--
+        This is the name that users will see when interacting with this channel.
+        It should describe the category of notifications that will be sent through this channel
+     -->
+    <string name="default_notification_channel_name" translatable="true">Global</string>
+    <string name="msg_subscribe_failed">Failed to subscribe to global topic</string>
+    <string name="msg_subscribed">Subscribed to global topic</string>
+    <string name="fcm_message">FCM Message</string>
+
     <string-array name="jobs_filter_array">
         <item>All</item>
         <item>Draft</item>

@@ -59,6 +59,11 @@ public class LoginRegisterActivityViewModel extends ViewModel {
         mRepository.registerFixAppUser(name, date_of_birth, gender, email, password);
     }
 
+    //call repository method to update the user's FCM id in the db
+    public void updateFCM(int userId, String token){
+        mRepository.updateFcmId(userId, token);
+    }
+
     public void insert(User user) { mRepository.insertUser(user); }
 
     public void delete() { mRepository.deleteUser();}

@@ -12,6 +12,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -28,6 +29,13 @@ public interface APIService {
     Call<Result> userLogin(
             @Field("email") String email,
             @Field("password") String password);
+
+    //register device with fcm
+    @FormUrlEncoded
+    @POST("public/updateFcm/{user_id}")
+    Call<Result> updateFcm(
+            @Path("user_id") int user_id,
+            @Field("fcm_registration_id") String fcm_registration_id);
 
     //The register call
     @FormUrlEncoded

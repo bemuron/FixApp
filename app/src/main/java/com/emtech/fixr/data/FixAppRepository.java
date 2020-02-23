@@ -1,10 +1,14 @@
 package com.emtech.fixr.data;
 
 import androidx.lifecycle.LiveData;
+
+import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.emtech.fixr.AppExecutors;
+import com.emtech.fixr.app.Config;
 import com.emtech.fixr.data.database.CategoriesDao;
 import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.data.database.Job;
@@ -20,6 +24,7 @@ import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.User;
+import com.emtech.fixr.presentation.ui.activity.LoginActivity;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;
@@ -35,6 +40,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.emtech.fixr.presentation.ui.activity.LoginActivity.loginActivityInstance;
 import static com.emtech.fixr.presentation.ui.activity.PostJobActivity.postJobActivity;
 
 /**
@@ -257,6 +263,12 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         mLoginUser.startLoginUserService(email, password);
     }
 
+    //method to update the user's FCM id in the db
+    public void updateFcmId(int userId, String token){
+        //call retrofit in background to post the offer for the job
+        mExecutors.diskIO().execute(() -> updateFcm(userId, token) );
+    }
+
     //returning if login is successful or not
     public void OnSuccessfulLogin(Boolean isLoginSuccessful){
 
@@ -317,6 +329,47 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         isUpdated = isJobUpdated;
         updateResponseMessage = message;
         jobDetailsSection = jobSection;
+    }
+
+    //retrofit call to register device token in mysql for fcm
+    private void updateFcm(int userId, String fcm_registration_id){
+
+        Log.d(LOG_TAG, "User device registration for fcm started");
+
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateFcm(userId, fcm_registration_id);
+
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                    try {
+                        //if response body is not null, we have some data
+                        //successful login
+                        if (!response.body().getError()) {
+
+                            loginActivityInstance.updateUIAfterFcmUpdate(true, response.body().getMessage());
+
+                        } else {
+                            loginActivityInstance.updateUIAfterFcmUpdate(false, response.body().getMessage());
+                        }
+                    }catch (Exception e){
+                        Log.e(LOG_TAG, e.getMessage());
+                        e.printStackTrace();
+                        loginActivityInstance.updateUIAfterFcmUpdate(false,e.getMessage());
+                    }
+
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                loginActivityInstance.updateUIAfterFcmUpdate(false, t.getMessage());
+            }
+        });
 
     }
 

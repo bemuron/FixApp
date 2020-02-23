@@ -4,10 +4,14 @@ import android.app.ProgressDialog;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +20,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.emtech.fixr.R;
 
+import com.emtech.fixr.app.Config;
+import com.emtech.fixr.app.MyApplication;
 import com.emtech.fixr.data.network.LoginUser;
 import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.data.network.api.APIService;
@@ -26,6 +32,8 @@ import com.emtech.fixr.models.User;
 import com.emtech.fixr.presentation.viewmodels.LoginRegisterActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.LoginRegistrationViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +41,7 @@ import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity implements LoginUser.SuccessfulLoginCallBack {
     private static final String TAG = LoginActivity.class.getSimpleName();
-
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private LoginRegisterActivityViewModel loginRegisterActivityViewModel;
     public static LoginActivity loginActivityInstance;
     private Button btnLogin;
@@ -174,6 +182,8 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
         } else {
 
             //login the user
+            //function to verify login details in mysql db
+            //Calls viewmodel method
             loginRegisterActivityViewModel.loginUser(email,password);
             //checkLogin(email,password);
 
@@ -241,15 +251,6 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
 
                         Toast.makeText(LoginActivity.this, "Welcome "+user.getName(), Toast.LENGTH_LONG).show();
 
-                        /**
-                         * Always check for google play services availability before
-                         * proceeding further with FCM
-                         * */
-                        /*
-                        if (checkPlayServices()) {
-                            registerFCM(mTongueUser.getUser_id());
-                        }
-                        */
 
                         //start home activity
                         Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
@@ -316,6 +317,15 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
 
             Toast.makeText(LoginActivity.this, "Welcome "+user.getName(), Toast.LENGTH_LONG).show();
 
+            /**
+             * Always check for google play services availability before
+             * proceeding further with FCM
+             * */
+
+            if (checkPlayServices()) {
+                registerFCM(user.getUser_id());
+            }
+
             //start home activity
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
             startActivity(intent);
@@ -326,5 +336,76 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
             btnLogin.setClickable(true);
         }
 
+    }
+
+    /**
+     * Persist token to third-party servers.
+     *
+     * Modify this method to associate the user's FCM InstanceID token with any server-side account
+     * maintained by your application.
+     *
+     * @param token The new token.
+     * @param userId the current user logged in id
+     */
+    private void sendRegistrationToServer(int userId, String token) {
+
+        //call model view method to update fcm
+        loginRegisterActivityViewModel.updateFCM(userId,token);
+    }
+
+    //this methos is called by the repository method after the FCM id has been
+    //saved in the db
+    public void updateUIAfterFcmUpdate(Boolean isUpdated, String message){
+        if (isUpdated){
+            // Notify UI that registration has completed, so the progress indicator can be hidden.
+            Intent registrationComplete = new Intent(Config.REGISTRATION_COMPLETE);
+            LocalBroadcastManager.getInstance(LoginActivity.this).sendBroadcast(registrationComplete);
+
+            Log.d(TAG, "Successful device fcm id registration");
+        }else{
+            Log.e(TAG, message);
+            Log.e(TAG, "Unable to send fcm registration id to our sever.");
+            //Toast.makeText(getApplicationContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    /**
+     * Registering with FCM and obtaining the fcm registration id
+     */
+    private void registerFCM(int userId) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        try{
+            String token = MyApplication.getInstance().getPrefManager().getDeviceToken();
+            Log.e(TAG, "FCM Registration Token: " + token);
+
+            sendRegistrationToServer(userId, token);
+
+            sharedPreferences.edit().putBoolean(Config.SENT_TOKEN_TO_SERVER, true).apply();
+
+        }catch (Exception e){
+            Log.e(TAG, "Failed to complete token refresh", e);
+
+            sharedPreferences.edit().putBoolean(Config.SENT_TOKEN_TO_SERVER, false).apply();
+        }
+
+    }
+
+    //check for google play services in device
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported. Google Play Services not installed!");
+                Toast.makeText(getApplicationContext(), "This device is not supported. Google Play Services not installed!", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 }
