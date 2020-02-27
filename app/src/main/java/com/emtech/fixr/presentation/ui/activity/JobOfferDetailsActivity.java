@@ -1,18 +1,19 @@
 package com.emtech.fixr.presentation.ui.activity;
 
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import android.app.ProgressDialog;
-
-import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.ViewModelProviders;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
@@ -28,10 +29,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class JobDetailsActivity extends AppCompatActivity implements View.OnClickListener,
+public class JobOfferDetailsActivity extends AppCompatActivity implements View.OnClickListener,
         MakeOfferDialogFragment.MakeOfferDialogListener
         {
-    private static final String LOG_TAG = JobDetailsActivity.class.getSimpleName();
+    private static final String LOG_TAG = JobOfferDetailsActivity.class.getSimpleName();
     private TextView jobTitleTV, postedByTV, timePostedTV, locationTV,
             toBeDoneDateTV, toBeDoneTimeTV, jobPriceTV, jobDetailsET;
     private Button makeOfferButton;
@@ -47,7 +48,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_job_details);
+        setContentView(R.layout.activity_job_offer_details);
         setupActionBar();
 
         // session manager
@@ -68,11 +69,11 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         setUpWidgets();
 
         PostJobViewModelFactory factory1 = InjectorUtils.providePostJobActivityViewModelFactory(this.getApplicationContext());
-        postJobActivityViewModel = ViewModelProviders.of
+        postJobActivityViewModel = new ViewModelProvider
                 (this, factory1).get(PostJobActivityViewModel.class);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this.getApplicationContext());
-        mViewModel = ViewModelProviders.of
+        mViewModel = new ViewModelProvider
                 (this, factory).get(MyJobsActivityViewModel.class);
 
         mViewModel.getJobDetails(job_id).observe(this, jobDetails -> {

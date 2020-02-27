@@ -1,11 +1,12 @@
 package com.emtech.fixr.presentation.ui.activity;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +39,7 @@ import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.app.MyApplication;
@@ -120,6 +123,14 @@ public class HomeActivity extends AppCompatActivity
                     // fcm successfully registered
                     // now subscribe to `global` topic to receive app wide notifications
                     subscribeToGlobalTopic();
+                }else if (intent.getAction().equals(Config.PUSH_NOTIFICATION)) {
+                    // new push notification is received
+
+                    String message = intent.getStringExtra("message");
+
+                    Toast.makeText(getApplicationContext(), "Push notification: " + message, Toast.LENGTH_LONG).show();
+
+                    Log.e(TAG, "Push notification: "+message);
                 }
             }
         };
@@ -192,8 +203,10 @@ public class HomeActivity extends AppCompatActivity
         return the existing ViewModel
          */
         HomeViewModelFactory factory = InjectorUtils.provideMainActivityViewModelFactory(this.getApplicationContext());
-        mViewModel = ViewModelProviders.of
-                (this, factory).get(HomeActivityViewModel.class);
+        //mViewModel = ViewModelProviders.of
+          //      (this, factory).get(HomeActivityViewModel.class);
+        // With ViewModelFactory
+        mViewModel = new ViewModelProvider(this, factory).get(HomeActivityViewModel.class);
 
         mViewModel.getAllCategories().observe(this, categoryList -> {
             mCategoriesAdapter.swapForecast(categoryList);
@@ -225,6 +238,31 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    //Here in onResume() method we are registering the broadcast receivers.
+    // So that this activity gets the push messages and registration id
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // register GCM registration complete receiver
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.REGISTRATION_COMPLETE));
+
+        // register new push message receiver
+        // by doing this, the activity will be notified each time a new message arrives
+        LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                new IntentFilter(Config.PUSH_NOTIFICATION));
+
+        // clear the notification area when the app is opened
+        MyNotificationManager.clearNotifications(getApplicationContext());
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        super.onPause();
     }
 
     /**
@@ -418,11 +456,17 @@ public class HomeActivity extends AppCompatActivity
                 //should take user to main page with categories
                 navDrawerFragmentContainer.setVisibility(View.GONE);
                 break;
-            case R.id.my_jobs:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = MyJobsFragment.newInstance(userId);
 
+            case R.id.poster_my_jobs:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
+                fragment = MyJobsFragment.newInstance(userId, "poster");
                 break;
+
+            case R.id.fixer_my_jobs:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
+                fragment = MyJobsFragment.newInstance(userId, "fixer");
+                break;
+
             case R.id.browse_jobs:
                 Intent intent = new Intent(this, BrowseJobsActivity.class);
                 startActivity(intent);
@@ -440,9 +484,14 @@ public class HomeActivity extends AppCompatActivity
                 fragment = new DashboardFragment();
 
                 break;
-            case R.id.payment_history:
+            case R.id.poster_payment_history:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = new PaymentHistoryFragment();
+                fragment = new PaymentHistoryFragment(userId, "poster");
+
+                break;
+            case R.id.fixer_payment_history:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
+                //fragment = new PaymentHistoryFragment(userId, "fixer");
 
                 break;
             case R.id.settings:

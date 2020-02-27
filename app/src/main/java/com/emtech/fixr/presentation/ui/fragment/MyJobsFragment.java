@@ -1,5 +1,6 @@
 package com.emtech.fixr.presentation.ui.fragment;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
+import com.emtech.fixr.presentation.viewmodels.HomeActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
@@ -42,6 +44,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
         AdapterView.OnItemSelectedListener{
     private static final String LOG_TAG = MyJobsFragment.class.getSimpleName();
     private static final String USER_ID = "userId";
+    private static final String USER_ROLE = "userRole";
     private RecyclerView recyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
     private List<Job> jobList = new ArrayList<Job>();
@@ -49,6 +52,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
     private Job job;
     private MyJobsListAdapter jobsAdapter;
     private int mUserId;
+    private String mUserRole;
     private TextView emptyView;
     private Spinner jobsFilterSpinner;
     private int statusJobDisplay;
@@ -68,10 +72,11 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
      * @return A new instance of fragment BrowseJobsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static MyJobsFragment newInstance(int userId) {
+    public static MyJobsFragment newInstance(int userId, String userRole) {
         MyJobsFragment fragment = new MyJobsFragment();
         Bundle args = new Bundle();
         args.putInt(USER_ID, userId);
+        args.putString(USER_ROLE, userRole);
         fragment.setArguments(args);
         return fragment;
     }
@@ -82,6 +87,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
         if (getArguments() != null) {
             mUserId = getArguments().getInt(USER_ID);
+            mUserRole = getArguments().getString(USER_ROLE);
         }
     }
 
@@ -102,10 +108,9 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
         super.onActivityCreated(savedInstanceState);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity().getApplicationContext());
-        mViewModel = ViewModelProviders.of
-                (this, factory).get(MyJobsActivityViewModel.class);
 
-        mViewModel.getAllJobsForUser(mUserId).observe(this, userJobsList -> {
+        mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
+        mViewModel.getAllJobsForUser(mUserId).observe(getActivity(), userJobsList -> {
             jobList = userJobsList;
             jobsAdapter.setList(userJobsList);
             Log.e(LOG_TAG, "Jobs list size is " +jobList.size());
@@ -140,6 +145,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
         recyclerView = view.findViewById(R.id.my_jobs_recycler_view);
         emptyView = view.findViewById(R.id.empty_jobs_list_view);
+
         jobsFilterSpinner = view.findViewById(R.id.spinner_filter_jobs);
         jobsFilterSpinner.setOnItemSelectedListener(this);
     }
@@ -158,11 +164,21 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
     //setting up jobs spinner adapter
     public void setSpinnerAdapter() {
-        // Create an ArrayAdapter using the string array and a default spinner layout
-        ArrayAdapter<CharSequence> jobsFilterAdapter = ArrayAdapter.createFromResource(getActivity(),
-                R.array.jobs_filter_array, android.R.layout.simple_spinner_item);
-        jobsFilterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        jobsFilterSpinner.setAdapter(jobsFilterAdapter);
+        //display the right list based on what the user clicked
+        //either for poster or for fixer
+        if (mUserRole.equals("poster")) {
+            // Create an ArrayAdapter using the string array and a default spinner layout
+            ArrayAdapter<CharSequence> jobsFilterAdapter = ArrayAdapter.createFromResource(getActivity(),
+                    R.array.poster_jobs_filter_array, android.R.layout.simple_spinner_item);
+            jobsFilterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            jobsFilterSpinner.setAdapter(jobsFilterAdapter);
+        }else {
+            // Create an ArrayAdapter using the string array and a default spinner layout
+            ArrayAdapter<CharSequence> jobsFilterAdapter = ArrayAdapter.createFromResource(getActivity(),
+                    R.array.fixer_jobs_filter_array, android.R.layout.simple_spinner_item);
+            jobsFilterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            jobsFilterSpinner.setAdapter(jobsFilterAdapter);
+        }
     }
 
     @Override
@@ -185,6 +201,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        showBar();
         if ("All".equals(parent.getItemAtPosition(position))) {
             showBar();
             loadSelectedJobs(5);
@@ -214,6 +231,16 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
             statusJobDisplay = 4;
             loadSelectedJobs(4);
             Log.e(LOG_TAG, "Completed jobs selected");
+        }else if ("Offers Made".equals(parent.getItemAtPosition(position))){
+            showBar();
+            statusJobDisplay = 4;
+            loadSelectedJobs(4);
+            Log.e(LOG_TAG, "Offers Made selected");
+        }else if ("Offers Accepted".equals(parent.getItemAtPosition(position))){
+            showBar();
+            statusJobDisplay = 4;
+            loadSelectedJobs(4);
+            Log.e(LOG_TAG, "Offers Accepted selected");
         }
 
     }

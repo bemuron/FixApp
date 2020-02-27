@@ -3,44 +3,70 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/post_job"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/title_activity_post_job" />
-        <item
-            android:id="@+id/my_jobs"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/my_jobs" />
-        <item
-            android:id="@+id/browse_jobs"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/browse_jobs" />
+    <item android:title="@string/title_as_a_poster">
+        <menu>
+            <item
+                android:id="@+id/post_job"
+                android:icon="@drawable/ic_menu_camera"
+                android:title="@string/title_activity_post_job" />
+            <item
+                android:id="@+id/poster_my_jobs"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="@string/my_jobs" />
+            <item
+                android:id="@+id/poster_payment_history"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/payment_history" />
+        </menu>
+    </item>
 
-        <item
-            android:id="@+id/my_profile"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/profile" />
-    </group>
+    <item android:title="@string/title_as_a_fixer">
+        <menu>
+            <!--<item
+                android:id="@+id/nav_fixer_offers_accepted"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/offers_accepted" />
+            <item
+                android:id="@+id/nav_fixer_offers_made"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/offers_made" />-->
+            <item
+                android:id="@+id/fixer_my_jobs"
+                android:icon="@drawable/ic_menu_gallery"
+                android:title="@string/my_jobs" />
+            <item
+                android:id="@+id/browse_jobs"
+                android:icon="@drawable/ic_menu_slideshow"
+                android:title="@string/browse_jobs"/>
+            <item
+                android:id="@+id/fixer_payment_history"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/payment_history" />
+        </menu>
+    </item>
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/dashboard"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/dashboard" />
+    <item android:title="@string/title_general">
+        <menu>
+            <item
+                android:id="@+id/dashboard"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/dashboard" />
+            <item
+                android:id="@+id/my_profile"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/profile" />
+            <item
+                android:id="@+id/settings"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/action_settings" />
+            <item
+                android:id="@+id/privacy_policy"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/nav_privacy_policy" />
+        </menu>
+    </item>
 
-        <item
-            android:id="@+id/payment_history"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/payment_history" />
-
-        <item
-            android:id="@+id/settings"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="@string/action_settings" />
-    </group>
-
-    <!--<item android:title="Communicate">
+    <!--<item android:title="As a Poster">
         <menu>
             <item
                 android:id="@+id/nav_share"

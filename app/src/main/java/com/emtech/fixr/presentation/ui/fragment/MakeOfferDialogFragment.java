@@ -162,7 +162,6 @@ public class MakeOfferDialogFragment extends DialogFragment {
         jobPosterTextView.setText(jobPoster);
         messageEditText = view.findViewById(R.id.edit_text_message);
         offeredAmountET = view.findViewById(R.id.edit_text_offer);
-
     }
 
     //method to get what user has filled in

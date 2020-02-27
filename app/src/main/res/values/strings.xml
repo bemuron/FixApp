@@ -29,6 +29,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">FixApp</string>
+    <string name="nav_privacy_policy">Privacy Policy</string>
     <string name="nav_header_subtitle">Get things done</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -37,6 +38,9 @@
 
     <!--nav bar strings-->
     <string name="my_jobs">My Jobs</string>
+    <string name="offers_received">Offers Received</string>
+    <string name="offers_accepted">Offers Accepted</string>
+    <string name="offers_made">Offers Made</string>
     <string name="browse_jobs">Browse Jobs</string>
     <string name="messages">Messages</string>
     <string name="dashboard">Dashboard</string>
@@ -75,6 +79,7 @@
 
     <string name="title_as_a_fixer">As a Fixer</string>
     <string name="title_as_a_poster">As a Poster</string>
+    <string name="title_general">General</string>
 
     <string name="send_offer">Send Offer</string>
     <string name="cancel">Cancel</string>
@@ -84,7 +89,7 @@
     <string name="offer_how_much_instructions">How much are you offering to do this job at? (optional)</string>
     <string name="offer_message_instructions">Write a brief message below to accompany your offer</string>
     <string name="offer_amount_hint">Enter amount eg 250,000</string>
-    <string name="offer_message_hint">Breif message</string>
+    <string name="offer_message_hint">Brief message</string>
 
     <!--fcm-->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
@@ -97,13 +102,18 @@
     <string name="msg_subscribed">Subscribed to global topic</string>
     <string name="fcm_message">FCM Message</string>
 
-    <string-array name="jobs_filter_array">
+    <string-array name="poster_jobs_filter_array">
         <item>All</item>
         <item>Draft</item>
         <item>Posted</item>
         <item>Assigned</item>
         <item>Offers</item>
         <item>Completed</item>
+    </string-array>
+
+    <string-array name="fixer_jobs_filter_array">
+        <item>Offers Made</item>
+        <item>Offers Accepted</item>
     </string-array>
 
 </resources>

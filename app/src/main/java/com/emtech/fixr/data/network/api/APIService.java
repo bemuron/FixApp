@@ -192,6 +192,16 @@ public interface APIService {
             @Field("job_id") int job_id,
             @Field("edit_count") int edit_count);
 
+    //getting all the jobs the fixer has made an offer to
+    @GET("public/getOffersMade/{user_id}")
+    Call<UserJobs> getOffersMade(
+            @Path("user_id") int user_id);
+
+    //getting all the jobs the fixer has made an offer to
+    @GET("public/getOffersAccepted/{user_id}")
+    Call<UserJobs> getOffersAccepted(
+            @Path("user_id") int user_id);
+
     /*
     //The register call
     @FormUrlEncoded

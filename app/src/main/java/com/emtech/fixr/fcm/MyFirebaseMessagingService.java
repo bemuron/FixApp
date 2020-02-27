@@ -10,6 +10,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -87,7 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            Log.d(TAG, "Message data payload: " + remoteMessage.getData().toString());
 
             /*if (*//* Check if data needs to be processed by long running job *//* true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
@@ -147,10 +148,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //save the token in sharedpreferences
         MyApplication.getInstance().getPrefManager().saveDeviceToken(token);
 
-        /*
-         LocalBroadcastManager is used to broadcast the message to all the activities which are
-          registered for the broadcast receiver.
-         */
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         Intent registrationComplete = new Intent();
         registrationComplete.setAction(Config.REGISTRATION_COMPLETE);
@@ -174,27 +171,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     }*/
 
     /**
-     * Subscribe to a topic
-     */
-    public void subscribeToTopic(String topic) {
-        Log.e(TAG, "Subscribing to weather topic");
-        // [START subscribe_topics]
-        FirebaseMessaging.getInstance().subscribeToTopic(topic)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        String msg = getString(R.string.msg_subscribed);
-                        if (!task.isSuccessful()) {
-                            msg = getString(R.string.msg_subscribe_failed);
-                        }
-                        Log.d(TAG, msg);
-                        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
-// [END subscribe_topics]
-    }
-
-    /**
      * Handle time allotted to BroadcastReceivers.
      */
     private void handleNow() {
@@ -211,10 +187,24 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             //getting the json data
             JSONObject data = json.getJSONObject("data");
 
+            String title = data.getString("title");
+            String message = data.getString("message");
+            boolean isBackground = data.getBoolean("is_background");
+            String imageUrl = data.getString("image");
+            String timestamp = data.getString("timestamp");
+            JSONObject payload = data.getJSONObject("payload");
+
+            Log.e(TAG, "title: " + title);
+            Log.e(TAG, "message: " + message);
+            Log.e(TAG, "isBackground: " + isBackground);
+            Log.e(TAG, "payload: " + payload.toString());
+            Log.e(TAG, "imageUrl: " + imageUrl);
+            Log.e(TAG, "timestamp: " + timestamp);
+
             //parsing json data
             //optString returns the value mapped by name if it exists,
             // coercing it if necessary. Returns the empty string if no such mapping exists.
-            String imageUrl = data.optString("image");
+            /*String imageUrl = data.optString("image");
 
             String activityToLaunch = data.getString("activity_to_launch");
 
@@ -223,8 +213,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             String time_taken = data.getString("time_taken");
 
-            JSONObject mObj  = data.getJSONObject("message");
-            NotificationMessage notificationMessage = new NotificationMessage();
+            JSONObject mObj  = data.getJSONObject("message");*/
+            /*NotificationMessage notificationMessage = new NotificationMessage();
             notificationMessage.setMeeting_id(mObj.getInt("meeting_id"));
             //variable to hold our created message
             String newMessage = null;
@@ -247,229 +237,32 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
             String title = data.getString("title");
             boolean isBackground = data.getBoolean("is_background");
-            String timestamp = "1:00";
+            String timestamp = "1:00";*/
 
             if (!MyNotificationManager.isAppInBackground(getApplicationContext())) {
-                switch (activityToLaunch) {
-                    case "HomeActivity": {
-                        // app is in foreground, broadcast the push message
-                        Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
+                // app is in foreground, broadcast the push message
+                Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
+                pushNotification.putExtra("message", message);
+                LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
 
-                        //get the user id too, to be compared with the logged in users id
-                        //so that if the requester is a tutor too we can still open the right activity
-                        pushNotification.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        pushNotification.putExtra("user_id", user.getId());
-                        pushNotification.putExtra("isSessionOn", true);
-                        pushNotification.putExtra("message", title);
-
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-                        Log.e(TAG, "fcm: session_in_progress");
-
-
-                        break;
-                    }
-                    case "payment_activity": {
-
-                        //time_taken = (float) data.getDouble("time_taken");
-                        // app is in foreground, broadcast the push message
-                        Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-
-                        //get the user id too, to be compared with the logged in users id
-                        //so that if the requester is a tutor too we can still open the right activity
-                        pushNotification.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        pushNotification.putExtra("user_id", user.getId());
-                        pushNotification.putExtra("time_taken", time_taken);
-                        pushNotification.putExtra("session_finished", true);
-                        Log.e(TAG, "fcm: payment activity");
-
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-
-                        break;
-                    }
-                    case "rating_activity": {
-                        // app is in foreground, broadcast the push message
-                        Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-
-                        //get the user id too, to be compared with the logged in users id
-                        //so that if the requester is a tutor too we can still open the right activity
-                        pushNotification.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        pushNotification.putExtra("user_id", user.getId());
-                        pushNotification.putExtra("rating_activity", true);
-                        Log.e(TAG, "fcm: rating activity");
-
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-                        break;
-                    }
-                    case "tutor_pending_requests": {
-                        //creating an intent for the notification
-                        //timestamp = data.getString("timestamp");
-                        // app is in foreground, broadcast the push message
-                        Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-                        pushNotification.putExtra("fragment_id", 5);
-                        pushNotification.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        pushNotification.putExtra("requester_name", data.getString("user_name"));
-                        pushNotification.putExtra("tutor_pending_requests", true);
-                        Log.e(TAG, "fcm: tutor_pending_requests");
-
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-
-                        break;
-                    }
-                    case "tutor_confirmed_requests": {
-                        //creating an intent for the notification
-                        // app is in foreground, broadcast the push message
-                        Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-                        pushNotification.putExtra("fragment_id", 7);
-                        pushNotification.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        pushNotification.putExtra("requester_name", data.getString("user_name"));
-                        pushNotification.putExtra("tutor_confirmed_requests", true);
-                        Log.e(TAG, "fcm: tutor_confirmed_requests");
-
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-                        break;
-                    }
-                    case "user_confirmed_requests": {
-                        //creating an intent for the notification
-                        // app is in foreground, broadcast the push message
-                        Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-                        pushNotification.putExtra("fragment_id", 8);
-                        pushNotification.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        pushNotification.putExtra("tutor_name", data.getString("tutor_name"));
-                        pushNotification.putExtra("user_confirmed_requests", true);
-                        Log.e(TAG, "fcm: user_confirmed_requests");
-
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-
-                        break;
-                    }
-                    case "user_pending_requests": {
-                        timestamp = data.getString("timestamp");
-                        //creating an intent for the notification
-                        // app is in foreground, broadcast the push message
-                        Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-                        pushNotification.putExtra("fragment_id", 6);
-                        pushNotification.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        pushNotification.putExtra("tutor_name", data.getString("tutor_name"));
-                        pushNotification.putExtra("user_pending_requests", true);
-                        Log.e(TAG, "fcm: user_pending_requests");
-
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-
-                        break;
-                    }
-
-                    default: {
-                        // app is in foreground, broadcast the push message
-                        Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
-                        pushNotification.putExtra("message", title);
-                        LocalBroadcastManager.getInstance(this).sendBroadcast(pushNotification);
-                        Log.e(TAG, "fcm:" + title);
-
-                        // play notification sound
-                        MyNotificationManager notificationManager = new MyNotificationManager(getApplicationContext());
-                        notificationManager.playNotificationSound();
-                        break;
-                    }
-                }
+                // play notification sound
+                MyNotificationManager notificationManager = new MyNotificationManager(getApplicationContext());
+                notificationManager.playNotificationSound();
 
             }else {
 
                 // app is in background. show the message in notification tray
-            Intent intent = null;
-                switch (activityToLaunch) {
-                    case "HomeActivity":
-                        timestamp = data.getString("timestamp");
-                        //creating an intent for the notification
-                        intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("fragment_id", 6);
-                        intent.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        intent.putExtra("tutor_name", data.getString("tutor_name"));
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
+                Intent resultIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                resultIntent.putExtra("message", message);
 
-                        break;
-                    case "tutor_pending_requests":
-                        timestamp = data.getString("timestamp");
-                        //creating an intent for the notification
-                        intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("fragment_id", 5);
-                        intent.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        intent.putExtra("requester_name", data.getString("user_name"));
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-
-                        break;
-                    case "tutor_confirmed_requests":
-                        //creating an intent for the notification
-                        intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("fragment_id", 7);
-                        intent.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        intent.putExtra("requester_name", data.getString("user_name"));
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-                        break;
-                    case "user_confirmed_requests":
-                        //creating an intent for the notification
-                        intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("fragment_id", 8);
-                        intent.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        intent.putExtra("tutor_name", data.getString("tutor_name"));
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-
-                        break;
-
-                    case "session_in_progress":
-                        //creating an intent for the notification
-                        intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        intent.putExtra("user_id", user.getId());
-                        //get the user id too, to be compared with the logged in users id
-                        //so that if the requester is a tutor too we can still open the right activity
-                        intent.putExtra("start_session", true);
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-
-                        break;
-
-                    case "payment_activity":
-                        //time_taken = (float) data.getDouble("time_taken");
-                        //creating an intent for the notification
-                        intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        //get the user id too, to be compared with the logged in users id
-                        //so that if the requester is a tutor too we can still open the right activity
-                        intent.putExtra("user_id", user.getId());
-                        intent.putExtra("time_taken", time_taken);
-                        intent.putExtra("session_finished", true);
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-
-                        break;
-
-                    case "rating_activity":
-                        //creating an intent for the notification
-                        intent = new Intent(getApplicationContext(), HomeActivity.class);
-                        intent.putExtra("meeting_id", notificationMessage.getMeeting_id());
-                        //get the user id too, to be compared with the logged in users id
-                        //so that if the requester is a tutor too we can still open the right activity
-                        intent.putExtra("student_id", user.getId());
-                        Log.e(TAG, "meeting id from notification " + notificationMessage.getMeeting_id());
-
-                        break;
-                }
-
-                //if there is no image
-                if (imageUrl.equals("null")) {
-                    //displaying small notification
-                    //myNotificationManager.showNotificationMessage(title, notificationMessage.getMessage(), intent);
-                    showNotificationMessage(getApplicationContext(), title, notificationMessage.getMessage(), timestamp, intent);
+                // check for image attachment
+                if (TextUtils.isEmpty(imageUrl)) {
+                    showNotificationMessage(getApplicationContext(), title, message, timestamp, resultIntent);
                     //playing notification sound
                     myNotificationManager.playNotificationSound();
                 } else {
-                    //if there is an image
-                    //displaying a big notification
-                    //myNotificationManager.showNotificationMessage(title, notificationMessage.getMessage(), intent);
                     // image is present, show notification with image
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, notificationMessage.getMessage(), timestamp, intent, imageUrl);
+                    showNotificationMessageWithBigImage(getApplicationContext(), title, message, timestamp, resultIntent, imageUrl);
                 }
             }
         } catch (JSONException e) {

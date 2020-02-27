@@ -36,6 +36,12 @@ public class UserJobs {
     //number of pages
     private int pages_count;
 
+    //list of jobs a fixer has made an offer for
+    private List<Job> offersMadeList;
+
+    //list of jobs whose offers have been accepted for specific fixer
+    private List<Job> offersAcceptedList;
+
     public UserJobs() {
 
     }
@@ -80,6 +86,14 @@ public class UserJobs {
         return pages_count;
     }
 
-    //LiveData<List<FixAppCategory>> getCategories();
+    public List<Job> getOffersMadeList() {
+        return offersMadeList;
+    }
+
+    public List<Job> getOffersAcceptedList() {
+        return offersAcceptedList;
+    }
+
+//LiveData<List<FixAppCategory>> getCategories();
 
 }
