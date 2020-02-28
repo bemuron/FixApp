@@ -486,7 +486,7 @@ public class HomeActivity extends AppCompatActivity
                 break;
             case R.id.poster_payment_history:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = new PaymentHistoryFragment(userId, "poster");
+                //fragment = new PaymentHistoryFragment(userId, "poster");
 
                 break;
             case R.id.fixer_payment_history:

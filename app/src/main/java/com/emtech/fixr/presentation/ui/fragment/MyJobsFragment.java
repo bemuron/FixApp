@@ -233,13 +233,11 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
             Log.e(LOG_TAG, "Completed jobs selected");
         }else if ("Offers Made".equals(parent.getItemAtPosition(position))){
             showBar();
-            statusJobDisplay = 4;
-            loadSelectedJobs(4);
+            loadSelectedJobs(5);
             Log.e(LOG_TAG, "Offers Made selected");
         }else if ("Offers Accepted".equals(parent.getItemAtPosition(position))){
             showBar();
-            statusJobDisplay = 4;
-            loadSelectedJobs(4);
+            loadSelectedJobs(6);
             Log.e(LOG_TAG, "Offers Accepted selected");
         }
 

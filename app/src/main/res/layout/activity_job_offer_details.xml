@@ -150,7 +150,7 @@
             android:textSize="@dimen/text_size_xnormal"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold"
-            android:text="Details;"/>
+            android:text="Message;"/>
 
         <TextView
             android:id="@+id/JOD_job_details_message"
@@ -187,8 +187,6 @@
             android:textSize="@dimen/text_size_xnormal"
             android:textColor="@color/colorPrimaryDark"
             android:text="Seen by job poster"/>
-
-
     </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -198,6 +196,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:text="Edit Offer!" />
-
     </LinearLayout>
+
 </ScrollView>

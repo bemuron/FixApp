@@ -194,6 +194,20 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         return mBrowsedJobs.getSearchedJobs();
     }
 
+    //getting all jobs associated with a user by status selected
+    public LiveData<List<Job>> getOffersMade(int user_id){
+        Log.d(LOG_TAG, "calling bg method to get offers made list");
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffersMade(user_id, "made"));
+        return mGetMyJobs.getJobsForUserByStatus();
+    }
+
+    //getting all jobs associated with a user by status selected
+    public LiveData<List<Job>> getOffersAccepted(int user_id){
+        Log.d(LOG_TAG, "calling bg method to get offers accepted list");
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffersMade(user_id, "accepted"));
+        return mGetMyJobs.getJobsForUserByStatus();
+    }
+
     public Cursor getUser(){
         mUserDetail = mUsersDao.getUserDetails();
 

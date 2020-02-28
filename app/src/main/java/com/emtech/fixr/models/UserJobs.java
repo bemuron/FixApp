@@ -37,10 +37,10 @@ public class UserJobs {
     private int pages_count;
 
     //list of jobs a fixer has made an offer for
-    private List<Job> offersMadeList;
+    private List<Offer> offersMadeList;
 
     //list of jobs whose offers have been accepted for specific fixer
-    private List<Job> offersAcceptedList;
+    private List<Offer> offersAcceptedList;
 
     public UserJobs() {
 
@@ -86,11 +86,11 @@ public class UserJobs {
         return pages_count;
     }
 
-    public List<Job> getOffersMadeList() {
+    public List<Offer> getOffersMadeList() {
         return offersMadeList;
     }
 
-    public List<Job> getOffersAcceptedList() {
+    public List<Offer> getOffersAcceptedList() {
         return offersAcceptedList;
     }
 

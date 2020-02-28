@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/padding_list_row"
+    android:paddingLeft="?listPreferredItemPaddingLeft"
+    android:paddingStart="?listPreferredItemPaddingLeft"
+    android:paddingRight="?listPreferredItemPaddingRight"
+    android:paddingEnd="?listPreferredItemPaddingRight"
+    android:paddingTop="@dimen/padding_list_row">
+
+    <LinearLayout
+        android:id="@+id/my_jobs_job_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:paddingLeft="72dp"
+        android:paddingRight="@dimen/padding_list_row">
+
+        <TextView
+            android:id="@+id/my_jobs_job_title"
+            android:text="Job Name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/text_size_xxnormal"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/my_jobs_job_location"
+            android:text="John 3:16, Mark 11:23"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="@dimen/text_size_xnormal" />
+
+        <TextView
+            android:id="@+id/my_jobs_date"
+            android:text="30 verses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:lines="1"
+            android:textSize="@dimen/text_size_normal" />
+
+        <TextView
+            android:id="@+id/my_jobs_time"
+            android:text="30 verses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/text_size_normal" />
+
+        <TextView
+            android:id="@+id/my_jobs_amount"
+            android:text="UGX.50,000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:textStyle="bold"
+            android:lines="1"
+            android:textSize="@dimen/text_size_xnormal" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/icon_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/icon_front"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/icon_profile"
+                android:layout_width="@dimen/icon_width_height"
+                android:layout_height="@dimen/icon_width_height" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/job_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/draft_job"
+        android:textSize="@dimen/text_size_normal"
+        android:textStyle="bold"
+        android:text="Draft"/>
+
+</RelativeLayout>

@@ -10,6 +10,7 @@ import com.emtech.fixr.AppExecutors;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
+import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.models.UserJobs;
 
 import java.util.ArrayList;
@@ -28,13 +29,16 @@ public class GetMyJobs {
     private final AppExecutors mExecutors;
 
     private final MutableLiveData<Job> mJobDetails;
+    private final MutableLiveData<List<Offer>> mJobOffersList;
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
     private static GetMyJobs sInstance;
     private final Context mContext;
     private Job job;
+    private Offer offer;
     private List<Job> jobList = new ArrayList<Job>();
+    private List<Offer> offersList = new ArrayList<Offer>();
 
     public GetMyJobs(Context context, AppExecutors executors) {
         mContext = context;
@@ -44,6 +48,7 @@ public class GetMyJobs {
         mDownloadedJobsByStatus = new MutableLiveData<>();
         mJobsForBrowsing = new MutableLiveData<>();
         mSearchedJobs = new MutableLiveData<>();
+        mJobOffersList = new MutableLiveData<>();
     }
 
     /**
@@ -83,6 +88,11 @@ public class GetMyJobs {
     //returned jobs after search
     public LiveData<List<Job>> getSearchedJobs() {
         return mSearchedJobs;
+    }
+
+    //returned list of offers made for jobs, accepted or not
+    public LiveData<List<Offer>> getOffersMade() {
+        return mJobOffersList;
     }
 
     /**
@@ -318,16 +328,23 @@ public class GetMyJobs {
 
     }
 
-    //method to get all jobs for browsing
-    public void BrowseJobs() {
-        Log.d(LOG_TAG, "Browse jobs started");
+    //getting the jobs the fixer has made an offer on
+    public void GetOffersMade(int user_id, String offerType) {
+        Log.d(LOG_TAG, "Fetch offers made for jobs for fixer started");
 
         //Defining retrofit com.emtech.retrofitexample.api service
         //APIService service = retrofit.create(APIService.class);
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
-        //defining the call
-        Call<UserJobs> call = service.browseAllJobs(1,1);
+        Call<UserJobs> call = null;
+
+        //get accepted offers or just offers made based on what the fixer clicked on
+        if (offerType.equals("made")) {
+            //defining the call
+            call = service.getOffersMade(user_id);
+        }else if (offerType.equals("accepted")){
+            call = service.getOffersAccepted(user_id);
+        }
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<UserJobs>() {
@@ -336,51 +353,49 @@ public class GetMyJobs {
 
                 //if response body is not null, we have some data
                 //count what we have in the response
-                if (response.body() != null) {
-                    Log.d(LOG_TAG, "JSON not null");
+                try {
+                    if (response.body() != null) {
+                        Log.d(LOG_TAG, "JSON not null");
 
-                    //clear the previous search list if it has content
-                    if (jobList != null) {
-                        jobList.clear();
+                        //clear the previous search list if it has content
+                        if (offersList != null) {
+                            offersList.clear();
+                        }
+
+                        for (int i = 0; i < response.body().getOffersMadeList().size(); i++) {
+                            offer = new Offer();
+                            offer.setOffered_by(response.body().getOffersMadeList().get(i).getOffered_by());
+                            offer.setJob_id(response.body().getOffersMadeList().get(i).getJob_id());
+                            offer.setOffer_amount(response.body().getOffersMadeList().get(i).getOffer_amount());
+                            offer.setMessage(response.body().getOffersMadeList().get(i).getMessage());
+                            offer.setLast_edited_on(response.body().getOffersMadeList().get(i).getLast_edited_on());
+                            offer.setSeen_by_poster(response.body().getOffersMadeList().get(i).getSeen_by_poster());
+                            offer.setEdit_count(response.body().getOffersMadeList().get(i).getEdit_count());
+                            offer.setOffer_accepted(response.body().getOffersMadeList().get(i).getOffer_accepted());
+                            offer.setName(response.body().getOffersMadeList().get(i).getName());
+                            offer.setEst_tot_budget(response.body().getOffersMadeList().get(i).getEst_tot_budget());
+                            offer.setPosted_by(response.body().getOffersMadeList().get(i).getPosted_by());
+                            offer.setPosted_on(response.body().getOffersMadeList().get(i).getPosted_on());
+                            offer.setJob_date(response.body().getOffersMadeList().get(i).getJob_date());
+
+                            offersList.add(offer);
+                        }
+
+                        //add the profile pic of the user who posted the job
+                        offer.setProfile_pic(response.body().getProfilePic());
+
+                        // When you are off of the main thread and want to update LiveData, use postValue.
+                        // It posts the update to the main thread.
+                        mJobOffersList.postValue(offersList);
+
+                        Log.d(LOG_TAG, "Size of list: " + response.body().getOffersMadeList().size());
+                        // If the code reaches this point, we have successfully performed our sync
+                        Log.d(LOG_TAG, "Successfully got all jobs associated " +
+                                "to this user by status = ");
                     }
-
-                    for (int i = 0; i < response.body().getBrowsedJobsList().size(); i++) {
-                        job = new Job();
-                        job.setCategory_id(response.body().getBrowsedJobsList().get(i).getCategory_id());
-                        job.setJob_id(response.body().getBrowsedJobsList().get(i).getJob_id());
-                        job.setPosted_by(response.body().getBrowsedJobsList().get(i).getPosted_by());
-                        job.setName(response.body().getBrowsedJobsList().get(i).getName());
-                        job.setDescription(response.body().getBrowsedJobsList().get(i).getDescription());
-                        job.setMust_have_one(response.body().getBrowsedJobsList().get(i).getMust_have_one());
-                        job.setMust_have_two(response.body().getBrowsedJobsList().get(i).getMust_have_two());
-                        job.setMust_have_three(response.body().getBrowsedJobsList().get(i).getMust_have_three());
-                        job.setIs_job_remote(response.body().getBrowsedJobsList().get(i).getIs_job_remote());
-                        job.setLocation(response.body().getBrowsedJobsList().get(i).getLocation());
-                        job.setImage1(response.body().getBrowsedJobsList().get(i).getImage1());
-                        job.setJob_date(response.body().getBrowsedJobsList().get(i).getJob_date());
-                        job.setJob_time(response.body().getBrowsedJobsList().get(i).getJob_time());
-                        job.setTotal_budget(response.body().getBrowsedJobsList().get(i).getTotal_budget());
-                        job.setPrice_per_hr(response.body().getBrowsedJobsList().get(i).getPrice_per_hr());
-                        job.setTotal_hrs(response.body().getBrowsedJobsList().get(i).getTotal_hrs());
-                        job.setEst_tot_budget(response.body().getBrowsedJobsList().get(i).getEst_tot_budget());
-                        job.setJob_status(response.body().getBrowsedJobsList().get(i).getJob_status());
-                        job.setCompleted_by(response.body().getBrowsedJobsList().get(i).getCompleted_by());
-                        job.setPosted_on(response.body().getBrowsedJobsList().get(i).getPosted_on());
-                        job.setCompleted_on(response.body().getBrowsedJobsList().get(i).getCompleted_on());
-
-                        jobList.add(job);
-                    }
-
-                    //add the profile pic of the user who posted the job
-                    job.setProfile_pic(response.body().getProfilePic());
-
-                    // When you are off of the main thread and want to update LiveData, use postValue.
-                    // It posts the update to the main thread.
-                    mJobsForBrowsing.postValue(jobList);
-
-                    Log.d(LOG_TAG, "Size of list: "+response.body().getBrowsedJobsList().size());
-                    // If the code reaches this point, we have successfully performed our sync
-                    Log.d(LOG_TAG, "Successfully got all jobs for browsing");
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, "Error from inside response area in retrofit call --"+e.getMessage());
                 }
             }
 

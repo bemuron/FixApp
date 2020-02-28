@@ -42,6 +42,16 @@ public class MyJobsActivityViewModel extends ViewModel {
         return mRepository.getJobDetails(jobId);
     }
 
+    //a getter method for all the jobs a fixer has made an offer to.
+    public LiveData<List<Job>> getAllOffersMade(int userid){
+        return mRepository.getOffersMade(userid);
+    }
+
+    //a getter method for all the jobs a fixer made an offer to and have been accepted
+    public LiveData<List<Job>> getAllOffersAccepted(int userid){
+        return mRepository.getOffersAccepted(userid);
+    }
+
     //a wrapper insert() method that calls the Repository's insert() method. In this way,
     // the implementation of insert() is completely hidden from the UI.
     //public void insert(Category category) { mRepository.insert(category); }
