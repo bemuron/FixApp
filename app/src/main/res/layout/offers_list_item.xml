@@ -13,7 +13,7 @@
     android:paddingTop="@dimen/padding_list_row">
 
     <LinearLayout
-        android:id="@+id/my_jobs_job_container"
+        android:id="@+id/offer_job_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -22,7 +22,7 @@
         android:paddingRight="@dimen/padding_list_row">
 
         <TextView
-            android:id="@+id/my_jobs_job_title"
+            android:id="@+id/offer_jobs_job_title"
             android:text="Job Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,8 +32,8 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/my_jobs_job_location"
-            android:text="John 3:16, Mark 11:23"
+            android:id="@+id/offer_job_location"
+            android:text="Kampala"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
@@ -42,8 +42,8 @@
             android:textSize="@dimen/text_size_xnormal" />
 
         <TextView
-            android:id="@+id/my_jobs_date"
-            android:text="30 verses"
+            android:id="@+id/offer_job_date"
+            android:text="05 MAR 2020"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
@@ -51,15 +51,15 @@
             android:textSize="@dimen/text_size_normal" />
 
         <TextView
-            android:id="@+id/my_jobs_time"
-            android:text="30 verses"
+            android:id="@+id/offer_job_posted_on"
+            android:text="01 MAR 2020"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="@dimen/text_size_normal" />
 
         <TextView
-            android:id="@+id/my_jobs_amount"
+            android:id="@+id/offer_amount"
             android:text="UGX.50,000"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
     </LinearLayout>
 
     <RelativeLayout
-        android:id="@+id/icon_container"
+        android:id="@+id/offer_icon_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -90,7 +90,7 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/job_status"
+        android:id="@+id/offer_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -98,6 +98,6 @@
         android:textColor="@color/draft_job"
         android:textSize="@dimen/text_size_normal"
         android:textStyle="bold"
-        android:text="Draft"/>
+        android:text="Seen by poster"/>
 
 </RelativeLayout>

@@ -31,8 +31,7 @@ public class PostJobActivityViewModel extends ViewModel {
     }
 
     //method to edit the offer made by the user
-    public void editOffer(int amountOffered, String offerMessage){
-
-
+    public void editOffer(int offerId, int amountOffered, String offerMessage, int editCount){
+        mRepository.editFixerOffer(offerId, amountOffered, offerMessage, editCount);
     }
 }

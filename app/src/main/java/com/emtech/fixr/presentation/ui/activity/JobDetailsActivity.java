@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.app.ProgressDialog;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,11 +69,11 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         setUpWidgets();
 
         PostJobViewModelFactory factory1 = InjectorUtils.providePostJobActivityViewModelFactory(this.getApplicationContext());
-        postJobActivityViewModel = ViewModelProviders.of
+        postJobActivityViewModel = new ViewModelProvider
                 (this, factory1).get(PostJobActivityViewModel.class);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this.getApplicationContext());
-        mViewModel = ViewModelProviders.of
+        mViewModel = new ViewModelProvider
                 (this, factory).get(MyJobsActivityViewModel.class);
 
         mViewModel.getJobDetails(job_id).observe(this, jobDetails -> {
@@ -240,7 +241,8 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
             ft.remove(prev);
         }
         ft.addToBackStack(null);
-        DialogFragment dialogFragment = MakeOfferDialogFragment.newInstance(jobName, jobPoster);
+        DialogFragment dialogFragment = MakeOfferDialogFragment.newInstance(jobName,
+                null, null, "newOffer");
         dialogFragment.show(getSupportFragmentManager(), "MakeOfferDialogFragment");
 
     }

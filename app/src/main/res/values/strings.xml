@@ -73,6 +73,10 @@
     <string name="add_must_have">Add</string>
     <string name="save_must_have">Save</string>
     <string name="empty_posted_jobs_list">You have not posted any jobs yet</string>
+    <string name="empty_fixer_offers_accepted_list">Your offers that have been accepted by the Job poster will appear here</string>
+    <string name="empty_fixer_offers_made_list">The offers you have made to jobs will appear here</string>
+    <string name="empty_poster_offers_accepted_list">The offers you accept will appear here</string>
+    <string name="empty_poster_offers_received_list">The offers you receive will appear here</string>
     <string name="action_search">Browse jobs</string>
     <string name="search_hint">Search jobs</string>
     <string name="settings_description">Search available jobs</string>

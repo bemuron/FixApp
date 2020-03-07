@@ -343,11 +343,18 @@ public class HomeActivity extends AppCompatActivity
 
     //callback from MyJobsFragment, launch activity to display job selected details
     @Override
-    public void onMyjobsInteraction(int jobID, String jobName) {
-        Intent intent = new Intent(this, JobDetailsActivity.class);
-        intent.putExtra("jobID", jobID);
-        intent.putExtra("jobName", jobName);
-        startActivity(intent);
+    public void onMyjobsInteraction(int jobID, String jobName, String userRole) {
+        if (userRole.equals("poster")) {
+            Intent intent = new Intent(this, JobDetailsActivity.class);
+            intent.putExtra("jobID", jobID);
+            intent.putExtra("jobName", jobName);
+            startActivity(intent);
+        }else if(userRole.equals("fixer")){
+            Intent intent = new Intent(this, OfferDetailsForFixerActivity.class);
+            intent.putExtra("offerID", jobID);
+            intent.putExtra("jobName", jobName);
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -462,9 +469,14 @@ public class HomeActivity extends AppCompatActivity
                 fragment = MyJobsFragment.newInstance(userId, "poster");
                 break;
 
-            case R.id.fixer_my_jobs:
+            case R.id.nav_fixer_offers_accepted:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = MyJobsFragment.newInstance(userId, "fixer");
+                fragment = MyJobsFragment.newInstance(userId, "accepted");
+                break;
+
+            case R.id.nav_fixer_offers_made:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
+                fragment = MyJobsFragment.newInstance(userId, "made");
                 break;
 
             case R.id.browse_jobs:
@@ -472,28 +484,23 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(intent);
                 //navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 //fragment = new BrowseJobsFragment();
-
                 break;
+
             case R.id.my_profile:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new MyProfileFragment();
-
                 break;
+                
             case R.id.dashboard:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new DashboardFragment();
-
                 break;
-            case R.id.poster_payment_history:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                //fragment = new PaymentHistoryFragment(userId, "poster");
 
-                break;
-            case R.id.fixer_payment_history:
+            case R.id.payment_history:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 //fragment = new PaymentHistoryFragment(userId, "fixer");
-
                 break;
+
             case R.id.settings:
 
                 break;

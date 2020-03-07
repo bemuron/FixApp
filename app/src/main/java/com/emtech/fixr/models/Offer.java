@@ -1,9 +1,5 @@
 package com.emtech.fixr.models;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.Index;
-import androidx.room.PrimaryKey;
 
 public class Offer {
 
@@ -13,13 +9,13 @@ public class Offer {
 
     private int job_id;
 
-    private int offer_amount;
+    private String offer_amount;
 
     private String message;
 
     private String last_edited_on;
 
-    private String seen_by_poster;
+    private int seen_by_poster;
 
     private int edit_count;
 
@@ -61,11 +57,11 @@ public class Offer {
         this.job_id = job_id;
     }
 
-    public int getOffer_amount() {
+    public String getOffer_amount() {
         return offer_amount;
     }
 
-    public void setOffer_amount(int offer_amount) {
+    public void setOffer_amount(String offer_amount) {
         this.offer_amount = offer_amount;
     }
 
@@ -85,11 +81,11 @@ public class Offer {
         this.last_edited_on = last_edited_on;
     }
 
-    public String getSeen_by_poster() {
+    public int getSeen_by_poster() {
         return seen_by_poster;
     }
 
-    public void setSeen_by_poster(String seen_by_poster) {
+    public void setSeen_by_poster(int seen_by_poster) {
         this.seen_by_poster = seen_by_poster;
     }
 

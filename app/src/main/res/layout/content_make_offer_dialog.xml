@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".presentation.ui.fragment.MakeOfferDialogFragment">
 
     <TextView
@@ -28,33 +28,10 @@
         android:text="Job Name" />
 
     <TextView
-        android:id="@+id/offer_instructions2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/offer_job_name"
-        android:textColor="@color/colorPrimaryDark"
-        android:padding="@dimen/margin_padding_normal"
-        android:textSize="@dimen/text_size_xnormal"
-        android:text="@string/offer_job_poster_instructions" />
-
-    <TextView
-        android:id="@+id/offer_job_poster"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/offer_instructions2"
-        android:layout_toEndOf="@id/offer_instructions2"
-        android:layout_alignBaseline="@id/offer_instructions2"
-        android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold"
-        android:padding="@dimen/margin_padding_normal"
-        android:textSize="@dimen/album_title"
-        android:text="Job Poster" />
-
-    <TextView
         android:id="@+id/offer_instructions3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/offer_instructions2"
+        android:layout_below="@id/offer_job_name"
         android:textColor="@color/colorPrimaryDark"
         android:padding="@dimen/margin_padding_normal"
         android:textSize="@dimen/text_size_xnormal"

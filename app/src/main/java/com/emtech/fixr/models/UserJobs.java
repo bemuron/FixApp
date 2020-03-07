@@ -42,6 +42,11 @@ public class UserJobs {
     //list of jobs whose offers have been accepted for specific fixer
     private List<Offer> offersAcceptedList;
 
+    //list of jobs by a poster which have offers made to
+    private List<Offer> offersReceived;
+
+    private Offer offerDetails;
+
     public UserJobs() {
 
     }
@@ -94,6 +99,14 @@ public class UserJobs {
         return offersAcceptedList;
     }
 
-//LiveData<List<FixAppCategory>> getCategories();
+    public Offer getOfferDetails() {
+        return offerDetails;
+    }
+
+    public List<Offer> getOffersReceived() {
+        return offersReceived;
+    }
+
+    //LiveData<List<FixAppCategory>> getCategories();
 
 }

@@ -26,6 +26,8 @@ public class PostFixAppJob {
     private final AppExecutors mExecutors;
     JobCreatedCallBack jobCreatedCallBack;
     static JobUpdatedCallBack jobUpdatedCallBack;
+    static OfferEditedCallBack offerEditedCallBack;
+    static OfferSavedCallBack offerSavedCallBack;
     public PostJobActivity postJobActivity;
 
     // For Singleton instantiation
@@ -182,13 +184,16 @@ public class PostFixAppJob {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
 
-                if (!response.body().getError()) {
-                    Log.d(LOG_TAG, response.body().getMessage());
-                    //send response data to the repository
-                    //success
-                    jobUpdatedCallBack.onJobUpdated(true, response.body().getMessage(),
-                            "basicsWithImage");
-
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+                        //send response data to the repository
+                        //success
+                        offerSavedCallBack.onOfferCreated(true, response.body().getMessage());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
                 }
             }
 
@@ -198,8 +203,47 @@ public class PostFixAppJob {
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
                 //send response data to the repository
-                jobUpdatedCallBack.onJobUpdated(false, "Job details not updated",
-                        "basicsWithImage");
+                offerSavedCallBack.onOfferCreated(false, "Offer Saved");
+            }
+        });
+
+    }
+
+    //retrofit call to edit the offer made for the job to the server
+    public void editOffer(int offerId, int amountOffered, String offerMessage, int editCount){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateOffer(offerId, amountOffered, offerMessage, editCount);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+                        //send response data to the repository
+                        //success
+                        offerEditedCallBack.onOfferEdited(true, response.body().getMessage());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                //send response data to the repository
+                offerEditedCallBack.onOfferEdited(false, "Offer Edited");
             }
         });
 
@@ -257,6 +301,20 @@ public class PostFixAppJob {
      */
     public interface JobUpdatedCallBack {
         void onJobUpdated(Boolean isJobUpdated, String message, String jobSection);
+    }
+
+    /**
+     * The interface that receives whether the offer was saved or not
+     */
+    public interface OfferSavedCallBack {
+        void onOfferCreated(Boolean isOfferPosted, String message);
+    }
+
+    /**
+     * The interface that receives whether the offer was edited or not
+     */
+    public interface OfferEditedCallBack {
+        void onOfferEdited(Boolean isOfferEdited, String message);
     }
 
 }

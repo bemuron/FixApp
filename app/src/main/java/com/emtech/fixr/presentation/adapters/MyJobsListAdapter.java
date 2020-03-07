@@ -126,18 +126,23 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
         switch (jobStatus){
             case 0:
                 holder.job_status.setText("Draft");
+                holder.job_status.setTextColor(context.getResources().getColor(R.color.draft_job));
                 break;
             case 1:
                 holder.job_status.setText("Posted");
+                holder.job_status.setTextColor(context.getResources().getColor(R.color.posted_job));
                 break;
             case 2:
                 holder.job_status.setText("Assigned");
+                holder.job_status.setTextColor(context.getResources().getColor(R.color.assigned_job));
                 break;
             case 3:
                 holder.job_status.setText("Offers");
+                holder.job_status.setTextColor(context.getResources().getColor(R.color.offered_job));
                 break;
             case 4:
                 holder.job_status.setText("Complete");
+                holder.job_status.setTextColor(context.getResources().getColor(R.color.completed_job));
                 break;
         }
 

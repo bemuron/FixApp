@@ -1,5 +1,6 @@
 package com.emtech.fixr.presentation.ui.activity;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import androidx.annotation.NonNull;
@@ -73,7 +74,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         hideBar();
 
         PostJobViewModelFactory factory = InjectorUtils.providePostJobActivityViewModelFactory(this.getApplicationContext());
-        postJobActivityViewModel = ViewModelProviders.of
+        postJobActivityViewModel = new ViewModelProvider
                 (this, factory).get(PostJobActivityViewModel.class);
 
         //find the bottom sheet layout

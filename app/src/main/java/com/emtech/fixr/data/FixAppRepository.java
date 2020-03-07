@@ -23,6 +23,7 @@ import com.emtech.fixr.data.network.RegisterUser;
 import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
+import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.models.User;
 import com.emtech.fixr.presentation.ui.activity.LoginActivity;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
@@ -49,7 +50,8 @@ import static com.emtech.fixr.presentation.ui.activity.PostJobActivity.postJobAc
  * and {@link CategoriesDao}
  */
 
-public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
+public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostFixAppJob.OfferSavedCallBack,
+        PostFixAppJob.OfferEditedCallBack {
     private static final String LOG_TAG = FixAppRepository.class.getSimpleName();
 
     // For Singleton instantiation
@@ -136,14 +138,13 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
 
         mExecutors.diskIO().execute(() -> {
             if (isFetchNeeded()) {
-                //startFetchWeatherService();
                 startFetchCategoryService();
             }
         });
 
-        /*if (isFetchNeeded()) {
+        if (isFetchNeeded()) {
             mExecutors.diskIO().execute(this::startFetchCategoryService);
-        }*/
+        }
     }
 
     public AppExecutors getExecutors(){
@@ -194,18 +195,32 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         return mBrowsedJobs.getSearchedJobs();
     }
 
-    //getting all jobs associated with a user by status selected
-    public LiveData<List<Job>> getOffersMade(int user_id){
+    //a getter method for all the jobs a fixer has made an offer to.
+    public LiveData<List<Offer>> getOffersMade(int user_id){
         Log.d(LOG_TAG, "calling bg method to get offers made list");
-        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffersMade(user_id, "made"));
-        return mGetMyJobs.getJobsForUserByStatus();
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffers(user_id, "made"));
+        return mGetMyJobs.getOffersMade();
     }
 
-    //getting all jobs associated with a user by status selected
-    public LiveData<List<Job>> getOffersAccepted(int user_id){
+    //a getter method for all the jobs a fixer made an offer to and have been accepted
+    public LiveData<List<Offer>> getOffersAccepted(int user_id){
         Log.d(LOG_TAG, "calling bg method to get offers accepted list");
-        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffersMade(user_id, "accepted"));
-        return mGetMyJobs.getJobsForUserByStatus();
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffers(user_id, "accepted"));
+        return mGetMyJobs.getOffersMade();
+    }
+
+    //getting offer details of a selected job
+    public LiveData<Offer> getOfferDetails(int offer_id){
+        Log.d(LOG_TAG, "calling bg method to get offer details");
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOfferDetails(offer_id));
+        return mGetMyJobs.getOfferDetails();
+    }
+
+    //a getter method for all the jobs by a poster to which offers have been made
+    public LiveData<List<Offer>> getOffersReceived(int user_id){
+        Log.d(LOG_TAG, "calling bg method to get offers received list");
+        mExecutors.diskIO().execute(() -> mGetMyJobs.getOffersReceived(user_id));
+        return mGetMyJobs.getOffersMade();
     }
 
     public Cursor getUser(){
@@ -270,6 +285,12 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
     public void saveFixerOffer(int amountOffered, String offerMessage, int userId, int jobId){
         //call retrofit in background to post the offer for the job
         mExecutors.diskIO().execute(() -> mPostFixAppJob.saveOffer(amountOffered, offerMessage, userId, jobId) );
+    }
+
+    //method to edit the offer made by the fixer/tasker
+    public void editFixerOffer(int offerId, int amountOffered, String offerMessage, int editCount){
+        //call retrofit in background to post the offer for the job
+        mExecutors.diskIO().execute(() -> mPostFixAppJob.editOffer(offerId, amountOffered, offerMessage, editCount) );
     }
 
     //method to call service to login user
@@ -577,9 +598,29 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack {
         });
     }
 
+    @Override
+    public void onOfferCreated(Boolean isOfferPosted, String message) {
+
+    }
+
+    @Override
+    public void onOfferEdited(Boolean isOfferEdited, String message) {
+
+    }
+
     //interface to communicate job details update status to activity
     public interface UpdateJobDetailsTaskListener {
         void onUpdateFinish(Boolean isJobUpdated, String message, String jobSection);
+    }
+
+    //interface to communicate job details update status to activity
+    public interface OfferEditedListener {
+        void onOfferEdited(Boolean isOfferPosted, String message);
+    }
+
+    //interface to communicate job details update status to activity
+    public interface OfferSavedListener {
+        void onOfferSaved(Boolean isOfferSaved, String message);
     }
 
 }

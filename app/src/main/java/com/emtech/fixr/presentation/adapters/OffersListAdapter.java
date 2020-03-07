@@ -48,23 +48,23 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
     private static int currentSelectedIndex = -1;
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
-        public TextView job_name, job_location, job_date, job_time, job_amount, job_status;
+        public TextView job_name, job_location, job_date, job_posted_on, job_amount, job_status;
         public ImageView iconImp, imgProfile;
         public LinearLayout jobContainer;
         public RelativeLayout iconContainer, iconBack, iconFront;
 
         public MyViewHolder(View view) {
             super(view);
-            job_name = view.findViewById(R.id.my_jobs_job_title);
-            job_date = view.findViewById(R.id.my_jobs_date);
-            job_location = view.findViewById(R.id.my_jobs_job_location);
-            job_time = view.findViewById(R.id.my_jobs_time);
-            job_amount = view.findViewById(R.id.my_jobs_amount);
-            job_status = view.findViewById(R.id.job_status);
+            job_name = view.findViewById(R.id.offer_jobs_job_title);
+            job_date = view.findViewById(R.id.offer_job_date);
+            job_location = view.findViewById(R.id.offer_job_location);
+            job_posted_on = view.findViewById(R.id.offer_job_posted_on);
+            job_amount = view.findViewById(R.id.offer_amount);
+            job_status = view.findViewById(R.id.offer_status);
             //iconImp = view.findViewById(R.id.icon_star);
             imgProfile = view.findViewById(R.id.icon_profile);
-            jobContainer = view.findViewById(R.id.my_jobs_job_container);
-            iconContainer = view.findViewById(R.id.icon_container);
+            jobContainer = view.findViewById(R.id.offer_job_container);
+            iconContainer = view.findViewById(R.id.offer_icon_container);
             view.setOnLongClickListener(this);
         }
 
@@ -95,30 +95,40 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         Offer offer = offerList.get(position);
-        int jobStatus;
+        int offerStatus;
 
         //make these texts bold
         SpannableStringBuilder location = new SpannableStringBuilder("Location: ");
-        SpannableStringBuilder date = new SpannableStringBuilder("Date: ");
-        SpannableStringBuilder currency = new SpannableStringBuilder("UGX. ");
-        SpannableStringBuilder time = new SpannableStringBuilder("Time: ");
+        SpannableStringBuilder date = new SpannableStringBuilder("Posted On: ");
+        SpannableStringBuilder yourOffer = new SpannableStringBuilder("Your offer UGX. ");
+        SpannableStringBuilder postedOn = new SpannableStringBuilder("Posted On: ");
 
         location.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, location.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         date.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, date.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        currency.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, currency.length(),
+        yourOffer.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, yourOffer.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        time.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, time.length(),
+        postedOn.setSpan(new android.text.style.StyleSpan(Typeface.BOLD), 0, postedOn.length(),
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
         // displaying text view data
         holder.job_name.setText(offer.getName());
         holder.job_date.setText(date + offer.getJob_date());
-        holder.job_amount.setText(currency + offer.getEst_tot_budget());
+        holder.job_posted_on.setText(postedOn + offer.getPosted_on());
+        holder.job_amount.setText(yourOffer + offer.getOffer_amount());
 
         // displaying the first letter of From in icon text
         //holder.iconText.setText(tutor.getName().substring(0, 1));
+
+        offerStatus = offer.getSeen_by_poster();
+        if (offerStatus == 0){
+            holder.job_status.setText("Not yet seen");
+            holder.job_status.setTextColor(context.getResources().getColor(R.color.draft_job));
+        }else if(offerStatus == 1){
+            holder.job_status.setText("Seen by poster");
+            holder.job_status.setTextColor(context.getResources().getColor(R.color.completed_job));
+        }
 
         // change the row state to activated
         holder.itemView.setActivated(selectedItems.get(position, false));

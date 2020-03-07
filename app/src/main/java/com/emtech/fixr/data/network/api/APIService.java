@@ -183,13 +183,11 @@ public interface APIService {
 
     //updating an offer made for a job
     @FormUrlEncoded
-    @POST("public/updateOffer")
+    @POST("public/updateOffer/{offer_id}")
     Call<Result> updateOffer(
-            @Field("offer_id") int offer_id,
+            @Path("offer_id") int offer_id,
             @Field("amount_offered") int amount_offered,
             @Field("offer_message") String offer_message,
-            @Field("user_id") int user_id,
-            @Field("job_id") int job_id,
             @Field("edit_count") int edit_count);
 
     //getting all the jobs the fixer has made an offer to
@@ -200,6 +198,16 @@ public interface APIService {
     //getting all the jobs the fixer has made an offer to
     @GET("public/getOffersAccepted/{user_id}")
     Call<UserJobs> getOffersAccepted(
+            @Path("user_id") int user_id);
+
+    //getting the details of an offer made for a job
+    @GET("public/getOfferDetails/{offer_id}")
+    Call<UserJobs> getOfferDetails(
+            @Path("offer_id") int offer_id);
+
+    //getting all the jobs posted by the poster which have offers made to
+    @GET("public/getOffersForJobs/{user_id}")
+    Call<UserJobs> getOffersForJobs(
             @Path("user_id") int user_id);
 
     /*

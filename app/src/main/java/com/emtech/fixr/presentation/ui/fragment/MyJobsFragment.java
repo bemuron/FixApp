@@ -23,7 +23,9 @@ import android.widget.TextView;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
+import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
+import com.emtech.fixr.presentation.adapters.OffersListAdapter;
 import com.emtech.fixr.presentation.viewmodels.HomeActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
@@ -41,16 +43,18 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobsListAdapterListener,
-        AdapterView.OnItemSelectedListener{
+        OffersListAdapter.OffersListAdapterListener,AdapterView.OnItemSelectedListener{
     private static final String LOG_TAG = MyJobsFragment.class.getSimpleName();
     private static final String USER_ID = "userId";
     private static final String USER_ROLE = "userRole";
     private RecyclerView recyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
     private List<Job> jobList = new ArrayList<Job>();
+    private List<Offer> offerList = new ArrayList<Offer>();
     private MyJobsActivityViewModel mViewModel;
     private Job job;
     private MyJobsListAdapter jobsAdapter;
+    private OffersListAdapter offersAdapter;
     private int mUserId;
     private String mUserRole;
     private TextView emptyView;
@@ -108,16 +112,26 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
         super.onActivityCreated(savedInstanceState);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity().getApplicationContext());
-
         mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
-        mViewModel.getAllJobsForUser(mUserId).observe(getActivity(), userJobsList -> {
-            jobList = userJobsList;
-            jobsAdapter.setList(userJobsList);
-            Log.e(LOG_TAG, "Jobs list size is " +jobList.size());
 
-            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-            recyclerView.smoothScrollToPosition(mPosition);
-        });
+        if (mUserRole.equals("poster")) {
+            mViewModel.getAllJobsForUser(mUserId).observe(getActivity(), userJobsList -> {
+                jobList = userJobsList;
+                jobsAdapter.setList(userJobsList);
+                Log.e(LOG_TAG, "Jobs list size is " + jobList.size());
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+            });
+        }else{
+            mViewModel.getAllOffersMade(mUserId).observe(getActivity(), offersMadeList -> {
+                offersAdapter.setList(offersMadeList);
+                Log.e(LOG_TAG, "offers made list size is " +jobList.size());
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+            });
+        }
     }
 
     @Override
@@ -194,7 +208,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
         if (mListener != null) {
             //master detail flow callback
             //send to the parent activity then call the activity to display details
-            mListener.onMyjobsInteraction(job.getJob_id(), job.getName());
+            mListener.onMyjobsInteraction(job.getJob_id(), job.getName(), "poster");
         }
 
     }
@@ -233,11 +247,11 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
             Log.e(LOG_TAG, "Completed jobs selected");
         }else if ("Offers Made".equals(parent.getItemAtPosition(position))){
             showBar();
-            loadSelectedJobs(5);
+            loadSelectedJobs(6);
             Log.e(LOG_TAG, "Offers Made selected");
         }else if ("Offers Accepted".equals(parent.getItemAtPosition(position))){
             showBar();
-            loadSelectedJobs(6);
+            loadSelectedJobs(7);
             Log.e(LOG_TAG, "Offers Accepted selected");
         }
 
@@ -250,7 +264,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
     //method to load the jobs selected from the spinner dropdown
     private void loadSelectedJobs(int status){
-        if (status == 5) {
+        if (status == 5) {//spinner item on "ALL" show all jobs
             mViewModel.getAllJobsForUser(mUserId).observe(this, userJobsList -> {
                 jobList = userJobsList;
                 jobsAdapter.setList(userJobsList);
@@ -260,7 +274,34 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
             });
-        }else {
+        }else if(status == 6 ){//offers made by fixer
+            mViewModel.getAllOffersMade(mUserId).observe(this, offersMadeList -> {
+                offersAdapter.setList(offersMadeList);
+                Log.e(LOG_TAG, "offers made list size is " +offerList.size());
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+                hideBar();
+            });
+        }else if(status == 7 ){//offers accepted for fixer
+            mViewModel.getAllOffersAccepted(mUserId).observe(this, offersAccepted -> {
+                offersAdapter.setList(offersAccepted);
+                Log.e(LOG_TAG, "offers accepted list size is " +offerList.size());
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+                hideBar();
+            });
+        }else if(status == 3 ){//offers made to jobs posted by this user
+            mViewModel.getAllOffersReceived(mUserId).observe(this, offersReceived -> {
+                offersAdapter.setList(offersReceived);
+                Log.e(LOG_TAG, "offers to jobs for poster list size is " +offerList.size());
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+                hideBar();
+            });
+        }else{
             mViewModel.getAllJobsByStatus(mUserId, status).observe(this, userJobsByStatus -> {
                 jobsAdapter.setList(userJobsByStatus);
                 Log.e(LOG_TAG, "Jobs list size is " +jobList.size());
@@ -283,6 +324,17 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
         getActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
+    @Override
+    public void onOfferRowClicked(int position) {
+        Offer offer = offerList.get(position);
+        offerList.set(position, offer);
+        if (mListener != null) {
+            //master detail flow callback
+            //send to the parent activity then call the activity to display details
+            mListener.onMyjobsInteraction(offer.getOffer_id(), offer.getName(), "fixer");
+        }
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -294,6 +346,6 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnMyJobsInteractionListener {
-        void onMyjobsInteraction(int jobID, String jobName);
+        void onMyjobsInteraction(int jobID, String jobName, String userRole);
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.emtech.fixr.data.FixAppRepository;
 import com.emtech.fixr.data.database.Job;
+import com.emtech.fixr.models.Offer;
 
 import java.util.List;
 
@@ -43,13 +44,23 @@ public class MyJobsActivityViewModel extends ViewModel {
     }
 
     //a getter method for all the jobs a fixer has made an offer to.
-    public LiveData<List<Job>> getAllOffersMade(int userid){
-        return mRepository.getOffersMade(userid);
+    public LiveData<List<Offer>> getAllOffersMade(int userId){
+        return mRepository.getOffersMade(userId);
     }
 
     //a getter method for all the jobs a fixer made an offer to and have been accepted
-    public LiveData<List<Job>> getAllOffersAccepted(int userid){
-        return mRepository.getOffersAccepted(userid);
+    public LiveData<List<Offer>> getAllOffersAccepted(int userId){
+        return mRepository.getOffersAccepted(userId);
+    }
+
+    //a getter method for the offer details. This hides the implementation from the UI
+    public LiveData<Offer> getOfferDetails(int offerId){
+        return mRepository.getOfferDetails(offerId);
+    }
+
+    //a getter method for all the jobs by a poster to which offers have been made
+    public LiveData<List<Offer>> getAllOffersReceived(int userId){
+        return mRepository.getOffersReceived(userId);
     }
 
     //a wrapper insert() method that calls the Repository's insert() method. In this way,

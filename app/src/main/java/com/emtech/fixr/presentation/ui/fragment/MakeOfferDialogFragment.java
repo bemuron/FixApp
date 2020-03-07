@@ -33,11 +33,14 @@ import com.google.android.material.textfield.TextInputEditText;
 public class MakeOfferDialogFragment extends DialogFragment {
     // the fragment initialization parameters
     private static final String JOB_NAME = "job_name";
-    private static final String JOB_POSTER = "job_poster";
-    private String jobName,jobPoster;
+    private static final String OFFERED_AMOUNT = "amount_offered";
+    private static final String OFFER_MESSAGE = "offer_message";
+    private static final String OFFER_ACTION = "offer_action";
+    private String jobName, offerAction, offerMessage, amountOffered;
+    //private int amountOffered;
     private MakeOfferDialogListener mListener;
     private Toolbar toolbar;
-    private TextView jobNameTextView, jobPosterTextView;
+    private TextView jobNameTextView;
     //private EditText messageEditText;
     private TextInputEditText offeredAmountET, messageEditText;
 
@@ -46,14 +49,19 @@ public class MakeOfferDialogFragment extends DialogFragment {
      * this fragment using the provided parameters.
      *
      * @param jobName The title of the job.
-     * @param jobPoster Name of the person who posted the job.
+     * @param amountOffered  the amount the fixer previously offered
+     * @param offerMessage  the message to acompany the offer
+     * @param offerAction Name of the person who posted the job.
      * @return A new instance of fragment MakeOfferDialogFragment.
      */
-    public static MakeOfferDialogFragment newInstance(String jobName, String jobPoster) {
+    public static MakeOfferDialogFragment newInstance(String jobName, String amountOffered,
+                                                      String offerMessage, String offerAction) {
         MakeOfferDialogFragment fragment = new MakeOfferDialogFragment();
         Bundle args = new Bundle();
         args.putString(JOB_NAME, jobName);
-        args.putString(JOB_POSTER, jobPoster);
+        args.putString(OFFERED_AMOUNT, amountOffered);
+        args.putString(OFFER_MESSAGE, offerMessage);
+        args.putString(OFFER_ACTION, offerAction);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,7 +72,9 @@ public class MakeOfferDialogFragment extends DialogFragment {
         setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_FullScreenDialog);
         if (getArguments() != null) {
             jobName = getArguments().getString(JOB_NAME);
-            jobPoster = getArguments().getString(JOB_POSTER);
+            amountOffered = getArguments().getString(OFFERED_AMOUNT);
+            offerMessage = getArguments().getString(OFFER_MESSAGE);
+             offerAction = getArguments().getString(OFFER_ACTION);
         }
     }
 
@@ -128,7 +138,12 @@ public class MakeOfferDialogFragment extends DialogFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         toolbar.setNavigationOnClickListener(v -> dismiss());
-        toolbar.setTitle("Make Offer");
+        if (offerAction.equals("editOffer")) {
+            toolbar.setTitle("Edit Offer");
+        }else{
+            toolbar.setTitle("Make Offer");
+        }
+
         toolbar.inflateMenu(R.menu.make_offer_dialog);
         toolbar.setOnMenuItemClickListener(item -> {
             getOfferDetails();
@@ -158,27 +173,29 @@ public class MakeOfferDialogFragment extends DialogFragment {
         toolbar = view.findViewById(R.id.toolbar);
         jobNameTextView = view.findViewById(R.id.offer_job_name);
         jobNameTextView.setText(jobName);
-        jobPosterTextView = view.findViewById(R.id.offer_job_poster);
-        jobPosterTextView.setText(jobPoster);
         messageEditText = view.findViewById(R.id.edit_text_message);
         offeredAmountET = view.findViewById(R.id.edit_text_offer);
+        if (offerAction.equals("editOffer")){
+            messageEditText.setText(offerMessage);
+            offeredAmountET.setText(amountOffered);
+        }
     }
 
     //method to get what user has filled in
     public  void getOfferDetails() {
         String offeredAmount = offeredAmountET.getText().toString().trim();
         if (TextUtils.isEmpty(offeredAmount)) {
-            offeredAmountET.setError("Job Title is required");
+            offeredAmountET.setError("Amount your offering is required");
             //return false;
         }
 
         String offerMessage = messageEditText.getText().toString().trim();
         if (TextUtils.isEmpty(offerMessage)) {
-            messageEditText.setError("Job description is required");
+            messageEditText.setError("Please enter a message");
             //return false;
         }
 
-        //convert the amount entered o integer
+        //convert the amount entered to integer
         int amountOffered = Integer.parseInt(offeredAmount);
 
         mListener.returnOfferDetails(amountOffered, offerMessage);

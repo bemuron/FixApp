@@ -72,4 +72,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     //firebase cloud messaging
     implementation 'com.google.firebase:firebase-messaging:20.1.0'
+
+    //circle image view
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 }
