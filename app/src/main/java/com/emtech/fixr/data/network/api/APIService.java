@@ -200,15 +200,20 @@ public interface APIService {
     Call<UserJobs> getOffersAccepted(
             @Path("user_id") int user_id);
 
-    //getting the details of an offer made for a job
-    @GET("public/getOfferDetails/{offer_id}")
-    Call<UserJobs> getOfferDetails(
+    //getting the details of an offer made for a job for the fixer
+    @GET("public/getOfferDetailsForFixer/{offer_id}")
+    Call<UserJobs> getOfferDetailsForFixer(
             @Path("offer_id") int offer_id);
 
     //getting all the jobs posted by the poster which have offers made to
     @GET("public/getOffersForJobs/{user_id}")
     Call<UserJobs> getOffersForJobs(
             @Path("user_id") int user_id);
+
+    //getting the details of an offer made for a job
+    @GET("public/getOfferDetailsForPoster/{offer_id}")
+    Call<UserJobs> getOfferDetailsForPoster(
+            @Path("offer_id") int offer_id);
 
     /*
     //The register call

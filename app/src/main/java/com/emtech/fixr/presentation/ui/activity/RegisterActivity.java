@@ -166,18 +166,23 @@ public class RegisterActivity extends AppCompatActivity {
 
                 //ResBeanSignup resBean = response.body();
                 //String response_status = Encryption.decrypt(resBean.getResponse_status());
+                try {
 
-                if (!response.body().getError()) {
-                    hideDialog();
-                    //Log.d(LOG_TAG, EnumAppMessages.REGISTER_SUCCESS_TITLE.getValue());
-                    Log.d(TAG, response.body().getMessage());
+                    if (!response.body().getError()) {
+                        hideDialog();
+                        //Log.d(LOG_TAG, EnumAppMessages.REGISTER_SUCCESS_TITLE.getValue());
+                        Log.d(TAG, response.body().getMessage());
 
-                    Toast toast = Toast.makeText(RegisterActivity.this,
-                            "Registration successful. Login now", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(RegisterActivity.this,
+                                "Registration successful. Login now", Toast.LENGTH_LONG);
 
-                    toast.show();
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                    finish();
+                        toast.show();
+                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+                        finish();
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                    Log.e(TAG, "Error msg from inside response body: "+e.getMessage());
                 }
             }
 

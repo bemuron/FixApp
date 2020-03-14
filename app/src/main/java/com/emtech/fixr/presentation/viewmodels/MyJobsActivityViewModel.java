@@ -54,13 +54,18 @@ public class MyJobsActivityViewModel extends ViewModel {
     }
 
     //a getter method for the offer details. This hides the implementation from the UI
-    public LiveData<Offer> getOfferDetails(int offerId){
-        return mRepository.getOfferDetails(offerId);
+    public LiveData<Offer> getOfferDetailsForFixer(int offerId){
+        return mRepository.getOfferDetailsForFixer(offerId);
     }
 
     //a getter method for all the jobs by a poster to which offers have been made
     public LiveData<List<Offer>> getAllOffersReceived(int userId){
         return mRepository.getOffersReceived(userId);
+    }
+
+    //a getter method for the offer details for poster
+    public LiveData<Offer> getOfferDetailsForPoster(int offerId){
+        return mRepository.getOfferDetailsForPoster(offerId);
     }
 
     //a wrapper insert() method that calls the Repository's insert() method. In this way,

@@ -87,7 +87,7 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
         mViewModel = new ViewModelProvider
                 (this, factory).get(MyJobsActivityViewModel.class);
 
-        mViewModel.getOfferDetails(offer_id).observe(this, offerDetails -> {
+        mViewModel.getOfferDetailsForPoster(offer_id).observe(this, offerDetails -> {
             clearViews();
 
             if (offerDetails != null) {

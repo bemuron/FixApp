@@ -14,6 +14,8 @@ import android.os.Bundle;
 
 import com.emtech.fixr.app.Config;
 import com.emtech.fixr.fcm.MyNotificationManager;
+import com.emtech.fixr.presentation.ui.fragment.FixerOffersListFragment;
+import com.emtech.fixr.presentation.ui.fragment.PosterOffersListFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -61,7 +63,8 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         CategoriesAdapter.CategoriesAdapterOnItemClickHandler, MyJobsFragment.OnMyJobsInteractionListener,
         MyProfileFragment.OnMyProfileInteractionListener,PaymentHistoryFragment.OnPaymentHistoryInteractionListener,
-        DashboardFragment.OnDashboardInteractionListener,BrowseJobsFragment.OnBrowseJobsInteractionListener{
+        DashboardFragment.OnDashboardInteractionListener,BrowseJobsFragment.OnBrowseJobsInteractionListener,
+        FixerOffersListFragment.OnFixerOffersListInteractionListener, PosterOffersListFragment.OnPosterOffersListInteractionListener {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -344,17 +347,10 @@ public class HomeActivity extends AppCompatActivity
     //callback from MyJobsFragment, launch activity to display job selected details
     @Override
     public void onMyjobsInteraction(int jobID, String jobName, String userRole) {
-        if (userRole.equals("poster")) {
             Intent intent = new Intent(this, JobDetailsActivity.class);
             intent.putExtra("jobID", jobID);
             intent.putExtra("jobName", jobName);
             startActivity(intent);
-        }else if(userRole.equals("fixer")){
-            Intent intent = new Intent(this, OfferDetailsForFixerActivity.class);
-            intent.putExtra("offerID", jobID);
-            intent.putExtra("jobName", jobName);
-            startActivity(intent);
-        }
     }
 
     @Override
@@ -370,6 +366,22 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onBrowseJobsInteraction(Uri uri) {
 
+    }
+
+    @Override
+    public void onFixerOffersListInteraction(int jobID, String jobName) {
+        Intent intent = new Intent(this, OfferDetailsForFixerActivity.class);
+        intent.putExtra("offerID", jobID);
+        intent.putExtra("jobName", jobName);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onPosterOffersListInteraction(int jobID, String jobName) {
+        Intent intent = new Intent(this, OfferDetailsForPosterActivity.class);
+        intent.putExtra("offerID", jobID);
+        intent.putExtra("jobName", jobName);
+        startActivity(intent);
     }
 
     /**
@@ -464,6 +476,16 @@ public class HomeActivity extends AppCompatActivity
                 navDrawerFragmentContainer.setVisibility(View.GONE);
                 break;
 
+            /*case R.id.nav_poster_offers_accepted:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
+                fragment = PosterOffersListFragment.newInstance(userId, "accepted");
+                break;*/
+
+            case R.id.nav_poster_offers_received:
+                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
+                fragment = PosterOffersListFragment.newInstance(userId, "received");
+                break;
+
             case R.id.poster_my_jobs:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = MyJobsFragment.newInstance(userId, "poster");
@@ -471,12 +493,12 @@ public class HomeActivity extends AppCompatActivity
 
             case R.id.nav_fixer_offers_accepted:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = MyJobsFragment.newInstance(userId, "accepted");
+                fragment = FixerOffersListFragment.newInstance(userId, "accepted");
                 break;
 
             case R.id.nav_fixer_offers_made:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = MyJobsFragment.newInstance(userId, "made");
+                fragment = FixerOffersListFragment.newInstance(userId, "made");
                 break;
 
             case R.id.browse_jobs:
@@ -490,7 +512,7 @@ public class HomeActivity extends AppCompatActivity
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new MyProfileFragment();
                 break;
-                
+
             case R.id.dashboard:
                 navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 fragment = new DashboardFragment();

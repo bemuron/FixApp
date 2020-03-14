@@ -49,7 +49,7 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener {
         public TextView job_name, job_location, job_date, job_posted_on, job_amount, job_status;
-        public ImageView iconImp, imgProfile;
+        public ImageView imgProfile;
         public LinearLayout jobContainer;
         public RelativeLayout iconContainer, iconBack, iconFront;
 
@@ -87,7 +87,7 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.my_jobs_list_item, parent, false);
+                .inflate(R.layout.offers_list_item, parent, false);
 
         return new MyViewHolder(itemView);
     }

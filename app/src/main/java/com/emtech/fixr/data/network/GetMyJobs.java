@@ -420,15 +420,15 @@ public class GetMyJobs {
 
     }
 
-    public void GetOfferDetails(int offer_id) {
-        Log.d(LOG_TAG, "Fetch offer details started");
+    public void GetOfferDetailsForFixer(int offer_id) {
+        Log.d(LOG_TAG, "Fetch offer details for fixer started");
 
         //Defining retrofit com.emtech.retrofitexample.api service
         //APIService service = retrofit.create(APIService.class);
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<UserJobs> call = service.getOfferDetails(offer_id);
+        Call<UserJobs> call = service.getOfferDetailsForFixer(offer_id);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<UserJobs>() {
@@ -542,6 +542,69 @@ public class GetMyJobs {
                 }catch (Exception e){
                     e.printStackTrace();
                     Log.e(LOG_TAG, "Error from inside response area in retrofit call --"+e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserJobs> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+            }
+        });
+
+    }
+
+    public void GetOfferDetailsForPoster(int offer_id) {
+        Log.d(LOG_TAG, "Fetch offer details for poster started");
+
+        //Defining retrofit com.emtech.retrofitexample.api service
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<UserJobs> call = service.getOfferDetailsForPoster(offer_id);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<UserJobs>() {
+            @Override
+            public void onResponse(Call<UserJobs> call, Response<UserJobs> response) {
+
+                try {
+                    //if response body is not null, we have some data
+                    if (response.body() != null) {
+                        //count what we have in the response
+                        if (!response.body().getError()) {
+                            Log.d(LOG_TAG, "JSON not null");
+
+                            offer = new Offer();
+                            offer.setOffered_by(response.body().getOfferDetails().getOffered_by());
+                            offer.setJob_id(response.body().getOfferDetails().getJob_id());
+                            offer.setOffer_amount(response.body().getOfferDetails().getOffer_amount());
+                            offer.setMessage(response.body().getOfferDetails().getMessage());
+                            offer.setLast_edited_on(response.body().getOfferDetails().getLast_edited_on());
+                            offer.setSeen_by_poster(response.body().getOfferDetails().getSeen_by_poster());
+                            offer.setEdit_count(response.body().getOfferDetails().getEdit_count());
+                            offer.setOffer_accepted(response.body().getOfferDetails().getOffer_accepted());
+                            offer.setName(response.body().getOfferDetails().getName());
+                            offer.setEst_tot_budget(response.body().getOfferDetails().getEst_tot_budget());
+                            offer.setPosted_by(response.body().getOfferDetails().getPosted_by());
+                            offer.setPosted_on(response.body().getOfferDetails().getPosted_on());
+                            offer.setJob_date(response.body().getOfferDetails().getJob_date());
+
+                            // When you are off of the main thread and want to update LiveData, use postValue.
+                            // It posts the update to the main thread.
+                            mOfferDetails.postValue(offer);
+
+                            // If the code reaches this point, we have successfully performed our sync
+                            Log.d(LOG_TAG, "Successfully got all offer details");
+                        }
+                    } else {
+                        Log.e(LOG_TAG, "response.body() is null");
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, "catch block error msg: "+e.getMessage());
                 }
             }
 

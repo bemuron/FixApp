@@ -80,7 +80,7 @@ public class OfferDetailsForFixerActivity extends AppCompatActivity implements V
         mViewModel = new ViewModelProvider
                 (this, factory).get(MyJobsActivityViewModel.class);
 
-        mViewModel.getOfferDetails(offer_id).observe(this, offerDetails -> {
+        mViewModel.getOfferDetailsForFixer(offer_id).observe(this, offerDetails -> {
             clearViews();
 
             if (offerDetails != null) {

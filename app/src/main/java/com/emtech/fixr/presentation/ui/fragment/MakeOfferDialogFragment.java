@@ -13,6 +13,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 
 import com.emtech.fixr.R;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +33,7 @@ import com.google.android.material.textfield.TextInputEditText;
  * create an instance of this fragment.
  */
 public class MakeOfferDialogFragment extends DialogFragment {
+    private static final String TAG = MakeOfferDialogFragment.class.getSimpleName();
     // the fragment initialization parameters
     private static final String JOB_NAME = "job_name";
     private static final String OFFERED_AMOUNT = "amount_offered";
@@ -43,6 +46,7 @@ public class MakeOfferDialogFragment extends DialogFragment {
     private TextView jobNameTextView;
     //private EditText messageEditText;
     private TextInputEditText offeredAmountET, messageEditText;
+    private TextInputLayout offeredAmountLO, messageLO;
 
     /**
      * Use this factory method to create a new instance of
@@ -175,6 +179,8 @@ public class MakeOfferDialogFragment extends DialogFragment {
         jobNameTextView.setText(jobName);
         messageEditText = view.findViewById(R.id.edit_text_message);
         offeredAmountET = view.findViewById(R.id.edit_text_offer);
+        offeredAmountLO = view.findViewById(R.id.text_input_offer);
+        messageLO = view.findViewById(R.id.text_input_message);
         if (offerAction.equals("editOffer")){
             messageEditText.setText(offerMessage);
             offeredAmountET.setText(amountOffered);
@@ -183,15 +189,19 @@ public class MakeOfferDialogFragment extends DialogFragment {
 
     //method to get what user has filled in
     public  void getOfferDetails() {
-        String offeredAmount = offeredAmountET.getText().toString().trim();
+        String offeredAmount1 = offeredAmountET.getText().toString().trim();
+        String offeredAmount = offeredAmountLO.getEditText().getText().toString().trim();
         if (TextUtils.isEmpty(offeredAmount)) {
             offeredAmountET.setError("Amount your offering is required");
+            Log.e(TAG, "amount entered is "+offeredAmount);
+            Log.e(TAG, "amount entered is(old stmnt) "+offeredAmount1);
             //return false;
         }
 
         String offerMessage = messageEditText.getText().toString().trim();
         if (TextUtils.isEmpty(offerMessage)) {
             messageEditText.setError("Please enter a message");
+            Log.e(TAG, "message entered is "+offerMessage);
             //return false;
         }
 

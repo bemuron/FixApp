@@ -178,21 +178,11 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
     //setting up jobs spinner adapter
     public void setSpinnerAdapter() {
-        //display the right list based on what the user clicked
-        //either for poster or for fixer
-        if (mUserRole.equals("poster")) {
             // Create an ArrayAdapter using the string array and a default spinner layout
             ArrayAdapter<CharSequence> jobsFilterAdapter = ArrayAdapter.createFromResource(getActivity(),
                     R.array.poster_jobs_filter_array, android.R.layout.simple_spinner_item);
             jobsFilterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             jobsFilterSpinner.setAdapter(jobsFilterAdapter);
-        }else {
-            // Create an ArrayAdapter using the string array and a default spinner layout
-            ArrayAdapter<CharSequence> jobsFilterAdapter = ArrayAdapter.createFromResource(getActivity(),
-                    R.array.fixer_jobs_filter_array, android.R.layout.simple_spinner_item);
-            jobsFilterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            jobsFilterSpinner.setAdapter(jobsFilterAdapter);
-        }
     }
 
     @Override
@@ -245,14 +235,6 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
             statusJobDisplay = 4;
             loadSelectedJobs(4);
             Log.e(LOG_TAG, "Completed jobs selected");
-        }else if ("Offers Made".equals(parent.getItemAtPosition(position))){
-            showBar();
-            loadSelectedJobs(6);
-            Log.e(LOG_TAG, "Offers Made selected");
-        }else if ("Offers Accepted".equals(parent.getItemAtPosition(position))){
-            showBar();
-            loadSelectedJobs(7);
-            Log.e(LOG_TAG, "Offers Accepted selected");
         }
 
     }
@@ -273,33 +255,6 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
-            });
-        }else if(status == 6 ){//offers made by fixer
-            mViewModel.getAllOffersMade(mUserId).observe(this, offersMadeList -> {
-                offersAdapter.setList(offersMadeList);
-                Log.e(LOG_TAG, "offers made list size is " +offerList.size());
-
-                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-                recyclerView.smoothScrollToPosition(mPosition);
-                hideBar();
-            });
-        }else if(status == 7 ){//offers accepted for fixer
-            mViewModel.getAllOffersAccepted(mUserId).observe(this, offersAccepted -> {
-                offersAdapter.setList(offersAccepted);
-                Log.e(LOG_TAG, "offers accepted list size is " +offerList.size());
-
-                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-                recyclerView.smoothScrollToPosition(mPosition);
-                hideBar();
-            });
-        }else if(status == 3 ){//offers made to jobs posted by this user
-            mViewModel.getAllOffersReceived(mUserId).observe(this, offersReceived -> {
-                offersAdapter.setList(offersReceived);
-                Log.e(LOG_TAG, "offers to jobs for poster list size is " +offerList.size());
-
-                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-                recyclerView.smoothScrollToPosition(mPosition);
-                hideBar();
             });
         }else{
             mViewModel.getAllJobsByStatus(mUserId, status).observe(this, userJobsByStatus -> {

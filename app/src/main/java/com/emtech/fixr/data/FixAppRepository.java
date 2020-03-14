@@ -101,6 +101,10 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         * */
 
         fixAppCategories.observeForever(newCategoriesFromNetwork -> mExecutors.diskIO().execute(() -> {
+            //delete all previous categories from the db, this ensures that if we have new
+            //categories on the main server(online) then we can add them too
+            deleteOldData();
+            Log.d(LOG_TAG, "Old categories deleted");
             // Insert our categories into FixApp's database
             mCategoryDao.insertCategory(newCategoriesFromNetwork);
 
@@ -154,6 +158,10 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     /**
      * Database related operations
      **/
+
+    private void deleteOldData() {
+        mCategoryDao.deleteAllCategories();
+    }
 
     public LiveData<List<Category>> getAllCategories(){
         initializeData();
@@ -210,9 +218,9 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     }
 
     //getting offer details of a selected job
-    public LiveData<Offer> getOfferDetails(int offer_id){
-        Log.d(LOG_TAG, "calling bg method to get offer details");
-        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOfferDetails(offer_id));
+    public LiveData<Offer> getOfferDetailsForFixer(int offer_id){
+        Log.d(LOG_TAG, "calling bg method to get offer details for fixer");
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOfferDetailsForFixer(offer_id));
         return mGetMyJobs.getOfferDetails();
     }
 
@@ -221,6 +229,13 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         Log.d(LOG_TAG, "calling bg method to get offers received list");
         mExecutors.diskIO().execute(() -> mGetMyJobs.getOffersReceived(user_id));
         return mGetMyJobs.getOffersMade();
+    }
+
+    //getting offer details of a selected job
+    public LiveData<Offer> getOfferDetailsForPoster(int offer_id){
+        Log.d(LOG_TAG, "calling bg method to get offer details for poster");
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOfferDetailsForPoster(offer_id));
+        return mGetMyJobs.getOfferDetails();
     }
 
     public Cursor getUser(){

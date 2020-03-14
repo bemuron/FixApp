@@ -24,7 +24,7 @@ public interface CategoriesDao {
     //void insertCategory(Category category);
 
     @Query("Delete from categories")
-    void deleteAll();
+    void deleteAllCategories();
 
     @Query("SELECT * from categories ORDER BY category_id ASC")
     LiveData<List<Category>> getAllCategories();

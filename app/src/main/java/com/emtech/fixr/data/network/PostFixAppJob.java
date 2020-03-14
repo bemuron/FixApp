@@ -9,6 +9,7 @@ import com.emtech.fixr.AppExecutors;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
+import com.emtech.fixr.presentation.ui.fragment.MyJobsFragment;
 
 import java.io.File;
 
@@ -18,6 +19,8 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.emtech.fixr.presentation.ui.activity.JobDetailsActivity.jobDetailsActivity;
 
 public class PostFixAppJob {
     private static final String LOG_TAG = PostFixAppJob.class.getSimpleName();
@@ -147,14 +150,19 @@ public class PostFixAppJob {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
 
-                if (!response.body().getError()) {
-                    Log.d(LOG_TAG, response.body().getMessage());
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
 
-                    int job_id = response.body().getJob().getJob_id();
+                        int job_id = response.body().getJob().getJob_id();
 
-                    //send data to parent activity
-                    jobCreatedCallBack.onJobCreated(true, response.body().getMessage(), job_id);
+                        //send data to parent activity
+                        jobCreatedCallBack.onJobCreated(true, response.body().getMessage(), job_id);
 
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
                 }
             }
 
@@ -189,7 +197,8 @@ public class PostFixAppJob {
                         Log.d(LOG_TAG, response.body().getMessage());
                         //send response data to the repository
                         //success
-                        offerSavedCallBack.onOfferCreated(true, response.body().getMessage());
+                        jobDetailsActivity.afterSaveOfferAttempt(true, response.body().getMessage());
+                        //offerSavedCallBack.onOfferCreated(true, response.body().getMessage());
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -203,7 +212,8 @@ public class PostFixAppJob {
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
                 //send response data to the repository
-                offerSavedCallBack.onOfferCreated(false, "Offer Saved");
+                //offerSavedCallBack.onOfferCreated(false, "Offer Not Saved");
+                jobDetailsActivity.afterSaveOfferAttempt(false, "Offer Not Saved");
             }
         });
 

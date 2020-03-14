@@ -1,16 +1,12 @@
 package com.emtech.fixr.presentation.ui.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -22,9 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.emtech.fixr.R;
-import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.models.Offer;
-import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
 import com.emtech.fixr.presentation.adapters.OffersListAdapter;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
@@ -36,13 +30,13 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnFixerOffersListInteractionListener} interface
+ * {@link OnPosterOffersListInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FixerOffersListFragment#newInstance} factory method to
+ * Use the {@link PosterOffersListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FixerOffersListFragment extends Fragment implements OffersListAdapter.OffersListAdapterListener{
-    private static final String LOG_TAG = FixerOffersListFragment.class.getSimpleName();
+public class PosterOffersListFragment extends Fragment implements OffersListAdapter.OffersListAdapterListener{
+    private static final String LOG_TAG = PosterOffersListFragment.class.getSimpleName();
     private static final String USER_ID = "userId";
     private static final String OFFER_TYPE = "offerType";
     private RecyclerView recyclerView;
@@ -56,9 +50,9 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
     private int statusJobDisplay;
     private ProgressBar progressBar;
 
-    private OnFixerOffersListInteractionListener mListener;
+    private OnPosterOffersListInteractionListener mListener;
 
-    public FixerOffersListFragment() {
+    public PosterOffersListFragment() {
         // Required empty public constructor
     }
 
@@ -69,8 +63,8 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
      * @param userId This user's ID.
      * @return A new instance of fragment BrowseJobsFragment.
      */
-    public static FixerOffersListFragment newInstance(int userId, String offerType) {
-        FixerOffersListFragment fragment = new FixerOffersListFragment();
+    public static PosterOffersListFragment newInstance(int userId, String offerType) {
+        PosterOffersListFragment fragment = new PosterOffersListFragment();
         Bundle args = new Bundle();
         args.putInt(USER_ID, userId);
         args.putString(OFFER_TYPE, offerType);
@@ -91,7 +85,7 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_fixer_offers_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_poster_offers_list, container, false);
 
         getAllWidgets(view);
         setAdapter();
@@ -103,10 +97,10 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity().getApplicationContext());
+        MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity());
         mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
 
-        if (mOfferType.equals("accepted")) {
+        /*if (mOfferType.equals("accepted")) {
             //offers accepted for fixer
             mViewModel.getAllOffersAccepted(mUserId).observe(getActivity(), offersAccepted -> {
                 offersAdapter.setList(offersAccepted);
@@ -115,49 +109,48 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
             });
-        }else if (mOfferType.equals("made")){
-            mViewModel.getAllOffersMade(mUserId).observe(getActivity(), offersMadeList -> {
-                offersAdapter.setList(offersMadeList);
-                Log.e(LOG_TAG, "offers made list size is " +offerList.size());
+        }else if (mOfferType.equals("received")){*/
+            mViewModel.getAllOffersReceived(mUserId).observe(getActivity(), offersReceived -> {
+                offersAdapter.setList(offersReceived);
+                Log.e(LOG_TAG, "offers to jobs for poster list size is " +offerList.size());
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
                 hideBar();
             });
-        }
+        //}
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //you can set the title for your toolbar here for different fragments different titles
-        if (mOfferType.equals("accepted")) {
+        /*if (mOfferType.equals("accepted")) {
             getActivity().setTitle("Offers Accepted");
             if (offerList == null || offerList.size() == 0){
-                emptyView.setText(R.string.empty_fixer_offers_accepted_list);
+                emptyView.setText(R.string.empty_poster_offers_accepted_list);
             }
-        }else if (mOfferType.equals("made")){
-            getActivity().setTitle("Offers Made");
+        }else if (mOfferType.equals("received")){*/
+            getActivity().setTitle("Offers Received");
             if (offerList == null || offerList.size() == 0){
-                emptyView.setText(R.string.empty_fixer_offers_made_list);
+                emptyView.setText(R.string.empty_poster_offers_received_list);
             }
-        }
+        //}
     }
 
     private void getAllWidgets(View view){
         // Progress bar
-        progressBar = view.findViewById(R.id.fixer_offers_progress_bar);
+        progressBar = view.findViewById(R.id.poster_offers_progress_bar);
         showBar();
 
-        recyclerView = view.findViewById(R.id.fixer_offers_list_recycler_view);
-        emptyView = view.findViewById(R.id.fixerOffers_empty_list_view);
+        recyclerView = view.findViewById(R.id.poster_offers_list_recycler_view);
+        emptyView = view.findViewById(R.id.posterOffers_empty_list_view);
     }
 
     //setting up the recycler view adapter
     private void setAdapter()
     {
         offersAdapter = new OffersListAdapter(getActivity(), offerList,this);
-
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -189,7 +182,7 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
         if (mListener != null) {
             //master detail flow callback
             //send to the parent activity then call the activity to display details
-            mListener.onFixerOffersListInteraction(offer.getOffer_id(), offer.getName());
+            mListener.onPosterOffersListInteraction(offer.getOffer_id(), offer.getName());
         }
     }
 
@@ -203,7 +196,7 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFixerOffersListInteractionListener {
-        void onFixerOffersListInteraction(int jobID, String jobName);
+    public interface OnPosterOffersListInteractionListener {
+        void onPosterOffersListInteraction(int jobID, String jobName);
     }
 }

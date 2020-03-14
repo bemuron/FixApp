@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
@@ -39,6 +40,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     private MyJobsActivityViewModel mViewModel;
     private PostJobActivityViewModel postJobActivityViewModel;
     private Job job;
+    public static JobDetailsActivity jobDetailsActivity;
     private ProgressDialog pDialog;
     private SessionManager session;
     private MakeOfferDialogFragment dialogFragment;
@@ -50,6 +52,8 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_job_details);
         setupActionBar();
+
+        jobDetailsActivity = this;
 
         // session manager
         session = new SessionManager(getApplicationContext());
@@ -117,6 +121,17 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
             }
 
         });
+    }
+
+    public JobDetailsActivity getInstance() {
+        return jobDetailsActivity;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        jobDetailsActivity = this;
+
     }
 
     private void setupActionBar() {
@@ -264,7 +279,17 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void returnOfferDetails(int amountOffered, String offerMessage) {
+        showDialog();
         postJobActivityViewModel.saveOffer(amountOffered,offerMessage, userId, job_id);
+    }
+
+    //this method is called in the PostFixAppJob class to return the results of an attempt
+    // to save the offer details
+    public void afterSaveOfferAttempt(Boolean isOfferPosted, String message){
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        Log.d(LOG_TAG, "********** is save offer successful: "+isOfferPosted +" Message: "+message);
+        hideDialog();
+
     }
 
     private void showDialog() {
