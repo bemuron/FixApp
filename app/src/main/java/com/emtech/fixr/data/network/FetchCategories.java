@@ -115,7 +115,7 @@ public class FetchCategories {
             public void onFailure(Call<Categories> call, Throwable t) {
                 //print out any error we may get
                 //probably server connection
-                Log.e(LOG_TAG, t.getMessage());
+                Log.e(LOG_TAG, "Could not get categories");
             }
         });
 

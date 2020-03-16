@@ -53,13 +53,14 @@
                 android:text="Fixer Name"/>
         </LinearLayout>
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/forPoster_fixerImageView"
             android:layout_marginTop="16dp"
             android:layout_width="103dp"
             android:layout_height="101dp"
-            android:layout_gravity="center_horizontal"
-            android:src="@mipmap/ic_account_circle_black" />
+            android:scaleType="centerCrop"
+            android:background="@drawable/img_layer"
+            android:layout_gravity="center_horizontal" />
 
         <TextView
             android:id="@+id/forPoster_offer_amount_title"

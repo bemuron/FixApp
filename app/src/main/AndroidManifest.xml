@@ -57,6 +57,16 @@
             android:name=".presentation.ui.activity.JobDetailsActivity"
             android:label="@string/job_details_activity"
             android:launchMode="singleInstance" />
+        <!-- Offer Details fro Poster Activity -->
+        <activity
+            android:name=".presentation.ui.activity.OfferDetailsForPosterActivity"
+            android:label="@string/job_details_activity"
+            android:launchMode="singleInstance" />
+        <!-- OfferDetailsForFixerActivity -->
+        <activity
+            android:name=".presentation.ui.activity.OfferDetailsForFixerActivity"
+            android:label="@string/job_details_activity"
+            android:launchMode="singleInstance" />
 
         <service
             android:name=".fcm.MyFirebaseMessagingService"

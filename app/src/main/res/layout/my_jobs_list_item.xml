@@ -83,6 +83,8 @@
 
             <ImageView
                 android:id="@+id/icon_profile"
+                android:background="@drawable/img_layer"
+                android:scaleType="centerCrop"
                 android:layout_width="@dimen/icon_width_height"
                 android:layout_height="@dimen/icon_width_height" />
         </RelativeLayout>

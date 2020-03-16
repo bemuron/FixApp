@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -90,6 +91,19 @@ public class PosterOffersListFragment extends Fragment implements OffersListAdap
         getAllWidgets(view);
         setAdapter();
 
+        MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity());
+        mViewModel = ViewModelProviders.of(this, factory).get(MyJobsActivityViewModel.class);
+
+        mViewModel.getAllOffersReceived(mUserId).observe(getActivity(), offersReceived -> {
+            hideBar();
+            offerList = offersReceived;
+            offersAdapter.setList(offersReceived);
+            Log.e(LOG_TAG, "offers to jobs for poster list size is " +offerList.size());
+
+            if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+            recyclerView.smoothScrollToPosition(mPosition);
+        });
+
         return view;
     }
 
@@ -97,10 +111,10 @@ public class PosterOffersListFragment extends Fragment implements OffersListAdap
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity());
+        /*MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity());
         mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
 
-        /*if (mOfferType.equals("accepted")) {
+        *//*if (mOfferType.equals("accepted")) {
             //offers accepted for fixer
             mViewModel.getAllOffersAccepted(mUserId).observe(getActivity(), offersAccepted -> {
                 offersAdapter.setList(offersAccepted);
@@ -109,15 +123,16 @@ public class PosterOffersListFragment extends Fragment implements OffersListAdap
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
             });
-        }else if (mOfferType.equals("received")){*/
+        }else if (mOfferType.equals("received")){*//*
             mViewModel.getAllOffersReceived(mUserId).observe(getActivity(), offersReceived -> {
+                hideBar();
+                offerList = offersReceived;
                 offersAdapter.setList(offersReceived);
                 Log.e(LOG_TAG, "offers to jobs for poster list size is " +offerList.size());
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
-                hideBar();
-            });
+            });*/
         //}
     }
 
@@ -141,10 +156,9 @@ public class PosterOffersListFragment extends Fragment implements OffersListAdap
     private void getAllWidgets(View view){
         // Progress bar
         progressBar = view.findViewById(R.id.poster_offers_progress_bar);
-        showBar();
-
         recyclerView = view.findViewById(R.id.poster_offers_list_recycler_view);
         emptyView = view.findViewById(R.id.posterOffers_empty_list_view);
+        showBar();
     }
 
     //setting up the recycler view adapter
@@ -182,6 +196,7 @@ public class PosterOffersListFragment extends Fragment implements OffersListAdap
         if (mListener != null) {
             //master detail flow callback
             //send to the parent activity then call the activity to display details
+            Log.e(LOG_TAG, "Sending clicked row details to activity");
             mListener.onPosterOffersListInteraction(offer.getOffer_id(), offer.getName());
         }
     }
@@ -197,6 +212,6 @@ public class PosterOffersListFragment extends Fragment implements OffersListAdap
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnPosterOffersListInteractionListener {
-        void onPosterOffersListInteraction(int jobID, String jobName);
+        void onPosterOffersListInteraction(int offerID, String jobName);
     }
 }

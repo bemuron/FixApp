@@ -369,17 +369,19 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFixerOffersListInteraction(int jobID, String jobName) {
+    public void onFixerOffersListInteraction(int offerID, String jobName) {
+        Log.e(TAG, "Fixer Offers clicked");
         Intent intent = new Intent(this, OfferDetailsForFixerActivity.class);
-        intent.putExtra("offerID", jobID);
+        intent.putExtra("offerID", offerID);
         intent.putExtra("jobName", jobName);
         startActivity(intent);
     }
 
     @Override
-    public void onPosterOffersListInteraction(int jobID, String jobName) {
+    public void onPosterOffersListInteraction(int offerID, String jobName) {
+        Log.e(TAG, "Offers received by poster clicked");
         Intent intent = new Intent(this, OfferDetailsForPosterActivity.class);
-        intent.putExtra("offerID", jobID);
+        intent.putExtra("offerID", offerID);
         intent.putExtra("jobName", jobName);
         startActivity(intent);
     }

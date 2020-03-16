@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -35,7 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+//import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OfferDetailsForPosterActivity extends AppCompatActivity implements View.OnClickListener,
         MakeOfferDialogFragment.MakeOfferDialogListener, FixAppRepository.OfferEditedListener,
@@ -55,7 +56,7 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
     private MakeOfferDialogFragment dialogFragment;
     private int userId, job_id, offer_id, editCount;
     private String userRole, jobName, jobPoster;
-    private CircleImageView fixerImageView;
+    private ImageView fixerImageView;
     private RelativeLayout afterAcceptOfferContainer;
 
     @Override
@@ -162,7 +163,7 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
                         .load("http://www.emtechint.com/fixapp/assets/images/profile_pics/" + offer.getProfile_pic())
                         .thumbnail(0.5f)
                         .into(fixerImageView);
-                fixerImageView.setColorFilter(null);
+                //fixerImageView.setColorFilter(null);
             }
         }catch (Exception e){
             e.printStackTrace();

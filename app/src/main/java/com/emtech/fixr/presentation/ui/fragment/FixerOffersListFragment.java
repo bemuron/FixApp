@@ -1,30 +1,25 @@
 package com.emtech.fixr.presentation.ui.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.emtech.fixr.R;
-import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.models.Offer;
-import com.emtech.fixr.presentation.adapters.MyJobsListAdapter;
 import com.emtech.fixr.presentation.adapters.OffersListAdapter;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
@@ -104,11 +99,13 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
         super.onActivityCreated(savedInstanceState);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(getActivity().getApplicationContext());
-        mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
+        mViewModel = ViewModelProviders.of(this, factory).get(MyJobsActivityViewModel.class);
 
         if (mOfferType.equals("accepted")) {
             //offers accepted for fixer
             mViewModel.getAllOffersAccepted(mUserId).observe(getActivity(), offersAccepted -> {
+                hideBar();
+                offerList = offersAccepted;
                 offersAdapter.setList(offersAccepted);
                 Log.e(LOG_TAG, "offers accepted list size is " + offerList.size());
 
@@ -117,12 +114,13 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
             });
         }else if (mOfferType.equals("made")){
             mViewModel.getAllOffersMade(mUserId).observe(getActivity(), offersMadeList -> {
+                hideBar();
+                offerList = offersMadeList;
                 offersAdapter.setList(offersMadeList);
                 Log.e(LOG_TAG, "offers made list size is " +offerList.size());
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
-                hideBar();
             });
         }
     }
@@ -187,6 +185,7 @@ public class FixerOffersListFragment extends Fragment implements OffersListAdapt
         Offer offer = offerList.get(position);
         offerList.set(position, offer);
         if (mListener != null) {
+            Log.e(LOG_TAG, "Sending clicked row details to activity");
             //master detail flow callback
             //send to the parent activity then call the activity to display details
             mListener.onFixerOffersListInteraction(offer.getOffer_id(), offer.getName());
