@@ -280,7 +280,7 @@ public class MyJobsFragment extends Fragment implements MyJobsListAdapter.MyJobs
     }
 
     @Override
-    public void onOfferRowClicked(int position) {
+    public void onOfferRowClicked(String jobName, int position) {
         Offer offer = offerList.get(position);
         offerList.set(position, offer);
         if (mListener != null) {

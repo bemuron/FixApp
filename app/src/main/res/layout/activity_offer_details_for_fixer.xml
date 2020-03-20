@@ -109,7 +109,7 @@
                 android:textSize="@dimen/text_size_xnormal"
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold"
-                android:text="Status;"/>
+                android:text="Last Edited on;"/>
 
             <TextView
                 android:id="@+id/forFixer_offer_last_edit_date"
@@ -121,7 +121,7 @@
                 android:paddingEnd="@dimen/margin_padding_xnormal"
                 android:textSize="@dimen/text_size_xnormal"
                 android:textColor="@color/colorPrimaryDark"
-                android:text="Seen by job poster"/>
+                android:text="10 MAR 2020"/>
         </LinearLayout>
 
         <LinearLayout
@@ -137,7 +137,7 @@
                 android:textSize="@dimen/text_size_xnormal"
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold"
-                android:text="Last edited on;"/>
+                android:text="Status;"/>
 
             <TextView
                 android:id="@+id/forFixer_offer_status"

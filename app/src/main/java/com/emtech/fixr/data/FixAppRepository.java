@@ -2,13 +2,10 @@ package com.emtech.fixr.data;
 
 import androidx.lifecycle.LiveData;
 
-import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.emtech.fixr.AppExecutors;
-import com.emtech.fixr.app.Config;
 import com.emtech.fixr.data.database.CategoriesDao;
 import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.data.database.Job;
@@ -25,7 +22,6 @@ import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.models.User;
-import com.emtech.fixr.presentation.ui.activity.LoginActivity;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;

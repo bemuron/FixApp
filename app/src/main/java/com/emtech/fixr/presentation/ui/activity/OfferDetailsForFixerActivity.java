@@ -63,7 +63,7 @@ public class OfferDetailsForFixerActivity extends AppCompatActivity implements V
         userId = session.getUserId();
 
         // Progress bar
-        pBar = findViewById(R.id.post_job_progress_bar);
+        pBar = findViewById(R.id.forFixer_progress_bar);
         hideBar();
 
         offer_id = getIntent().getIntExtra("offerID", 0);
@@ -128,9 +128,9 @@ public class OfferDetailsForFixerActivity extends AppCompatActivity implements V
         lastEditDateTv = findViewById(R.id.forFixer_offer_last_edit_date);
         //if the current user is the one that posted this job
         //hide the edit button
-        if (userId == offer.getPosted_by()) {
+        //if (userId == offer.getPosted_by()) {
             //makeOfferButton.setBackgroundDrawable(null);
-        }
+        //}
         editOfferButton = findViewById(R.id.forFixer_editOffer_button);
         editOfferButton.setOnClickListener(this);
     }
@@ -138,11 +138,15 @@ public class OfferDetailsForFixerActivity extends AppCompatActivity implements V
     //method to handle population of the views with the content
     private void displayDetails(){
         jobTitleTV.setText(offer.getName());
-        timePostedTV.setText(offer.getPosted_on());
-        offerStatusTV.setText(offer.getSeen_by_poster());
+        //timePostedTV.setText(offer.getPosted_on());
+        if(offer.getSeen_by_poster() == 0) {
+            offerStatusTV.setText("Not yet seen by poster");
+        }else if(offer.getSeen_by_poster() == 1){
+            offerStatusTV.setText("Seen by poster");
+        }
         //toBeDoneDateTV.setText(job.getJob_date());
         formatDate();
-        toBeDoneTimeTV.setText(offer.getJob_date());
+        //toBeDoneTimeTV.setText(offer.getJob_date());
         offeredAmountTV.setText("UGX." + offer.getOffer_amount());
         offerMsgTV.setText(offer.getMessage());
         editCount = offer.getEdit_count();
@@ -154,10 +158,10 @@ public class OfferDetailsForFixerActivity extends AppCompatActivity implements V
         showBar();
         jobTitleTV.setText("");
         postedByTV.setText("");
-        timePostedTV.setText("");
+        //timePostedTV.setText("");
         //toBeDoneDateTV.setText(job.getJob_date());
         formatDate();
-        toBeDoneTimeTV.setText("");
+        //toBeDoneTimeTV.setText("");
         offeredAmountTV.setText("");
         offerMsgTV.setText("");
     }
@@ -190,8 +194,8 @@ public class OfferDetailsForFixerActivity extends AppCompatActivity implements V
             e.printStackTrace();
         }
 
-        toBeDoneDateTV.setText(jobDate);
-        timePostedTV.setText(postedOn);
+        //toBeDoneDateTV.setText(jobDate);
+        //timePostedTV.setText(postedOn);
         lastEditDateTv.setText(lastEditedOn);
     }
 

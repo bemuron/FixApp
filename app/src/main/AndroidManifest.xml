@@ -25,7 +25,11 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan">
-
+        <activity
+            android:name=".presentation.ui.activity.PostJobActivity"
+            android:label="@string/title_activity_post_job"
+            android:launchMode="standard"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity"/>
         <!-- Log in Activity -->
         <activity
             android:name=".presentation.ui.activity.LoginActivity"
@@ -44,11 +48,6 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".presentation.ui.activity.PostJobActivity"
-            android:label="@string/title_activity_post_job"
-            android:launchMode="standard"
-            android:parentActivityName=".presentation.ui.activity.HomeActivity" />
-        <activity
             android:name=".presentation.ui.activity.HomeActivity"
             android:label="@string/app_name"
             android:launchMode="singleInstance"
@@ -56,17 +55,24 @@
         <activity
             android:name=".presentation.ui.activity.JobDetailsActivity"
             android:label="@string/job_details_activity"
-            android:launchMode="singleInstance" />
-        <!-- Offer Details fro Poster Activity -->
+            android:launchMode="singleInstance" /> <!-- Offer Details fro Poster Activity -->
         <activity
             android:name=".presentation.ui.activity.OfferDetailsForPosterActivity"
             android:label="@string/job_details_activity"
-            android:launchMode="singleInstance" />
-        <!-- OfferDetailsForFixerActivity -->
+            android:launchMode="singleInstance" /> <!-- OfferDetailsForFixerActivity -->
         <activity
             android:name=".presentation.ui.activity.OfferDetailsForFixerActivity"
             android:label="@string/job_details_activity"
             android:launchMode="singleInstance" />
+        <activity
+            android:name=".presentation.ui.activity.PosterOffersListActivity"
+            android:label="@string/title_activity_poster_offers_accepted"
+            android:launchMode="standard"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity" />
+        <activity
+            android:name=".presentation.ui.activity.FixerOffersListActivity"
+            android:launchMode="standard"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity" />
 
         <service
             android:name=".fcm.MyFirebaseMessagingService"
@@ -75,9 +81,7 @@
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
-
-        <!-- [START fcm_default_icon] -->
+        </service> <!-- [START fcm_default_icon] -->
         <!--
              Set custom default icon. This is used when no icon is set for incoming notification messages.
              See README(https://goo.gl/l4GJaQ) for more.
@@ -91,29 +95,27 @@
         -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/colorAccent" />
-        <!-- [END fcm_default_icon] -->
-
-
+            android:resource="@color/colorAccent" /> <!-- [END fcm_default_icon] -->
         <!-- [START fcm_default_channel] -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
-        <!-- [END fcm_default_channel] -->
-
+            android:value="@string/default_notification_channel_id" /> <!-- [END fcm_default_channel] -->
         <!-- Search jobs Activity -->
-        <activity android:name=".presentation.ui.activity.BrowseJobsActivity"
+        <activity
+            android:name=".presentation.ui.activity.BrowseJobsActivity"
             android:label="@string/browse_jobs_activity"
-            android:parentActivityName=".presentation.ui.activity.HomeActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity">
+
             <!-- Receives the search request. -->
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
-                <!-- No category needed, because the Intent will specify this class component-->
+                <!-- No category needed, because the Intent will specify this class component -->
             </intent-filter>
 
             <!-- Points to searchable meta data. -->
-            <meta-data android:name="android.app.searchable"
+            <meta-data
+                android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
         <!--

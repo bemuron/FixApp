@@ -9,7 +9,6 @@ import com.emtech.fixr.AppExecutors;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
-import com.emtech.fixr.presentation.ui.fragment.MyJobsFragment;
 
 import java.io.File;
 

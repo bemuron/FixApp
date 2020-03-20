@@ -15,7 +15,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
+
+import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -41,7 +44,6 @@ import android.widget.Toast;
 import com.emtech.fixr.R;
 import com.emtech.fixr.models.JobMustHave;
 import com.emtech.fixr.presentation.adapters.MustHavesAdapter;
-import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,17 +54,18 @@ import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
-public class PostJobFragment extends Fragment implements View.OnClickListener,
+public class PostJobDetailsFragment extends Fragment implements View.OnClickListener,
         MustHavesAdapter.MustHavesAdapterListener
 {
-    private static final String TAG = PostJobFragment.class.getSimpleName();
+    private static final String TAG = PostJobDetailsFragment.class.getSimpleName();
     OnPostButtonListener mCallback;
     private TextView postJobInstructionsTextView, jobMustHaves;
     private final static int WRITE_EXTERNAL_RESULT = 100;
     private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 55;
     private static final int SELECT_IMAGE_REQUEST_CODE =25 ;
-    private EditText jobTitleEditText;
-    private EditText jobDescEditText,jobLocationEditText, mustHavesEditText;
+    private TextInputEditText jobTitleEditText;
+    private TextInputEditText jobDescEditText,jobLocationEditText;
+    private EditText mustHavesEditText;
     private TextInputLayout jobLocationTextInputLayout;
     private ImageView jobImage1, jobImage2, jobImage3;
     private TextView mustHaveOneTv, mustHaveTwoTv, mustHaveThreeTv;
@@ -83,16 +86,16 @@ public class PostJobFragment extends Fragment implements View.OnClickListener,
             mustHaveOne = null, mustHaveTwo = null, mustHaveThree = null,
             mstHaveOne, mstHaveTwo, mstHaveThree, musthave;
 
-    public PostJobFragment(){
+    public PostJobDetailsFragment(){
 
     }
 
-    public static PostJobFragment newInstance(int userId, int categoryId, String categoryName){
+    public static PostJobDetailsFragment newInstance(int userId, int categoryId, String categoryName){
         Bundle arguments = new Bundle();
         arguments.putInt("user_id", userId);
         arguments.putInt("category_id", categoryId);
         arguments.putString("category_name", categoryName);
-        PostJobFragment fragment = new PostJobFragment();
+        PostJobDetailsFragment fragment = new PostJobDetailsFragment();
         fragment.setArguments(arguments);
 
         return fragment;
@@ -101,7 +104,7 @@ public class PostJobFragment extends Fragment implements View.OnClickListener,
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_post_job,container,false);
+        View view = inflater.inflate(R.layout.fragment_post_job_details,container,false);
 
         // Progress dialog
         pDialog = new ProgressDialog(getActivity());

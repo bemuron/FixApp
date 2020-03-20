@@ -1,19 +1,7 @@
 package com.emtech.fixr.presentation.ui.activity;
 
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.ProgressBar;
-import android.widget.ScrollView;
-import android.widget.Toast;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.app.MyApplication;
@@ -22,37 +10,58 @@ import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.presentation.ui.fragment.PostJobBudgetFragment;
 import com.emtech.fixr.presentation.ui.fragment.PostJobDateFragment;
-import com.emtech.fixr.presentation.ui.fragment.PostJobFragment;
+import com.emtech.fixr.presentation.ui.fragment.PostJobDetailsFragment;
 import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.PostJobViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.util.Log;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
+import android.widget.Toast;
+
+import com.emtech.fixr.presentation.adapters.SectionsPagerAdapter;
 
 import java.io.File;
 
 import static com.emtech.fixr.utilities.InjectorUtils.provideRepository;
 
-public class PostJobActivity extends AppCompatActivity implements PostJobFragment.OnPostButtonListener,
-        PostFixAppJob.JobCreatedCallBack,PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
+public class PostJobActivity extends AppCompatActivity implements PostJobDetailsFragment.OnPostButtonListener,
+        PostFixAppJob.JobCreatedCallBack, PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
         PostJobDateFragment.OnJobDateFragmentInteractionListener, FixAppRepository.UpdateJobDetailsTaskListener{
-    private static final String LOG_TAG = PostJobActivity.class.getSimpleName();
-    private PostJobActivityViewModel postJobActivityViewModel;
-    private SessionManager session;
-    private ProgressBar progressBar;
-    private ScrollView layoutBottomSheet;
-    private BottomSheetBehavior sheetBehavior;
-    public static PostJobActivity postJobActivity;
-    private int jobCreatedId = 0;
-    private FixAppRepository repository;
-    private boolean isUpdated;
-    private String updateResponseMessage, jobDetailsSection;
+private static final String LOG_TAG = PostJobActivity.class.getSimpleName();
+private PostJobActivityViewModel postJobActivityViewModel;
+private SessionManager session;
+private ProgressBar progressBar;
+private ScrollView layoutBottomSheet;
+private BottomSheetBehavior sheetBehavior;
+public static PostJobActivity postJobActivity;
+private int jobCreatedId = 0;
+private FixAppRepository repository;
+private boolean isUpdated;
+private String updateResponseMessage, jobDetailsSection;
+private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_job);
-        //Toolbar toolbar = findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
         setupActionBar();
+
+        int user_id = getIntent().getIntExtra("user_id", 0);
+        int category_id = getIntent().getIntExtra("category_id", 0);
+        String category_name = getIntent().getStringExtra("category_name");
 
         postJobActivity = this;
 
@@ -77,68 +86,27 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         postJobActivityViewModel = new ViewModelProvider
                 (this, factory).get(PostJobActivityViewModel.class);
 
-        //find the bottom sheet layout
-        //layoutBottomSheet = findViewById(R.id.bottom_sheet);
-        //sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
+        TabLayout tabs = findViewById(R.id.tabs);
 
-        /**
-         * bottom sheet state change listener
-         * we are changing button text when sheet changed state
-         * */
-//        sheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-//            @Override
-//            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//                switch (newState) {
-//                    case BottomSheetBehavior.STATE_HIDDEN:
-//                        break;
-//                    case BottomSheetBehavior.STATE_EXPANDED: {
-//                        Log.e(LOG_TAG, "close sheet");
-//                    }
-//                    break;
-//                    case BottomSheetBehavior.STATE_COLLAPSED: {
-//                        Log.e(LOG_TAG, "Expand sheet");
-//                    }
-//                    break;
-//                    case BottomSheetBehavior.STATE_DRAGGING:
-//                        break;
-//                    case BottomSheetBehavior.STATE_SETTLING:
-//                        break;
-//                }
-//            }
-//
-//            @Override
-//            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-//
-//            }
-//        });
+        mViewPager = findViewById(R.id.view_pager);
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager(),
+                user_id, category_id, category_name);
 
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
-        if (findViewById(R.id.post_job_fragment_container) != null) {
+        tabs.setupWithViewPager(mViewPager);
+        mViewPager.setAdapter(sectionsPagerAdapter);
 
-            // However, if we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) {
-                return;
+        //viewPager.setOffscreenPageLimit(3);
+        //viewPager.setAdapter(sectionsPagerAdapter);
+
+        FloatingActionButton fab = findViewById(R.id.fab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
-        }
-
-        PostJobFragment postJobFragment = findOrCreateViewFragment();
-        setupViewFragment(postJobFragment);
-
-        //postJobFragment();
-    }//close oncreate
-
-    public static PostJobActivity getInstance() {
-        return postJobActivity;
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        postJobActivity = this;
-
+        });
     }
 
     private void setupActionBar() {
@@ -149,36 +117,24 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         }
     }
 
+    public static PostJobActivity getInstance() {
+        return postJobActivity;
+    }
+
     //set up the post job details fragment
-    private void setupViewFragment(PostJobFragment postJobFragment) {
+    private void setupViewFragment(PostJobDetailsFragment postJobDetailsFragment) {
 
         // Add the fragment to the 'fragment_container' FrameLayout
         getSupportFragmentManager().beginTransaction()
-                .addToBackStack("PostJobFragment")
-                .replace(R.id.post_job_fragment_container, postJobFragment)
+                .addToBackStack("PostJobDetailsFragment")
+                .replace(R.id.post_job_fragment_container, postJobDetailsFragment)
                 .commit();
-    }
-
-    @NonNull
-    private PostJobFragment findOrCreateViewFragment() {
-        //get intent from which this activity is called and the id of language selected
-        //Bundle bundle = getArguments();
-        int user_id = getIntent().getIntExtra("user_id", 0);
-        int language_id = getIntent().getIntExtra("category_id", 0);
-        String language_name = getIntent().getStringExtra("category_name");
-
-        PostJobFragment postJobFragment = (PostJobFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.post_job_fragment_container);
-
-        if (postJobFragment == null) {
-            postJobFragment = PostJobFragment.newInstance(user_id, language_id, language_name);
-        }
-        return postJobFragment;
     }
 
     //open the next fragment(date and time) when the first(job details) is done
     private void setUpJobDateFragment(){
-        PostJobDateFragment jobDateFragment = new PostJobDateFragment();
+        mViewPager.setCurrentItem(1,true);
+        /*PostJobDateFragment jobDateFragment = new PostJobDateFragment();
 
         if (jobDateFragment== null) {
             jobDateFragment = PostJobDateFragment.newInstance();
@@ -188,12 +144,13 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         getSupportFragmentManager().beginTransaction()
                 .addToBackStack("PostJobDateFragment")
                 .replace(R.id.post_job_fragment_container, jobDateFragment)
-                .commit();
+                .commit();*/
     }
 
     //open the next fragment(job budget) when the previous(job date time) is done
     private void setUpJobBudgetFragment(){
-        PostJobBudgetFragment jobBudgetFragment = new PostJobBudgetFragment();
+        mViewPager.setCurrentItem(2,true);
+        /*PostJobBudgetFragment jobBudgetFragment = new PostJobBudgetFragment();
 
         if (jobBudgetFragment== null) {
             jobBudgetFragment = PostJobBudgetFragment.newInstance();
@@ -203,9 +160,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
         getSupportFragmentManager().beginTransaction()
                 .addToBackStack("PostJobBudgetFragment")
                 .replace(R.id.post_job_fragment_container, jobBudgetFragment)
-                .commit();
+                .commit();*/
     }
-
 
     //post job fragment callback
     @Override
@@ -237,8 +193,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
             setUpJobDateFragment();
         }
         Log.e(LOG_TAG, "Job details: userid = " + userId+ ", job title = "+ jobTitle+
-                        ", job desc = " +jobDesc+", job location = "+jobLocation+ ", musthaveone = "
-                        +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
+                ", job desc = " +jobDesc+", job location = "+jobLocation+ ", musthaveone = "
+                +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
                 mustHaveThree+ ", isJobRemote = " +isJobRemote+ ", file = " +file+", categoryid = " +categoryId);
 
     }
@@ -422,16 +378,16 @@ public class PostJobActivity extends AppCompatActivity implements PostJobFragmen
     public void updateUiAfterJobDateUpdate(Boolean isJobUpdated, String message, String jobSection){
         hideBar();
         //if (jobDetailsSection.equals("dateTime")){
-            if (isJobUpdated) {
-                //hideBar();
-                Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-                //go to the next section
-                setUpJobBudgetFragment();
-            }else {
-                //hideBar();
-                Log.e(LOG_TAG, "Job date time not updated");
-            }
+        if (isJobUpdated) {
+            //hideBar();
+            Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            //go to the next section
+            setUpJobBudgetFragment();
+        }else {
+            //hideBar();
+            Log.e(LOG_TAG, "Job date time not updated");
+        }
         //}
     }
 

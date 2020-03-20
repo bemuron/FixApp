@@ -8,8 +8,8 @@
     android:layout_gravity="center_horizontal"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/margin_padding_tiny"
-    android:paddingRight="@dimen/margin_padding_tiny"
+    android:paddingLeft="@dimen/margin_padding_normal"
+    android:paddingRight="@dimen/margin_padding_normal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
 <ScrollView
@@ -41,20 +41,18 @@
         app:counterEnabled="true"
         app:counterMaxLength="100"
         app:hintEnabled="true"
+        android:hint="@string/job_title_sample"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_job_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="@dimen/margin_padding_small"
-            android:layout_marginLeft="@dimen/margin_padding_small"
-            android:layout_marginStart="@dimen/margin_padding_small"
             android:layout_marginTop="@dimen/margin_padding_small"
-            android:hint="@string/job_title_sample"
-            android:padding="@dimen/margin_padding_normal"
+            android:inputType="text"
             android:maxLines="1"
             android:textColor="#000000"/>
 
@@ -67,18 +65,17 @@
         app:counterEnabled="true"
         app:counterMaxLength="500"
         app:hintEnabled="true"
+        android:hint="@string/job_desc_sample"
         android:layout_height="wrap_content">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_job_desc"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fadingEdge="vertical"
             android:minLines="2"
             android:gravity="top"
-            android:hint="@string/job_desc_sample"
             android:inputType="textMultiLine"
-            android:padding="@dimen/margin_padding_normal"
             android:scrollbars="vertical"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -112,20 +109,17 @@
         android:id="@+id/job_location"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         app:hintEnabled="true"
+        android:hint="@string/job_location_hint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/edit_text_job_location"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginBottom="@dimen/margin_padding_small"
-            android:layout_marginLeft="@dimen/margin_padding_small"
-            android:layout_marginStart="@dimen/margin_padding_small"
             android:layout_marginTop="@dimen/margin_padding_small"
-            android:hint="@string/job_location_hint"
-            android:padding="@dimen/margin_padding_normal"
             android:maxLines="1"
             android:textColor="#000000"/>
 

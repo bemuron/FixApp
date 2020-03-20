@@ -39,8 +39,7 @@ import java.util.Locale;
 //import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OfferDetailsForPosterActivity extends AppCompatActivity implements View.OnClickListener,
-        MakeOfferDialogFragment.MakeOfferDialogListener, FixAppRepository.OfferEditedListener,
-        FixAppRepository.OfferSavedListener
+        FixAppRepository.OfferEditedListener, FixAppRepository.OfferSavedListener
         {
     private static final String LOG_TAG = OfferDetailsForPosterActivity.class.getSimpleName();
     private TextView jobTitleTV, offerByTV, timePostedTV, offerStatusTV,
@@ -71,7 +70,7 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
         userId = session.getUserId();
 
         // Progress bar
-        pBar = findViewById(R.id.post_job_progress_bar);
+        pBar = findViewById(R.id.forPoster_progress_bar);
         hideBar();
 
         offer_id = getIntent().getIntExtra("offerID", 0);
@@ -198,16 +197,6 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
         SimpleDateFormat myFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa", Locale.US);
 
         try{
-            Date d = mysqlDateFormat.parse(offer.getJob_date());
-            jobDate = sdf.format(d);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        try{
-            Date d = mysqlDateTimeFormat.parse(offer.getPosted_on());
-            postedOn = myFormat.format(d);
-
             Date date = mysqlDateTimeFormat.parse(offer.getLast_edited_on());
             lastEditedOn = myFormat.format(date);
         }catch (Exception e){
@@ -251,7 +240,6 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
                  * Take the poster to the details of the job he posted
                  */
                 break;
-
         }
     }
 
@@ -259,41 +247,6 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
     public void onBackPressed(){
         clearViews();
     }*/
-
-    //this code instantiates the offer dialog fragment and shows it
-    public void showMakeOfferDialog(){
-        //dialogFragment = new MakeOfferDialogFragment();
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        Fragment prev = getSupportFragmentManager().findFragmentByTag("EditOfferDialogFragment");
-        if (prev != null) {
-            ft.remove(prev);
-        }
-        ft.addToBackStack(null);
-        DialogFragment dialogFragment = MakeOfferDialogFragment.newInstance(jobName, offer.getOffer_amount(),
-                offer.getMessage(),"editOffer");
-        dialogFragment.show(getSupportFragmentManager(), "EditOfferDialogFragment");
-
-    }
-
-            // The dialog fragment receives a reference to this Activity through the
-    // Fragment.onAttach() callback, which it uses to call the following methods
-    // defined by the NoticeDialogFragment.NoticeDialogListener interface
-    //when the buttons on the dialog are clicked these are the methods called
-    @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
-        // User touched the dialog's positive button
-    }
-
-    @Override
-    public void onDialogNegativeClick(DialogFragment dialog) {
-        // User touched the dialog's negative button
-        //dialogFragment.getDialog().cancel();
-    }
-
-    @Override
-    public void returnOfferDetails(int amountOffered, String offerMessage) {
-        postJobActivityViewModel.editOffer(offer_id, amountOffered,offerMessage, editCount++);
-    }
 
     private void showBar() {
         pBar.setVisibility(View.VISIBLE);

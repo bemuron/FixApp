@@ -134,7 +134,7 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
         holder.itemView.setActivated(selectedItems.get(position, false));
 
         // apply click events
-        applyClickEvents(holder, position);
+        applyClickEvents(holder, offer.getName(), position);
 
         // display profile image
         //applyProfilePicture(holder, offer);
@@ -142,11 +142,11 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
     }
 
     //handling different click events
-    private void applyClickEvents(MyViewHolder holder, final int position) {
+    private void applyClickEvents(MyViewHolder holder, String jobName, final int position) {
         holder.jobContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onOfferRowClicked(position);
+                listener.onOfferRowClicked(jobName, position);
             }
         });
     }
@@ -213,6 +213,10 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
         return items;
     }
 
+    public void clearData(){
+        offerList.clear();
+    }
+
     public void removeData(int position) {
         offerList.remove(position);
         resetCurrentIndex();
@@ -224,7 +228,7 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
 
     public interface OffersListAdapterListener {
 
-        void onOfferRowClicked(int position);
+        void onOfferRowClicked(String jobName, int position);
 
     }
 

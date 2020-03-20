@@ -8,6 +8,10 @@
     <string name="job_title_sample">Job Title e.g Broken water tap</string>
     <string name="job_desc_sample">Briefly describe the job</string>
     <string name="job_post_button">Post Job</string>
+    <string name="title_activity_poster_offers_accepted">Accepted Offers</string>
+    <string name="title_activity_poster_offers_received">Received Offers</string>
+    <string name="title_activity_fixer_offers_made">Offers Made</string>
+    <string name="title_activity_fixer_offers_accepted">Accepted Offers</string>
     <string name="job_images_instructions">Upload image of what you want to be fixed (optional)</string>
     <string name="description">Description;</string>
 
@@ -119,5 +123,9 @@
         <item>Offers Made</item>
         <item>Offers Accepted</item>
     </string-array>
+    <string name="title_activity_post_job2">PostJob2Activity</string>
+    <string name="job_details_tab">Job Details</string>
+    <string name="job_date_tab">Job Time</string>
+    <string name="job_budget_tab">Job Budget</string>
 
 </resources>

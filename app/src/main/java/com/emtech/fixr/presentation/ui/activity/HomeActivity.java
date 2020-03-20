@@ -14,8 +14,6 @@ import android.os.Bundle;
 
 import com.emtech.fixr.app.Config;
 import com.emtech.fixr.fcm.MyNotificationManager;
-import com.emtech.fixr.presentation.ui.fragment.FixerOffersListFragment;
-import com.emtech.fixr.presentation.ui.fragment.PosterOffersListFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -47,7 +45,6 @@ import com.emtech.fixr.R;
 import com.emtech.fixr.app.MyApplication;
 import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.helpers.SessionManager;
-import com.emtech.fixr.presentation.ui.fragment.BrowseJobsFragment;
 import com.emtech.fixr.presentation.ui.fragment.DashboardFragment;
 import com.emtech.fixr.presentation.ui.fragment.MyJobsFragment;
 import com.emtech.fixr.presentation.ui.fragment.MyProfileFragment;
@@ -63,8 +60,7 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         CategoriesAdapter.CategoriesAdapterOnItemClickHandler, MyJobsFragment.OnMyJobsInteractionListener,
         MyProfileFragment.OnMyProfileInteractionListener,PaymentHistoryFragment.OnPaymentHistoryInteractionListener,
-        DashboardFragment.OnDashboardInteractionListener,BrowseJobsFragment.OnBrowseJobsInteractionListener,
-        FixerOffersListFragment.OnFixerOffersListInteractionListener, PosterOffersListFragment.OnPosterOffersListInteractionListener {
+        DashboardFragment.OnDashboardInteractionListener {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
@@ -363,29 +359,6 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void onBrowseJobsInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onFixerOffersListInteraction(int offerID, String jobName) {
-        Log.e(TAG, "Fixer Offers clicked");
-        Intent intent = new Intent(this, OfferDetailsForFixerActivity.class);
-        intent.putExtra("offerID", offerID);
-        intent.putExtra("jobName", jobName);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onPosterOffersListInteraction(int offerID, String jobName) {
-        Log.e(TAG, "Offers received by poster clicked");
-        Intent intent = new Intent(this, OfferDetailsForPosterActivity.class);
-        intent.putExtra("offerID", offerID);
-        intent.putExtra("jobName", jobName);
-        startActivity(intent);
-    }
-
     /**
      * RecyclerView item decoration - give equal margin around grid item
      */
@@ -470,22 +443,22 @@ public class HomeActivity extends AppCompatActivity
 
         //creating fragment object
         Fragment fragment = null;
+        Intent intent;
 
         //initializing the fragment object which is selected
         switch (itemId) {
-            case R.id.post_job:
-                //should take user to main page with categories
-                navDrawerFragmentContainer.setVisibility(View.GONE);
+            case R.id.nav_poster_offers_accepted:
+                intent = new Intent(this, PosterOffersListActivity.class);
+                intent.putExtra("userId", userId);
+                intent.putExtra("offerType", "accepted");
+                startActivity(intent);
                 break;
 
-            /*case R.id.nav_poster_offers_accepted:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = PosterOffersListFragment.newInstance(userId, "accepted");
-                break;*/
-
             case R.id.nav_poster_offers_received:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = PosterOffersListFragment.newInstance(userId, "received");
+                intent = new Intent(this, PosterOffersListActivity.class);
+                intent.putExtra("userId", userId);
+                intent.putExtra("offerType", "received");
+                startActivity(intent);
                 break;
 
             case R.id.poster_my_jobs:
@@ -494,20 +467,22 @@ public class HomeActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_fixer_offers_accepted:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = FixerOffersListFragment.newInstance(userId, "accepted");
+                intent = new Intent(this, FixerOffersListActivity.class);
+                intent.putExtra("userId", userId);
+                intent.putExtra("offerType", "accepted");
+                startActivity(intent);
                 break;
 
             case R.id.nav_fixer_offers_made:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = FixerOffersListFragment.newInstance(userId, "made");
+                intent = new Intent(this, FixerOffersListActivity.class);
+                intent.putExtra("userId", userId);
+                intent.putExtra("offerType", "made");
+                startActivity(intent);
                 break;
 
             case R.id.browse_jobs:
-                Intent intent = new Intent(this, BrowseJobsActivity.class);
+                intent = new Intent(this, BrowseJobsActivity.class);
                 startActivity(intent);
-                //navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                //fragment = new BrowseJobsFragment();
                 break;
 
             case R.id.my_profile:

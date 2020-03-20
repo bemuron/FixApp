@@ -67,6 +67,7 @@
     <dimen name="margin_large">70dp</dimen>
     <dimen name="spacing">9dp</dimen>
     <dimen name="dividerHeight">8dp</dimen>
+    <dimen name="appbar_padding">16dp</dimen>
 
 
 </resources>
