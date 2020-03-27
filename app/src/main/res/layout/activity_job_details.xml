@@ -142,15 +142,6 @@
         android:paddingBottom="@dimen/margin_padding_normal"
         android:text="UGX. 150,000"/>
 
-    <Button
-        android:id="@+id/JD_make_offer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:paddingTop="@dimen/margin_padding_tiny"
-        android:background="@color/save"
-        android:text="Make an Offer"/>
-
     <TextView
         android:id="@+id/JD_job_details_title"
         android:layout_width="wrap_content"
@@ -169,5 +160,14 @@
         android:textSize="@dimen/text_size_xnormal"
         android:textColor="@color/colorPrimaryDark"
         android:text="Job details"/>
+
+    <Button
+        android:id="@+id/JD_make_offer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_marginTop="@dimen/margin_padding_xnormal"
+        android:background="@color/save"
+        android:text="Make an Offer"/>
 </LinearLayout>
     </ScrollView>

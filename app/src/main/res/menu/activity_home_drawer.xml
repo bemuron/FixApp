@@ -6,10 +6,6 @@
     <item android:title="@string/title_as_a_poster">
         <menu>
             <item
-                android:id="@+id/post_job"
-                android:icon="@drawable/ic_menu_camera"
-                android:title="@string/title_activity_post_job" />
-            <item
                 android:id="@+id/nav_poster_offers_accepted"
                 android:icon="@drawable/ic_menu_share"
                 android:title="@string/offers_accepted" />

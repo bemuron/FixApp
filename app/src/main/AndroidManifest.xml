@@ -25,12 +25,12 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan">
+        <activity android:name=".presentation.ui.activity.MyJobsListActivity"></activity>
         <activity
             android:name=".presentation.ui.activity.PostJobActivity"
             android:label="@string/title_activity_post_job"
             android:launchMode="standard"
-            android:parentActivityName=".presentation.ui.activity.HomeActivity"/>
-        <!-- Log in Activity -->
+            android:parentActivityName=".presentation.ui.activity.HomeActivity" /> <!-- Log in Activity -->
         <activity
             android:name=".presentation.ui.activity.LoginActivity"
             android:launchMode="singleTask"

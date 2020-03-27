@@ -16,6 +16,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.emtech.fixr.helpers.CircleTransform;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.textfield.TextInputEditText;
@@ -53,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class PostJobDetailsFragment extends Fragment implements View.OnClickListener,
         MustHavesAdapter.MustHavesAdapterListener
@@ -77,24 +82,37 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private MustHavesAdapter mAdapter;
     private File file;
     private Switch isJobRemoteSwitch;
-    private int categoryId, userId, isJobRemote = 0;
+    private int categoryId, userId, mJobId, isJobRemote = 0;
     private ScrollView layoutBottomSheet;
     private boolean locationSwitchChecked = false;
     private BottomSheetBehavior sheetBehavior;
     //private JobMustHave mustHave;
     private String categoryName, mediaPath, currentJobImage = null,
             mustHaveOne = null, mustHaveTwo = null, mustHaveThree = null,
-            mstHaveOne, mstHaveTwo, mstHaveThree, musthave;
+            mstHaveOne, mstHaveTwo, mstHaveThree, musthave, jobName, jobDescription;
 
     public PostJobDetailsFragment(){
 
     }
 
-    public static PostJobDetailsFragment newInstance(int userId, int categoryId, String categoryName){
+    public static PostJobDetailsFragment newInstance(int userId, int categoryId,
+                                                     String categoryName, int jobId, String jobName,
+                                                     String jobDescription, String mustHaveOne,
+                                                     String mustHaveTwo, String mustHaveThree,
+                                                     int isJobRemote, String jobImage){
         Bundle arguments = new Bundle();
         arguments.putInt("user_id", userId);
         arguments.putInt("category_id", categoryId);
         arguments.putString("category_name", categoryName);
+        arguments.putInt("job_id", jobId);
+        arguments.putString("job_name", jobName);
+        arguments.putString("job_description", jobDescription);
+        arguments.putString("must_have_one", mustHaveOne);
+        arguments.putString("must_have_two", mustHaveTwo);
+        arguments.putString("must_have_three", mustHaveThree);
+        arguments.putInt("is_remote", isJobRemote);
+        arguments.putString("job_image", jobImage);
+
         PostJobDetailsFragment fragment = new PostJobDetailsFragment();
         fragment.setArguments(arguments);
 
@@ -115,9 +133,21 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             userId = bundle.getInt("user_id");
             categoryId = bundle.getInt("category_id");
             categoryName = bundle.getString("category_name");
+            mJobId = bundle.getInt("job_id");
+            jobName = bundle.getString("job_name");
+            jobDescription = bundle.getString("job_description");
+            mustHaveOne = bundle.getString("must_have_one");
+            mustHaveTwo = bundle.getString("must_have_two");
+            mustHaveThree = bundle.getString("must_have_three");
+            isJobRemote = bundle.getInt("is_remote");
+            currentJobImage = bundle.getString("job_image");
         }
 
         setUpWidgets(view);
+        //if we have a job id then the user is editing a job
+        if (mJobId > 0){
+            inflateViews();
+        }
         setUpMustHavesAdapter();
         handleBottomSheet();
         return view;
@@ -155,6 +185,39 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             throw new ClassCastException(context.toString()
                     + " must implement OnPostButtonListener");
         }
+    }
+
+    //inflate the views in case the user is editing a job
+    private void inflateViews(){
+        //job name and desc
+        jobTitleEditText.setText(jobName);
+        jobDescEditText.setText(jobDescription);
+
+        //is job remote or not
+        if (isJobRemote == 1){
+            isJobRemoteSwitch.setChecked(true);
+        }else if (isJobRemote == 0){
+            isJobRemoteSwitch.setChecked(false);
+        }
+
+        //must haves
+        if (mustHaveOne != null || mustHaveTwo != null || mustHaveThree != null){
+            mustHaveOneTv.setText(mustHaveOne);
+            mustHaveTwoTv.setText(mustHaveTwo);
+            mustHaveTwoTv.setText(mustHaveTwo);
+        }
+
+        //Attached image
+        if (currentJobImage != null){
+            Glide.with(getActivity()).load("http://www.emtechint.com/fixapp/assets/images/"+currentJobImage)
+                    .thumbnail(0.5f)
+                    .transition(withCrossFade())
+                    .apply(new RequestOptions().fitCenter()
+                            .transform(new CircleTransform(getActivity())).diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .into(jobImage1);
+            jobImage1.setColorFilter(null);
+        }
+
     }
 
     //initialise the views

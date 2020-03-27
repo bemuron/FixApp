@@ -40,6 +40,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         app:counterEnabled="true"
         app:counterMaxLength="100"
+        android:layout_marginBottom="@dimen/margin_padding_small"
         app:hintEnabled="true"
         android:hint="@string/job_title_sample"
         android:layout_width="match_parent"
@@ -50,8 +51,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginBottom="@dimen/margin_padding_small"
-            android:layout_marginTop="@dimen/margin_padding_small"
             android:inputType="text"
             android:maxLines="1"
             android:textColor="#000000"/>

@@ -462,8 +462,9 @@ public class HomeActivity extends AppCompatActivity
                 break;
 
             case R.id.poster_my_jobs:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = MyJobsFragment.newInstance(userId, "poster");
+                intent = new Intent(this, MyJobsListActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
                 break;
 
             case R.id.nav_fixer_offers_accepted:

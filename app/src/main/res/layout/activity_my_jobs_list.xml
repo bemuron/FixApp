@@ -1,0 +1,55 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin">
+
+    <Spinner
+        android:id="@+id/spinner_filter_jobs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="@dimen/margin_padding_small"
+        android:layout_marginLeft="@dimen/margin_padding_small"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginTop="@dimen/margin_padding_small"
+        android:padding="@dimen/margin_padding_normal"
+        android:maxLines="1"
+        android:textColor="#000000"/>
+
+    <View
+        android:id="@+id/separator_line"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/spinner_filter_jobs"
+        android:background="#000000"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/my_jobs_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/margin_padding_normal"
+        android:layout_below="@id/separator_line"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
+
+    <TextView
+        android:id="@+id/empty_jobs_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:text="@string/empty_posted_jobs_list" />
+
+    <ProgressBar
+        android:id="@+id/my_jobs_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:backgroundTint="@color/colorPrimary"
+        android:indeterminateTint="#ea4c88"/>
+
+</RelativeLayout>

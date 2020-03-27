@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,11 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.emtech.fixr.R;
+import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -31,10 +34,10 @@ import java.util.Locale;
  * create an instance of this fragment.
  */
 public class PostJobDateFragment extends Fragment implements View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = PostJobDateFragment.class.getSimpleName();
+    private static final String JOB_ID = "job_id";
+    private static final String JOB_DATE = "job_date";
+    private static final String JOB_TIME = "job_time";
     private EditText jobDateEt;
     private Switch jobAtSepcificTimeSwicth;
     private CheckBox morningCheck, middayCheck, afternoonCheck, eveningCheck;
@@ -46,9 +49,8 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
             morningTimeSelected, middaySelected, afternoonSelected, eveningSelected;
     private boolean isSwitchOn = false;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private int mJobId;
+    private String mJobDate, mJobTime;
 
     private OnJobDateFragmentInteractionListener mListener;
 
@@ -63,12 +65,13 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
      * @return A new instance of fragment PostJobDateFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PostJobDateFragment newInstance() {
+    public static PostJobDateFragment newInstance(int jobId, String jobDate, String jobTime) {
         PostJobDateFragment fragment = new PostJobDateFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //args.putString(ARG_PARAM2, param2);
-        //fragment.setArguments(args);
+        args.putInt(JOB_ID, jobId);
+        args.putString(JOB_DATE, jobDate);
+        args.putString(JOB_TIME, jobTime);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -76,8 +79,9 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mJobId = getArguments().getInt(JOB_ID);
+            mJobDate = getArguments().getString(JOB_DATE);
+            mJobTime = getArguments().getString(JOB_TIME);
         }
     }
 
@@ -89,8 +93,70 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
 
         //inflate the views
         setUpWidgetViews(view);
+        //if we have a job id then the user is editing a job
+        if (mJobId > 0){
+            inflateViews();
+        }
 
         return view;
+    }
+
+    //if we have a job id then the user is just editing a job
+    private void inflateViews(){
+
+        //handle the job time
+        try {
+            if (mJobDate != null){
+                //when the job is expected to be done
+                jobDateEt.setText(formatDate(mJobDate));
+            }
+
+            if (mJobTime != null) {
+                //if the user selected specific time then switch on the switch
+                jobAtSepcificTimeSwicth.setChecked(true);
+                morningCheck.setVisibility(View.VISIBLE);
+                middayCheck.setVisibility(View.VISIBLE);
+                afternoonCheck.setVisibility(View.VISIBLE);
+                eveningCheck.setVisibility(View.VISIBLE);
+                isSwitchOn = true;
+
+                String[] jobTime = mJobTime.trim().split("\\s*,\\s*");
+
+                for (String s : jobTime) {
+                    System.out.println(s);
+                    if (s.equals(getResources().getString(R.string.check_box_morning))) {
+                        morningCheck.setChecked(true);
+                    } else if (s.equals(getResources().getString(R.string.check_box_midday))) {
+                        middayCheck.setChecked(true);
+                    } else if (s.equals(getResources().getString(R.string.check_box_afternoon))) {
+                        afternoonCheck.setChecked(true);
+                    } else if (s.equals(getResources().getString(R.string.check_box_evening))) {
+                        eveningCheck.setChecked(true);
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
+
+    }
+
+    //change the date received from mysql to a more eye pleasing one
+    private String formatDate(String date_of_job){
+        date_of_job = null;
+
+        SimpleDateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
+
+        try{
+            Date d = mysqlDateFormat.parse(date_of_job);
+            date_of_job = sdf.format(d);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return date_of_job;
     }
 
     //setup the views

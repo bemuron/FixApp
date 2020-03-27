@@ -31,9 +31,9 @@ import com.emtech.fixr.R;
  */
 public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnCheckedChangeListener{
     private static final String TAG = PostJobBudgetFragment.class.getSimpleName();
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String JOB_ID = "job_id";
+    private static final String EST_TOT_BUDGET = "est_tot_budget";
+    private static final String TOT_BUDGET = "tot_budget";
     private RadioGroup budgetTypeRadioGroup;
     private RadioButton totalBudgetRadioButton, hourlyRadioButton;
     private TextView totalBudgetTv,perHourTv, totHrsTv, estTotBudgetTv;
@@ -42,10 +42,8 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
     private String budgetTypeSelected,totalBudget;
     private int hoursTotal,perHourPrice;
     private boolean isTotalBudgetChecked = false, isHourlyChecked = false;
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private int mJobId;
+    private String mEstTotBudget, mTotBudget;
 
 
     private OnJobBudgetFragmentInteractionListener mListener;
@@ -61,12 +59,13 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
      * @return A new instance of fragment PostJobBudgetFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static PostJobBudgetFragment newInstance() {
+    public static PostJobBudgetFragment newInstance(int jobId, String estTotBudget, String totalBudget) {
         PostJobBudgetFragment fragment = new PostJobBudgetFragment();
-        /*Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);*/
+        Bundle args = new Bundle();
+        args.putInt(JOB_ID, jobId);
+        args.putString(EST_TOT_BUDGET, estTotBudget);
+        args.putString(TOT_BUDGET, totalBudget);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -74,8 +73,9 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mJobId = getArguments().getInt(JOB_ID);
+            mEstTotBudget = getArguments().getString(EST_TOT_BUDGET);
+            mTotBudget = getArguments().getString(TOT_BUDGET);
         }
     }
 
@@ -87,12 +87,27 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
 
         //inflate the views
         setUpWidgetViews(view);
+        //if we have a job id then the user is editing a job
+        if (mJobId > 0){
+            inflateViews();
+        }
 
         realTimePerHrPriceEtChange();
         realTimeTotHrsEtChange();
         realTimeTotBudgetEtChange();
 
         return view;
+    }
+
+    //inflate the views in case the user is editing a job
+    private void inflateViews(){
+        try {
+            totalBudgetEt.setText(mEstTotBudget);
+            totalBudgetTv.setText(mTotBudget);
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
     }
 
     //set up the view widgets
