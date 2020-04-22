@@ -169,5 +169,16 @@
         android:layout_marginTop="@dimen/margin_padding_xnormal"
         android:background="@color/save"
         android:text="Make an Offer"/>
+
+    <TextView
+        android:id="@+id/JD_offer_already_made_notice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/margin_padding_xnormal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:visibility="gone"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"/>
 </LinearLayout>
     </ScrollView>

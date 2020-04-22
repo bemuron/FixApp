@@ -14,28 +14,28 @@ import java.util.List;
 
 public class HomeActivityViewModel extends ViewModel {
 
-    //private member variable to hold reference to the repository
-    private FixAppRepository mRepository;
+  //private member variable to hold reference to the repository
+  private FixAppRepository mRepository;
 
-    //private LiveData member variable to cache the categories
-    private LiveData<List<Category>> mAllCategories;
+  //private LiveData member variable to cache the categories
+  private LiveData<List<Category>> mAllCategories;
 
-    //constructor that gets a reference to the repository and gets the categories
-    public HomeActivityViewModel(FixAppRepository repository) {
-        mRepository = repository;
-        mAllCategories = mRepository.getAllCategories();
-    }
+  //constructor that gets a reference to the repository and gets the categories
+  public HomeActivityViewModel(FixAppRepository repository) {
+    mRepository = repository;
+    mAllCategories = mRepository.getAllCategories();
+  }
 
-    //a getter method for all the categories. This hides the implementation from the UI
-    public LiveData<List<Category>> getAllCategories(){
-        return mAllCategories;
-    }
+  //a getter method for all the categories. This hides the implementation from the UI
+  public LiveData<List<Category>> getAllCategories(){
+    return mAllCategories;
+  }
 
-    //a wrapper insert() method that calls the Repository's insert() method. In this way,
-    // the implementation of insert() is completely hidden from the UI.
-    //public void insert(Category category) { mRepository.insert(category); }
+  //a wrapper insert() method that calls the Repository's insert() method. In this way,
+  // the implementation of insert() is completely hidden from the UI.
+  //public void insert(Category category) { mRepository.insert(category); }
 
-    public void delete() { mRepository.deleteUser();}
+  public void delete() { mRepository.deleteUser();}
 
 
 }

@@ -12,6 +12,7 @@ import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.models.UserJobs;
+import com.emtech.fixr.presentation.ui.activity.OfferReceivedDetailsForPosterActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,12 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.emtech.fixr.presentation.ui.activity.JobDetailsActivity.jobDetailsActivity;
+import static com.emtech.fixr.presentation.ui.activity.OfferAcceptedDetailsForFixerActivity.offerAcceptedDetailsForFixerActivity;
+import static com.emtech.fixr.presentation.ui.activity.OfferAcceptedDetailsForPosterActivity.offerAcceptedDetailsForPosterActivity;
+import static com.emtech.fixr.presentation.ui.activity.OfferMadeDetailsForFixerActivity.offerMadeDetailsForFixerActivity;
+import static com.emtech.fixr.presentation.ui.activity.OfferReceivedDetailsForPosterActivity.offerReceivedDetailsForPosterActivity;
 
 public class GetMyJobs {
     private static final String LOG_TAG = GetMyJobs.class.getSimpleName();
@@ -30,8 +37,10 @@ public class GetMyJobs {
 
     private final MutableLiveData<Job> mJobDetails;
     private final MutableLiveData<Offer> mOfferDetails;
-    private final MutableLiveData<List<Offer>> mJobOffersList;
-    private final MutableLiveData<List<Offer>> mOffersReceivedList;
+    private final MutableLiveData<List<Offer>> mFixerOffersMadeList;
+    private final MutableLiveData<List<Offer>> mFixerOffersAcceptedList;
+    private final MutableLiveData<List<Offer>> mPosterOffersReceivedList;
+    private final MutableLiveData<List<Offer>> mPosterOffersAcceptedList;
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
@@ -50,9 +59,11 @@ public class GetMyJobs {
         mDownloadedJobsByStatus = new MutableLiveData<>();
         mJobsForBrowsing = new MutableLiveData<>();
         mSearchedJobs = new MutableLiveData<>();
-        mJobOffersList = new MutableLiveData<>();
+        mFixerOffersMadeList = new MutableLiveData<>();
+        mFixerOffersAcceptedList = new MutableLiveData<>();
         mOfferDetails = new MutableLiveData<>();
-        mOffersReceivedList = new MutableLiveData<>();
+        mPosterOffersReceivedList = new MutableLiveData<>();
+        mPosterOffersAcceptedList = new MutableLiveData<>();
     }
 
     /**
@@ -94,14 +105,29 @@ public class GetMyJobs {
         return mSearchedJobs;
     }
 
-    //returned list of offers made for jobs, accepted or not
-    public LiveData<List<Offer>> getOffersMade() {
-        return mJobOffersList;
+    //returned list of offers made for jobs
+    public LiveData<List<Offer>> getOffersMadeForFixer() {
+        return mFixerOffersMadeList;
+    }
+
+    //returned offers accepted for fixer
+    public LiveData<List<Offer>> getOffersAcceptedForFixer() {
+        return mFixerOffersAcceptedList;
     }
 
     //returned offer details
     public LiveData<Offer> getOfferDetails() {
         return mOfferDetails;
+    }
+
+    //returned offers received for poster
+    public LiveData<List<Offer>> getOffersReceivedForPoster() {
+        return mPosterOffersReceivedList;
+    }
+
+    //returned offers accepted by poster
+    public LiveData<List<Offer>> getOffersAcceptedForPoster() {
+        return mPosterOffersAcceptedList;
     }
 
     /**
@@ -338,24 +364,14 @@ public class GetMyJobs {
     }
 
     //getting the jobs the fixer has made an offer on
-    //whether to return offers accepted or just made is decided here based on what the user clicked
-    //on
-    public void GetOffers(int user_id, String offerType) {
+    public void GetOffersMadeForFixer(int user_id) {
         Log.d(LOG_TAG, "Fetch offers made for jobs for fixer started");
 
         //Defining retrofit com.emtech.retrofitexample.api service
         //APIService service = retrofit.create(APIService.class);
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
-        Call<UserJobs> call = null;
-
-        //get accepted offers or just offers made based on what the fixer clicked on
-        if (offerType.equals("made")) {
-            //defining the call
-            call = service.getOffersMade(user_id);
-        }else if (offerType.equals("accepted")){
-            call = service.getOffersAccepted(user_id);
-        }
+        Call<UserJobs> call = service.getOffersMade(user_id);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<UserJobs>() {
@@ -365,18 +381,19 @@ public class GetMyJobs {
                 //if response body is not null, we have some data
                 //count what we have in the response
                 try {
-                    if (response.body() != null) {
+                    if (response.body().getOffersMadeList() != null) {
                         Log.d(LOG_TAG, "JSON not null");
 
                         //clear the previous search list if it has content
-                        if (offersList != null) {
+                        //if (offersList != null) {
                             offersList.clear();
-                        }
+                        //}
 
                         for (int i = 0; i < response.body().getOffersMadeList().size(); i++) {
                             offer = new Offer();
                             offer.setOffered_by(response.body().getOffersMadeList().get(i).getOffered_by());
                             offer.setJob_id(response.body().getOffersMadeList().get(i).getJob_id());
+                            offer.setOffer_id(response.body().getOffersMadeList().get(i).getOffer_id());
                             offer.setOffer_amount(response.body().getOffersMadeList().get(i).getOffer_amount());
                             offer.setMessage(response.body().getOffersMadeList().get(i).getMessage());
                             offer.setLast_edited_on(response.body().getOffersMadeList().get(i).getLast_edited_on());
@@ -397,12 +414,89 @@ public class GetMyJobs {
 
                         // When you are off of the main thread and want to update LiveData, use postValue.
                         // It posts the update to the main thread.
-                        mJobOffersList.postValue(offersList);
+                        mFixerOffersMadeList.postValue(offersList);
 
                         Log.d(LOG_TAG, "Size of list: " + response.body().getOffersMadeList().size());
                         // If the code reaches this point, we have successfully performed our sync
                         Log.d(LOG_TAG, "Successfully got all jobs associated " +
                                 "to this user by status = ");
+                    }else{
+                        mFixerOffersMadeList.postValue(null);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, "Error from inside response area in retrofit call --"+e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserJobs> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+            }
+        });
+    }
+
+    //getting the jobs this fixer made an offer on and have been accepted
+    public void GetOffersAcceptedForFixer(int user_id) {
+        Log.d(LOG_TAG, "Fetch offers accepted for jobs for fixer started");
+
+        //Defining retrofit com.emtech.retrofitexample.api service
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        Call<UserJobs> call = service.getOffersAcceptedForFixer(user_id);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<UserJobs>() {
+            @Override
+            public void onResponse(Call<UserJobs> call, Response<UserJobs> response) {
+
+                //if response body is not null, we have some data
+                //count what we have in the response
+                try {
+                    if (response.body().getFixerOffersAcceptedList() != null) {
+                        Log.d(LOG_TAG, "JSON not null");
+
+                        //clear the previous search list if it has content
+                        //if (offersList != null) {
+                            offersList.clear();
+                        //}
+
+                        for (int i = 0; i < response.body().getFixerOffersAcceptedList().size(); i++) {
+                            offer = new Offer();
+                            offer.setOffered_by(response.body().getFixerOffersAcceptedList().get(i).getOffered_by());
+                            offer.setJob_id(response.body().getFixerOffersAcceptedList().get(i).getJob_id());
+                            offer.setOffer_id(response.body().getFixerOffersAcceptedList().get(i).getOffer_id());
+                            offer.setOffer_amount(response.body().getFixerOffersAcceptedList().get(i).getOffer_amount());
+                            offer.setMessage(response.body().getFixerOffersAcceptedList().get(i).getMessage());
+                            offer.setLast_edited_on(response.body().getFixerOffersAcceptedList().get(i).getLast_edited_on());
+                            offer.setSeen_by_poster(response.body().getFixerOffersAcceptedList().get(i).getSeen_by_poster());
+                            offer.setEdit_count(response.body().getFixerOffersAcceptedList().get(i).getEdit_count());
+                            offer.setOffer_accepted(response.body().getFixerOffersAcceptedList().get(i).getOffer_accepted());
+                            offer.setName(response.body().getFixerOffersAcceptedList().get(i).getName());
+                            offer.setEst_tot_budget(response.body().getFixerOffersAcceptedList().get(i).getEst_tot_budget());
+                            offer.setPosted_by(response.body().getFixerOffersAcceptedList().get(i).getPosted_by());
+                            offer.setPosted_on(response.body().getFixerOffersAcceptedList().get(i).getPosted_on());
+                            offer.setJob_date(response.body().getFixerOffersAcceptedList().get(i).getJob_date());
+
+                            offersList.add(offer);
+                        }
+
+                        //add the profile pic of the user who posted the job
+                        offer.setProfile_pic(response.body().getProfilePic());
+
+                        // When you are off of the main thread and want to update LiveData, use postValue.
+                        // It posts the update to the main thread.
+                        mFixerOffersAcceptedList.postValue(offersList);
+
+                        Log.d(LOG_TAG, "Size of list: " + response.body().getFixerOffersAcceptedList().size());
+                        // If the code reaches this point, we have successfully performed our sync
+                        Log.d(LOG_TAG, "Successfully got all jobs associated " +
+                                "to this user by status = ");
+                    }else{
+                        mFixerOffersAcceptedList.postValue(null);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -443,6 +537,7 @@ public class GetMyJobs {
                             Log.d(LOG_TAG, "JSON not null");
 
                             offer = new Offer();
+                            offer.setOffer_id(response.body().getOfferDetails().getOffer_id());
                             offer.setOffered_by(response.body().getOfferDetails().getOffered_by());
                             offer.setJob_id(response.body().getOfferDetails().getJob_id());
                             offer.setOffer_amount(response.body().getOfferDetails().getOffer_amount());
@@ -456,6 +551,10 @@ public class GetMyJobs {
                             offer.setPosted_by(response.body().getOfferDetails().getPosted_by());
                             offer.setPosted_on(response.body().getOfferDetails().getPosted_on());
                             offer.setJob_date(response.body().getOfferDetails().getJob_date());
+                            //add the profile pic of the user who posted the job
+                            offer.setProfile_pic(response.body().getProfilePic());
+                            //set the name of the fixer
+                            offer.setUser_name(response.body().getUser_name());
 
                             // When you are off of the main thread and want to update LiveData, use postValue.
                             // It posts the update to the main thread.
@@ -483,9 +582,9 @@ public class GetMyJobs {
 
     }
 
-    //a getter method for all the jobs by a poster to which offers have been made
-    public void getOffersReceived(int user_id) {
-        Log.d(LOG_TAG, "Fetch offers receieved for jobs by poster started");
+    //getting the offers on jobs the poster has received
+    public void GetOffersReceivedForPoster(int user_id) {
+        Log.d(LOG_TAG, "Fetch offers received for jobs by poster started");
 
         //Defining retrofit com.emtech.retrofitexample.api service
         //APIService service = retrofit.create(APIService.class);
@@ -501,16 +600,17 @@ public class GetMyJobs {
                 //if response body is not null, we have some data
                 //count what we have in the response
                 try {
-                    if (response.body() != null) {
+                    if (response.body().getOffersReceived() != null) {
                         Log.d(LOG_TAG, "JSON not null");
 
                         //clear the previous search list if it has content
-                        if (offersList != null) {
+                        //if (offersList != null) {
                             offersList.clear();
-                        }
+                        //}
 
                         for (int i = 0; i < response.body().getOffersReceived().size(); i++) {
                             offer = new Offer();
+                            offer.setOffer_id(response.body().getOffersReceived().get(i).getOffer_id());
                             offer.setOffered_by(response.body().getOffersReceived().get(i).getOffered_by());
                             offer.setJob_id(response.body().getOffersReceived().get(i).getJob_id());
                             offer.setOffer_amount(response.body().getOffersReceived().get(i).getOffer_amount());
@@ -533,11 +633,88 @@ public class GetMyJobs {
 
                         // When you are off of the main thread and want to update LiveData, use postValue.
                         // It posts the update to the main thread.
-                        mOffersReceivedList.postValue(offersList);
+                        mPosterOffersReceivedList.postValue(offersList);
 
                         Log.d(LOG_TAG, "Size of list: " + response.body().getOffersReceived().size());
                         // If the code reaches this point, we have successfully performed our sync
                         Log.d(LOG_TAG, "Successfully got all offers received for jobs by this poster ");
+                    }else{
+                        mPosterOffersReceivedList.postValue(null);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, "Error from inside response area in retrofit call --"+e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserJobs> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+            }
+        });
+
+    }
+
+    //getting the offers on jobs the poster has received or accepted
+    public void GetOffersAcceptedForPoster(int user_id) {
+        Log.d(LOG_TAG, "Fetch offers accepted for jobs by poster started");
+
+        //Defining retrofit com.emtech.retrofitexample.api service
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        Call<UserJobs> call = service.getOffersAcceptedForPoster(user_id);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<UserJobs>() {
+            @Override
+            public void onResponse(Call<UserJobs> call, Response<UserJobs> response) {
+
+                //if response body is not null, we have some data
+                //count what we have in the response
+                try {
+                    if (response.body().getOffersAcceptedList() != null) {
+                        Log.d(LOG_TAG, "JSON not null");
+
+                        //clear the previous search list if it has content
+                        //if (offersList != null) {
+                            offersList.clear();
+                        //}
+
+                        for (int i = 0; i < response.body().getOffersAcceptedList().size(); i++) {
+                            offer = new Offer();
+                            offer.setOffer_id(response.body().getOffersAcceptedList().get(i).getOffer_id());
+                            offer.setOffered_by(response.body().getOffersAcceptedList().get(i).getOffered_by());
+                            offer.setJob_id(response.body().getOffersAcceptedList().get(i).getJob_id());
+                            offer.setOffer_amount(response.body().getOffersAcceptedList().get(i).getOffer_amount());
+                            offer.setMessage(response.body().getOffersAcceptedList().get(i).getMessage());
+                            offer.setLast_edited_on(response.body().getOffersAcceptedList().get(i).getLast_edited_on());
+                            offer.setSeen_by_poster(response.body().getOffersAcceptedList().get(i).getSeen_by_poster());
+                            offer.setEdit_count(response.body().getOffersAcceptedList().get(i).getEdit_count());
+                            offer.setOffer_accepted(response.body().getOffersAcceptedList().get(i).getOffer_accepted());
+                            offer.setName(response.body().getOffersAcceptedList().get(i).getName());
+                            offer.setEst_tot_budget(response.body().getOffersAcceptedList().get(i).getEst_tot_budget());
+                            offer.setPosted_by(response.body().getOffersAcceptedList().get(i).getPosted_by());
+                            offer.setPosted_on(response.body().getOffersAcceptedList().get(i).getPosted_on());
+                            offer.setJob_date(response.body().getOffersAcceptedList().get(i).getJob_date());
+
+                            offersList.add(offer);
+                        }
+
+                        //add the profile pic of the user who posted the job
+                        offer.setProfile_pic(response.body().getProfilePic());
+
+                        // When you are off of the main thread and want to update LiveData, use postValue.
+                        // It posts the update to the main thread.
+                        mPosterOffersAcceptedList.postValue(offersList);
+
+                        Log.d(LOG_TAG, "Size of list: " + response.body().getOffersAcceptedList().size());
+                        // If the code reaches this point, we have successfully performed our sync
+                        Log.d(LOG_TAG, "Successfully got all offers accepted for jobs by this poster ");
+                    }else{
+                        mPosterOffersAcceptedList.postValue(null);
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -578,6 +755,7 @@ public class GetMyJobs {
                             Log.d(LOG_TAG, "JSON not null");
 
                             offer = new Offer();
+                            offer.setOffer_id(response.body().getOfferDetails().getOffer_id());
                             offer.setOffered_by(response.body().getOfferDetails().getOffered_by());
                             offer.setJob_id(response.body().getOfferDetails().getJob_id());
                             offer.setOffer_amount(response.body().getOfferDetails().getOffer_amount());
@@ -591,6 +769,10 @@ public class GetMyJobs {
                             offer.setPosted_by(response.body().getOfferDetails().getPosted_by());
                             offer.setPosted_on(response.body().getOfferDetails().getPosted_on());
                             offer.setJob_date(response.body().getOfferDetails().getJob_date());
+                            //add the profile pic of the user who posted the job
+                            offer.setProfile_pic(response.body().getProfilePic());
+                            //set the name of the fixer
+                            offer.setUser_name(response.body().getUser_name());
 
                             // When you are off of the main thread and want to update LiveData, use postValue.
                             // It posts the update to the main thread.
@@ -616,6 +798,225 @@ public class GetMyJobs {
             }
         });
 
+    }
+
+    //retrofit call to update offer seen status to 1 (seen by poster)
+    public void UpdateOfferSeenByPosterStatus(int offerId){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.updateOfferSeenStatus(offerId, 1);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+            }
+        });
+
+    }
+
+    //retrofit call to update offer status to accepted by poster - 1
+    public void PosterAcceptOffer(int offerId, int jobId){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.posterAcceptOffer(offerId, jobId, 1);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+                        //send response data to the activity
+                        //success
+                        offerReceivedDetailsForPosterActivity.updateUiAfterPosterAcceptOffer(true,
+                                response.body().getMessage());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                offerReceivedDetailsForPosterActivity.updateUiAfterPosterAcceptOffer(false,
+                        t.getMessage());
+            }
+        });
+
+    }
+
+    //retrofit call to update offer status to rejected by poster - 2
+    public void PosterRejectOffer(int offerId, int jobId){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.posterRejectOffer(offerId, jobId,2);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+                        //send response data to the activity
+                        //success
+                        if (offerAcceptedDetailsForPosterActivity != null) {
+                            offerAcceptedDetailsForPosterActivity.updateUiAfterPosterRejectOffer(true,
+                                    response.body().getMessage());
+                        }else{
+                            offerReceivedDetailsForPosterActivity.updateUiAfterPosterRejectOffer(true,
+                                    response.body().getMessage());
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                if (offerAcceptedDetailsForPosterActivity != null) {
+                    offerAcceptedDetailsForPosterActivity.updateUiAfterPosterRejectOffer(true,
+                            t.getMessage());
+                }else{
+                    offerReceivedDetailsForPosterActivity.updateUiAfterPosterRejectOffer(true,
+                            t.getMessage());
+                }
+            }
+        });
+
+    }
+
+    //retrofit call to update offer status to rejected by fixer - 3
+    public void FixerRejectOffer(int offerId, int jobId){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.fixerRejectOffer(offerId, jobId, 3);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+                        //send response data to the activity
+                        //success
+                        if (offerMadeDetailsForFixerActivity != null) {
+                            offerMadeDetailsForFixerActivity.updateUiAfterFixerRejectOffer(true,
+                                    response.body().getMessage());
+                        }else {
+                            offerAcceptedDetailsForFixerActivity.updateUiAfterFixerRejectOffer(true,
+                                    response.body().getMessage());
+                        }
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                if (offerMadeDetailsForFixerActivity != null) {
+                    offerMadeDetailsForFixerActivity.updateUiAfterFixerRejectOffer(true,
+                            t.getMessage());
+                }else {
+                    offerAcceptedDetailsForFixerActivity.updateUiAfterFixerRejectOffer(true,
+                            t.getMessage());
+                }
+            }
+        });
+
+    }
+
+    //check if the fixer already made an offer to this job
+    public void CheckIfOfferIsAlreadyMade(int userId, int jobId){
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.checkOfferAlreadyMade(userId, jobId);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try {
+                    if (!response.body().getError()) {
+                        Log.e(LOG_TAG, "Offers made by this fixer = "+response.body().getMessage());
+                        //send response data to the activity
+                        //success
+                        jobDetailsActivity.offerAlreadyMadeCheck(response.body().getIs_offer_already_made());
+                        /*if (response.body().getMessage().equals("1")) {
+                            jobDetailsActivity.offerAlreadyMadeCheck(true);
+                        }else if (response.body().getMessage().equals("0")){
+                            jobDetailsActivity.offerAlreadyMadeCheck(false);
+                        }*/
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, "Error while checking if offer was already made: "+t.getMessage());
+            }
+        });
     }
 
 }

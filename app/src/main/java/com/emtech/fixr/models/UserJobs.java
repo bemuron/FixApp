@@ -24,6 +24,9 @@ public class UserJobs {
     @SerializedName("jobDetails")
     private Job jobDetails;
 
+    @SerializedName("user_name")
+    private String user_name;
+
     //@SerializedName("jobDetails")
     private List<Job> jobsListByStatus;
 
@@ -41,6 +44,8 @@ public class UserJobs {
 
     //list of jobs whose offers have been accepted for specific fixer
     private List<Offer> offersAcceptedList;
+
+    private List<Offer> fixerOffersAcceptedList;
 
     //list of jobs by a poster which have offers made to
     private List<Offer> offersReceived;
@@ -105,6 +110,14 @@ public class UserJobs {
 
     public List<Offer> getOffersReceived() {
         return offersReceived;
+    }
+
+    public List<Offer> getFixerOffersAcceptedList() {
+        return fixerOffersAcceptedList;
+    }
+
+    public String getUser_name() {
+        return user_name;
     }
 
     //LiveData<List<FixAppCategory>> getCategories();

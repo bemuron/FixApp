@@ -1,5 +1,6 @@
 package com.emtech.fixr.presentation.ui.activity;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -40,7 +41,6 @@ public class MyJobsListActivity extends AppCompatActivity implements MyJobsListA
     private MyJobsActivityViewModel mViewModel;
     private Job job;
     private MyJobsListAdapter jobsAdapter;
-    private OffersListAdapter offersAdapter;
     private int mUserId;
     private String mUserRole;
     private TextView emptyView;
@@ -52,6 +52,7 @@ public class MyJobsListActivity extends AppCompatActivity implements MyJobsListA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_jobs_list);
+        setupActionBar();
 
         mUserId = getIntent().getIntExtra("userId", 0);
         String user_role = getIntent().getStringExtra("userRole");
@@ -71,6 +72,14 @@ public class MyJobsListActivity extends AppCompatActivity implements MyJobsListA
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             recyclerView.smoothScrollToPosition(mPosition);
         });
+    }
+
+    private void setupActionBar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     private void getAllWidgets(){
@@ -117,7 +126,7 @@ public class MyJobsListActivity extends AppCompatActivity implements MyJobsListA
             startActivity(intent);
         }else {
             Intent intent = new Intent(this, JobDetailsActivity.class);
-            intent.putExtra("jobID", position);
+            intent.putExtra("jobID", job.getJob_id());
             intent.putExtra("jobName", job.getName());
             startActivity(intent);
         }

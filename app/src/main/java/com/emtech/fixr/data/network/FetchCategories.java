@@ -18,75 +18,75 @@ import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.Categories;
 
 public class FetchCategories {
-    private static final String LOG_TAG = FetchCategories.class.getSimpleName();
+  private static final String LOG_TAG = FetchCategories.class.getSimpleName();
 
-    // LiveData storing the latest downloaded weather forecasts
-    private final MutableLiveData<Category[]> mDownloadedCategories;
-    private final AppExecutors mExecutors;
+  // LiveData storing the latest downloaded weather forecasts
+  private final MutableLiveData<Category[]> mDownloadedCategories;
+  private final AppExecutors mExecutors;
 
-    // For Singleton instantiation
-    private static final Object LOCK = new Object();
-    private static FetchCategories sInstance;
-    private final Context mContext;
+  // For Singleton instantiation
+  private static final Object LOCK = new Object();
+  private static FetchCategories sInstance;
+  private final Context mContext;
 
-    public FetchCategories(Context context, AppExecutors executors) {
-        mContext = context;
-        mExecutors = executors;
-        mDownloadedCategories = new MutableLiveData<Category[]>();
+  public FetchCategories(Context context, AppExecutors executors) {
+    mContext = context;
+    mExecutors = executors;
+    mDownloadedCategories = new MutableLiveData<Category[]>();
+  }
+
+  /**
+   * Get the singleton for this class
+   */
+  public static FetchCategories getInstance(Context context, AppExecutors executors) {
+    Log.d(LOG_TAG, "Getting the network data source");
+    if (sInstance == null) {
+      synchronized (LOCK) {
+        sInstance = new FetchCategories(context.getApplicationContext(), executors);
+        Log.d(LOG_TAG, "Made new network data source");
+      }
     }
+    return sInstance;
+  }
 
-    /**
-     * Get the singleton for this class
-     */
-    public static FetchCategories getInstance(Context context, AppExecutors executors) {
-        Log.d(LOG_TAG, "Getting the network data source");
-        if (sInstance == null) {
-            synchronized (LOCK) {
-                sInstance = new FetchCategories(context.getApplicationContext(), executors);
-                Log.d(LOG_TAG, "Made new network data source");
-            }
-        }
-        return sInstance;
-    }
+  public LiveData<Category[]> getCurrentCategories() {
+    return mDownloadedCategories;
+  }
 
-    public LiveData<Category[]> getCurrentCategories() {
-        return mDownloadedCategories;
-    }
+  /**
+   * Starts an intent service to fetch the categories.
+   */
+  public void startFetchCategoryService() {
+    Intent intentToFetch = new Intent(mContext, FixAppSyncIntentService.class);
+    mContext.startService(intentToFetch);
+    Log.d(LOG_TAG, "Fetch categories service created");
+  }
 
-    /**
-     * Starts an intent service to fetch the categories.
-     */
-    public void startFetchCategoryService() {
-        Intent intentToFetch = new Intent(mContext, FixAppSyncIntentService.class);
-        mContext.startService(intentToFetch);
-        Log.d(LOG_TAG, "Fetch categories service created");
-    }
-
-    public void GetAppCategories() {
-        Log.d(LOG_TAG, "Fetch categories started");
+  public void GetAppCategories() {
+    Log.d(LOG_TAG, "Fetch categories started");
 /*
         //defining a progress dialog to show while signing up
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Signing Up...");
         progressDialog.show();
 */
-            //Defining retrofit com.emtech.retrofitexample.api service
-            //APIService service = retrofit.create(APIService.class);
-        APIService service = new LocalRetrofitApi().getRetrofitService();
+    //Defining retrofit com.emtech.retrofitexample.api service
+    //APIService service = retrofit.create(APIService.class);
+    APIService service = new LocalRetrofitApi().getRetrofitService();
 
-        //defining the call
-        Call<Categories> call = service.getCategories();
+    //defining the call
+    Call<Categories> call = service.getCategories();
 
-        //calling the com.emtech.retrofitexample.api
-        call.enqueue(new Callback<Categories>() {
-            @Override
-            public void onResponse(Call<Categories> call, Response<Categories> response) {
+    //calling the com.emtech.retrofitexample.api
+    call.enqueue(new Callback<Categories>() {
+      @Override
+      public void onResponse(Call<Categories> call, Response<Categories> response) {
 
-                //if response body is not null, we have some data
-                //count what we have in the response
-                if (response.body() != null && response.body().getCategories().length > 0) {
-                    Log.d(LOG_TAG, "JSON not null and has " + response.body().getCategories().length
-                            + " values");
+        //if response body is not null, we have some data
+        //count what we have in the response
+        if (response.body() != null && response.body().getCategories().length > 0) {
+          Log.d(LOG_TAG, "JSON not null and has " + response.body().getCategories().length
+                  + " values");
 
                     /*
                     //array to hold the category details from the response
@@ -102,23 +102,23 @@ public class FetchCategories {
                     }
                     */
 
-                    // When you are off of the main thread and want to update LiveData, use postValue.
-                    // It posts the update to the main thread.
-                    mDownloadedCategories.postValue(response.body().getCategories());
+          // When you are off of the main thread and want to update LiveData, use postValue.
+          // It posts the update to the main thread.
+          mDownloadedCategories.postValue(response.body().getCategories());
 
-                    // If the code reaches this point, we have successfully performed our sync
-                    Log.d(LOG_TAG, "Successfully performed our sync");
-                }
-            }
+          // If the code reaches this point, we have successfully performed our sync
+          Log.d(LOG_TAG, "Successfully performed our sync");
+        }
+      }
 
-            @Override
-            public void onFailure(Call<Categories> call, Throwable t) {
-                //print out any error we may get
-                //probably server connection
-                Log.e(LOG_TAG, "Could not get categories");
-            }
-        });
+      @Override
+      public void onFailure(Call<Categories> call, Throwable t) {
+        //print out any error we may get
+        //probably server connection
+        Log.e(LOG_TAG, "Could not get categories");
+      }
+    });
 
-    }
+  }
 
 }

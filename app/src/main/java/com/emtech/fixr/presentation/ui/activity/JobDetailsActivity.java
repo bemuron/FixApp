@@ -25,6 +25,7 @@ import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.PostJobViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,7 +36,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         {
     private static final String LOG_TAG = JobDetailsActivity.class.getSimpleName();
     private TextView jobTitleTV, postedByTV, timePostedTV, locationTV,
-            toBeDoneDateTV, toBeDoneTimeTV, jobPriceTV, jobDetailsET;
+            toBeDoneDateTV, toBeDoneTimeTV, jobPriceTV, jobDetailsET, offerAlreadyMadeNoticeTV;
     private Button makeOfferButton;
     private MyJobsActivityViewModel mViewModel;
     private PostJobActivityViewModel postJobActivityViewModel;
@@ -46,6 +47,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     private MakeOfferDialogFragment dialogFragment;
     private int userId, job_id;
     private String userRole, jobName, jobPoster;
+    private Boolean isOfferMade = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +81,9 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this.getApplicationContext());
         mViewModel = new ViewModelProvider
                 (this, factory).get(MyJobsActivityViewModel.class);
+
+        //check the offers table if this user already made an offer for this job
+        mViewModel.checkIfOfferIsAlreadyMade(userId, job_id);
 
         mViewModel.getJobDetails(job_id).observe(this, jobDetails -> {
             clearViews();
@@ -127,18 +132,31 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         return jobDetailsActivity;
     }
 
-    @Override
+    /*@Override
     public void onResume(){
         super.onResume();
         jobDetailsActivity = this;
 
-    }
+    }*/
 
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    //check if the fixer already made an offer
+    //this method is called from GetMyJobs with the network response for whether an offer
+    //has already been made
+    public void offerAlreadyMadeCheck(Boolean isOfferAlreadyMade){
+        if (isOfferAlreadyMade){
+            isOfferMade = isOfferAlreadyMade;
+            makeOfferButton.setEnabled(false);
+            makeOfferButton.setVisibility(View.GONE);
+            offerAlreadyMadeNoticeTV.setVisibility(View.VISIBLE);
+            offerAlreadyMadeNoticeTV.setText("You already made an offer to this job");
         }
     }
 
@@ -154,6 +172,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         jobDetailsET = findViewById(R.id.JD_job_details);
         makeOfferButton = findViewById(R.id.JD_make_offer);
         makeOfferButton.setOnClickListener(this);
+        offerAlreadyMadeNoticeTV = findViewById(R.id.JD_offer_already_made_notice);
     }
 
     //method to handle population of the views with the content
@@ -227,8 +246,17 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
                 if (userId != job.getPosted_by()) {
                     //show the make offer dialog
                     showMakeOfferDialog();
+                }else{
+                    //Toast.makeText(this,"You can't make an offer to a job you posted",
+                      //      Toast.LENGTH_LONG).show();
+                    Snackbar.make(v, "You can't make an offer to a job you posted", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
                 }
-                showMakeOfferDialog();
+                //if an offer is made already, disable the button
+                if (isOfferMade){
+                    Toast.makeText(this,"You already made an offer to this Job",
+                            Toast.LENGTH_LONG).show();
+                }
                 /**
                  * TODO
                  * check if the user has a valid phone number registered, profile pic,
@@ -279,17 +307,27 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void returnOfferDetails(int amountOffered, String offerMessage) {
+        pDialog.setMessage("Saving your offer ...");
         showDialog();
         postJobActivityViewModel.saveOffer(amountOffered,offerMessage, userId, job_id);
     }
 
     //this method is called in the PostFixAppJob class to return the results of an attempt
     // to save the offer details
-    public void afterSaveOfferAttempt(Boolean isOfferPosted, String message){
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-        Log.d(LOG_TAG, "********** is save offer successful: "+isOfferPosted +" Message: "+message);
-        hideDialog();
 
+    public void afterSaveOfferAttempt(Boolean isOfferPosted, String message){
+        if (isOfferPosted) {
+            isOfferMade = isOfferPosted;
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+
+            makeOfferButton.setVisibility(View.GONE);
+            offerAlreadyMadeNoticeTV.setVisibility(View.VISIBLE);
+            offerAlreadyMadeNoticeTV.setText("You already made an offer to this job");
+            Log.d(LOG_TAG, "********** is save offer successful: " + isOfferPosted + " Message: " + message);
+            hideDialog();
+        }else{
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        }
     }
 
     private void showDialog() {

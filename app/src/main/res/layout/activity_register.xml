@@ -79,6 +79,8 @@
                 android:layout_marginBottom="10dp"
                 android:hint="@string/hint_dob"
                 android:padding="10dp"
+                android:clickable="true"
+                android:focusable="true"
                 android:singleLine="true"
                 android:inputType="date"
                 android:textColor="@color/colorPrimaryDark"

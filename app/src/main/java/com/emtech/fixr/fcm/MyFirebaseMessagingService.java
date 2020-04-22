@@ -93,18 +93,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             /*if (*//* Check if data needs to be processed by long running job *//* true) {
                 // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
                 //scheduleJob();*/
-                try {
+            try {
 
-                    JSONObject json = new JSONObject(remoteMessage.getData().toString());
-                    sendPushNotification(json);
-                } catch (Exception e) {
-                    Log.e(TAG, "Exception: " + e.getMessage());
-                }
+                JSONObject json = new JSONObject(remoteMessage.getData().toString());
+                sendPushNotification(json);
+            } catch (Exception e) {
+                Log.e(TAG, "Exception: " + e.getMessage());
+            }
 
-        }else {
-        // Handle message within 10 seconds
-        handleNow();
-    }
+        }/*else {
+            // Handle message within 10 seconds
+            handleNow();
+        }*/
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
@@ -173,9 +173,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Handle time allotted to BroadcastReceivers.
      */
-    private void handleNow() {
+    /*private void handleNow() {
         Log.d(TAG, "Short lived task is done.");
-    }
+    }*/
 
     //this method will display the notification
     //We are passing the JSONObject that is received from
@@ -201,45 +201,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.e(TAG, "imageUrl: " + imageUrl);
             Log.e(TAG, "timestamp: " + timestamp);
 
-            //parsing json data
-            //optString returns the value mapped by name if it exists,
-            // coercing it if necessary. Returns the empty string if no such mapping exists.
-            /*String imageUrl = data.optString("image");
+            Intent resultIntent = new Intent(getApplicationContext(), HomeActivity.class);
+            resultIntent.putExtra("message", message);
+            //show notification wether is in back or foreground
+            showNotificationMessage(getApplicationContext(), title, message, timestamp, resultIntent);
 
-            String activityToLaunch = data.getString("activity_to_launch");
+            /*if (MyNotificationManager.isAppInBackground(getApplicationContext())) {
+                // app is in background. show the message in notification tray
+                Intent resultIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                resultIntent.putExtra("message", message);
 
-            //float time_taken = 0.0f;
-            //time_taken = (float) data.getDouble("time_taken");
+                //showNotificationMessage(getApplicationContext(), title, message, timestamp, resultIntent);
 
-            String time_taken = data.getString("time_taken");
+                // check for image attachment
+                if (TextUtils.isEmpty(imageUrl) || imageUrl == null) {
+                    showNotificationMessage(getApplicationContext(), title, message, timestamp, resultIntent);
 
-            JSONObject mObj  = data.getJSONObject("message");*/
-            /*NotificationMessage notificationMessage = new NotificationMessage();
-            notificationMessage.setMeeting_id(mObj.getInt("meeting_id"));
-            //variable to hold our created message
-            String newMessage = null;
-            if(mObj.getString("meeting_time") != null){
-                newMessage = "Meeting date: " + mObj.getString("meeting_date") +
-                "Meeting time: " + mObj.getString("meeting_time") +
-                "Meeting location: " + mObj.getString("meeting_location");
-            }
+                } else {
+                    // image is present, show notification with image
+                    showNotificationMessageWithBigImage(getApplicationContext(), title, message, timestamp, resultIntent, imageUrl);
+                }
 
-            notificationMessage.setMessage(newMessage);
-            //notificationMessage.setId(mObj.getString("meeting_id"));
-            //notificationMessage.setCreatedAt(mObj.getString("created_at"));
+            }else {
 
-            JSONObject uObj = data.getJSONObject("user");
-            NotificationUser user = new NotificationUser();
-            user.setId(uObj.getInt("user_id"));
-            //user.setEmail(uObj.getString("email"));
-            user.setName(uObj.getString("name"));
-            notificationMessage.setNotificationUser(user);
-
-            String title = data.getString("title");
-            boolean isBackground = data.getBoolean("is_background");
-            String timestamp = "1:00";*/
-
-            if (!MyNotificationManager.isAppInBackground(getApplicationContext())) {
                 // app is in foreground, broadcast the push message
                 Intent pushNotification = new Intent(Config.PUSH_NOTIFICATION);
                 pushNotification.putExtra("message", message);
@@ -248,23 +232,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 // play notification sound
                 MyNotificationManager notificationManager = new MyNotificationManager(getApplicationContext());
                 notificationManager.playNotificationSound();
-
-            }else {
-
-                // app is in background. show the message in notification tray
-                Intent resultIntent = new Intent(getApplicationContext(), HomeActivity.class);
-                resultIntent.putExtra("message", message);
-
-                // check for image attachment
-                if (TextUtils.isEmpty(imageUrl)) {
-                    showNotificationMessage(getApplicationContext(), title, message, timestamp, resultIntent);
-                    //playing notification sound
-                    myNotificationManager.playNotificationSound();
-                } else {
-                    // image is present, show notification with image
-                    showNotificationMessageWithBigImage(getApplicationContext(), title, message, timestamp, resultIntent, imageUrl);
-                }
-            }
+            }*/
         } catch (JSONException e) {
             Log.e(TAG, "Json Exception: " + e.getMessage());
         } catch (Exception e) {

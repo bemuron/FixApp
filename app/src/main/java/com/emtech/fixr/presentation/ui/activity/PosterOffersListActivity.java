@@ -2,7 +2,7 @@ package com.emtech.fixr.presentation.ui.activity;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -47,44 +47,45 @@ public class PosterOffersListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_poster_offers_list);
         setupActionBar();
 
+        // Progress bar
+        progressBar = findViewById(R.id.poster_offers_progress_bar);
+        showBar();
+
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this);
-        mViewModel = ViewModelProviders.of(this, factory).get(MyJobsActivityViewModel.class);
+        mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
 
         //get the user id sent by the home activity
         mUserId = getIntent().getIntExtra(USER_ID, 0);
         mOfferType = getIntent().getStringExtra(OFFER_TYPE);
 
+        //first clear the previous list
+        clearData();
+
         getAllWidgets();
         setAdapter();
-        showBar();
 
-        //first clear the previous list
-        offersAdapter.clearData();
-
-        if (mOfferType.equals("received")) {
+        if (mOfferType != null && mOfferType.equals("received")) {
             setTitle(R.string.title_activity_poster_offers_received);
             mViewModel.getAllOffersReceived(mUserId).observe(this, offersReceived -> {
-                hideBar();
                 offerList = offersReceived;
-                offersAdapter.setList(offersReceived);
-                Log.e(LOG_TAG, "offers to jobs for poster list size is " + offerList.size());
+                offersAdapter.setList(offerList);
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
 
                 if (offerList == null || offerList.size() == 0) {
-                    emptyView.setText(R.string.empty_poster_offers_received_list);
+                    emptyView.setText(R.string.empty_poster_offers_accepted_list);
                     emptyView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
+                }else{
+                    Log.e(LOG_TAG, "offers to jobs for poster list size is " + offerList.size());
                 }
             });
-        }else if (mOfferType.equals("accepted")) {
+        }else if (mOfferType != null && mOfferType.equals("accepted")) {
             setTitle(R.string.title_activity_poster_offers_accepted);
             mViewModel.getAllOffersAccepted(mUserId).observe(this, offersAccepted -> {
-                hideBar();
                 offerList = offersAccepted;
-                offersAdapter.setList(offersAccepted);
-                Log.e(LOG_TAG, "offers accepted by poster list size is " + offerList.size());
+                offersAdapter.setList(offerList);
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
@@ -93,6 +94,8 @@ public class PosterOffersListActivity extends AppCompatActivity implements
                     emptyView.setText(R.string.empty_poster_offers_received_list);
                     emptyView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
+                }else {
+                    Log.e(LOG_TAG, "offers accepted by poster list size is " + offerList.size());
                 }
             });
         }
@@ -108,22 +111,31 @@ public class PosterOffersListActivity extends AppCompatActivity implements
 
     //set up the view widgets
     private void getAllWidgets(){
-        // Progress bar
-        progressBar = findViewById(R.id.poster_offers_progress_bar);
         recyclerView = findViewById(R.id.poster_offers_list_recycler_view);
         emptyView = findViewById(R.id.posterOffers_empty_list_view);
-        showBar();
     }
 
     //setting up the recycler view adapter
     private void setAdapter()
     {
+        hideBar();
         offersAdapter = new OffersListAdapter(PosterOffersListActivity.this, offerList,this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(offersAdapter);
+    }
+
+    //method to clear the previous list if it exists
+    private void clearData(){
+        if(offerList != null){
+            offerList.clear(); // clear list
+        }
+        if (offersAdapter != null) {
+            offersAdapter.clearData();
+            offersAdapter.notifyDataSetChanged(); // let your adapter know about the changes and reload view.
+        }
     }
 
     private void showBar() {
@@ -151,10 +163,20 @@ public class PosterOffersListActivity extends AppCompatActivity implements
     public void onOfferRowClicked(String jobName, int position) {
         Offer offer = offerList.get(position);
         offerList.set(position, offer);
-            Log.e(LOG_TAG, "Offer clicked ID = "+position);
-            Intent intent = new Intent(this, OfferDetailsForPosterActivity.class);
-            intent.putExtra("offerID", position);
+        if (mOfferType.equals("received")) {
+            Log.e(LOG_TAG, "Offer clicked ID = " + offer.getOffer_id());
+            Intent intent = new Intent(PosterOffersListActivity.this,
+                    OfferReceivedDetailsForPosterActivity.class);
+            intent.putExtra("offerID", offer.getOffer_id());
             intent.putExtra("jobName", jobName);
             startActivity(intent);
+        }else if (mOfferType.equals("accepted")) {
+            Log.e(LOG_TAG, "Offer clicked ID = " + offer.getOffer_id());
+            Intent intent = new Intent(PosterOffersListActivity.this,
+                    OfferAcceptedDetailsForPosterActivity.class);
+            intent.putExtra("offerID", offer.getOffer_id());
+            intent.putExtra("jobName", jobName);
+            startActivity(intent);
+        }
     }
 }

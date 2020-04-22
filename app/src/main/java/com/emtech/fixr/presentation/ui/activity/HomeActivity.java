@@ -1,6 +1,7 @@
 package com.emtech.fixr.presentation.ui.activity;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ProcessLifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.BroadcastReceiver;
@@ -105,7 +106,8 @@ public class HomeActivity extends AppCompatActivity
 
         //we use this to associate the lifecycle observer(MyApplication) with this class(lifecycle owner)
         //it'll help us know when the app is in back ground or foreground
-        getLifecycle().addObserver(new MyApplication());
+        //getLifecycle().addObserver(new MyApplication());
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(new MyApplication());
 
         /**
          * Broadcast receiver calls in two scenarios

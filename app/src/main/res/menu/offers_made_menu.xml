@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presentation.ui.activity.OfferAcceptedDetailsForFixerActivity">
+
+    <item android:id="@+id/action_edit_offer"
+        android:icon="@mipmap/ic_edit_white_24dp"
+        android:orderInCategory="102"
+        android:title="Edit Offer"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_delete"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="102"
+        android:title="Delete"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/action_view_details"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="View Job details"
+        app:showAsAction="never"/>
+
+</menu>

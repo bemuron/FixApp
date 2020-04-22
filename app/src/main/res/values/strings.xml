@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">FixApp</string>
     <string name="job_details_activity">Job Details</string>
+    <string name="offer_details_activity">Offer Details</string>
     <string name="browse_jobs_activity">Browse jobs</string>
+    <string name="search_jobs_activity">Search jobs</string>
     <string name="categories_list_instructions">In what category is the item you want fixed?</string>
     <string name="describe_project_header">Describe Your project</string>
     <string name="title">Title;</string>
@@ -91,6 +93,7 @@
 
     <string name="send_offer">Send Offer</string>
     <string name="cancel">Cancel</string>
+    <string name="notice_yes">Yes</string>
 
     <string name="offer_job_instructions">You are making an offer to this job;</string>
     <string name="offer_job_poster_instructions">Posted by;</string>
@@ -127,5 +130,8 @@
     <string name="job_details_tab">Job Details</string>
     <string name="job_date_tab">Job Time</string>
     <string name="job_budget_tab">Job Budget</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

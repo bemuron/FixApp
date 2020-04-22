@@ -7,11 +7,11 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".presentation.ui.fragment.PostJobBudgetFragment">
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/margin_padding_normal"
-    android:orientation="vertical">
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="@dimen/margin_padding_normal"
+      android:orientation="vertical">
 
     <RadioGroup
         android:id="@+id/job_budget_radio_group"
@@ -26,33 +26,33 @@
         android:orientation="horizontal">
 
 
-        <RadioButton
-            android:id="@+id/job_budget_total_radio_button"
-            android:layout_width="100dp"
-            android:gravity="center"
-            android:layout_height="wrap_content"
-            android:background="@drawable/radio_flat_selector"
-            android:button="@android:color/transparent"
-            android:paddingLeft="16dp"
-            android:paddingTop="20dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="20dp"
-            android:text="@string/title_job_total"
-            android:textColor="@drawable/radio_flat_text_selector" />
+      <RadioButton
+          android:id="@+id/job_budget_total_radio_button"
+          android:layout_width="100dp"
+          android:gravity="center"
+          android:layout_height="wrap_content"
+          android:background="@drawable/radio_flat_selector"
+          android:button="@android:color/transparent"
+          android:paddingLeft="16dp"
+          android:paddingTop="20dp"
+          android:paddingRight="16dp"
+          android:paddingBottom="20dp"
+          android:text="@string/title_job_total"
+          android:textColor="@drawable/radio_flat_text_selector" />
 
-        <RadioButton
-            android:id="@+id/job_budget_hourly_radio_button"
-            android:gravity="center"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/radio_flat_selector"
-            android:button="@android:color/transparent"
-            android:paddingLeft="14dp"
-            android:paddingTop="20dp"
-            android:paddingRight="14dp"
-            android:paddingBottom="20dp"
-            android:text="@string/title_job_hourly_rate"
-            android:textColor="@drawable/radio_flat_text_selector" />
+      <RadioButton
+          android:id="@+id/job_budget_hourly_radio_button"
+          android:gravity="center"
+          android:layout_width="100dp"
+          android:layout_height="wrap_content"
+          android:background="@drawable/radio_flat_selector"
+          android:button="@android:color/transparent"
+          android:paddingLeft="14dp"
+          android:paddingTop="20dp"
+          android:paddingRight="14dp"
+          android:paddingBottom="20dp"
+          android:text="@string/title_job_hourly_rate"
+          android:textColor="@drawable/radio_flat_text_selector" />
     </RadioGroup>
 
     <!--the textview and edittext below is to be made visible if the user selects budget total option-->
@@ -150,5 +150,5 @@
         android:textColor="@color/whiteTextColor"
         android:text="@string/job_post_button"/>
 
-</LinearLayout>
+  </LinearLayout>
 </ScrollView>

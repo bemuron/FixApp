@@ -202,15 +202,22 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     //a getter method for all the jobs a fixer has made an offer to.
     public LiveData<List<Offer>> getOffersMade(int user_id){
         Log.d(LOG_TAG, "calling bg method to get offers made list");
-        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffers(user_id, "made"));
-        return mGetMyJobs.getOffersMade();
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffersMadeForFixer(user_id));
+        return mGetMyJobs.getOffersMadeForFixer();
     }
 
-    //a getter method for all the jobs a fixer made an offer to and have been accepted
+    //a getter method for all the job offers by this fixer that have been accepted
+    public LiveData<List<Offer>> getOffersAcceptedForFixer(int user_id){
+        Log.d(LOG_TAG, "calling bg method to get offers made list");
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffersAcceptedForFixer(user_id));
+        return mGetMyJobs.getOffersAcceptedForFixer();
+    }
+
+    //a getter method for all the job offers a poster has accepted
     public LiveData<List<Offer>> getOffersAccepted(int user_id){
         Log.d(LOG_TAG, "calling bg method to get offers accepted list");
-        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffers(user_id, "accepted"));
-        return mGetMyJobs.getOffersMade();
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffersAcceptedForPoster(user_id));
+        return mGetMyJobs.getOffersAcceptedForPoster();
     }
 
     //getting offer details of a selected job
@@ -223,15 +230,52 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     //a getter method for all the jobs by a poster to which offers have been made
     public LiveData<List<Offer>> getOffersReceived(int user_id){
         Log.d(LOG_TAG, "calling bg method to get offers received list");
-        mExecutors.diskIO().execute(() -> mGetMyJobs.getOffersReceived(user_id));
-        return mGetMyJobs.getOffersMade();
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetOffersReceivedForPoster(user_id));
+        return mGetMyJobs.getOffersReceivedForPoster();
     }
 
-    //getting offer details of a selected job
+    //getting offer details of a selected job for the poster
     public LiveData<Offer> getOfferDetailsForPoster(int offer_id){
         Log.d(LOG_TAG, "calling bg method to get offer details for poster");
         mExecutors.diskIO().execute(() -> mGetMyJobs.GetOfferDetailsForPoster(offer_id));
         return mGetMyJobs.getOfferDetails();
+    }
+
+    //updating offer seen status to 1 (seen by poster)
+    public void updateOfferSeenByPosterStatus(int offer_id){
+        Log.e(LOG_TAG, "calling method to update offer seen status");
+        //call retrofit in background to update offer seen status
+        mExecutors.diskIO().execute(() -> mGetMyJobs.UpdateOfferSeenByPosterStatus(offer_id));
+    }
+
+    //updating the offer to accepted by the poster
+    public  void posterAcceptOffer(int offer_id, int jobId){
+        Log.e(LOG_TAG, "calling method to update offer seen status");
+        //call retrofit in background to accept the offer for poster
+        mExecutors.diskIO().execute(() -> mGetMyJobs.PosterAcceptOffer(offer_id, jobId));
+    }
+
+    //updating the offer to rejected by the poster
+    public  void posterRejectOffer(int offer_id, int jobId){
+        Log.e(LOG_TAG, "calling method to reject offer by poster");
+        //call retrofit in background to reject the offer for poster
+        mExecutors.diskIO().execute(() -> mGetMyJobs.PosterRejectOffer(offer_id, jobId));
+    }
+
+    //updating the offer to rejected by the fixer
+    public void fixerRejectOffer(int offer_id, int jobId){
+        Log.e(LOG_TAG, "calling method to reject offer by fixer");
+        //call retrofit in background to reject the offer for poster
+        mExecutors.diskIO().execute(() -> mGetMyJobs.FixerRejectOffer(offer_id, jobId));
+    }
+
+    //method to check if the fixer already made an offer for a job
+    //a fixer cant make an offer for the same job more than once
+    //they can only edit what they had already made
+    public void checkIfOfferIsAlreadyMade(int userId, int jobId){
+        Log.e(LOG_TAG, "calling method to check if a fixer already made an offer to a job");
+        //call retrofit in background to check if offer is already made
+        mExecutors.diskIO().execute(() -> mGetMyJobs.CheckIfOfferIsAlreadyMade(userId, jobId));
     }
 
     public Cursor getUser(){
@@ -300,7 +344,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
 
     //method to edit the offer made by the fixer/tasker
     public void editFixerOffer(int offerId, int amountOffered, String offerMessage, int editCount){
-        //call retrofit in background to post the offer for the job
+        //call retrofit in background to update the offer for the job
         mExecutors.diskIO().execute(() -> mPostFixAppJob.editOffer(offerId, amountOffered, offerMessage, editCount) );
     }
 

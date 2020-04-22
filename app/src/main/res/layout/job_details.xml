@@ -6,54 +6,54 @@
     android:padding="8dp">
 
 
-    <TextView
-        android:id="@+id/describe_project-header"
-        android:layout_width="fill_parent"
-        android:gravity="center_horizontal"
-        android:layout_height="wrap_content"
-        android:text="@string/describe_project_header"
-        android:textSize="17sp"/>
+  <TextView
+      android:id="@+id/describe_project-header"
+      android:layout_width="fill_parent"
+      android:gravity="center_horizontal"
+      android:layout_height="wrap_content"
+      android:text="@string/describe_project_header"
+      android:textSize="17sp"/>
 
-    <EditText
-        android:id="@+id/project_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="@dimen/margin_padding_small"
-        android:layout_marginLeft="@dimen/margin_padding_small"
-        android:layout_marginTop="@dimen/margin_padding_small"
-        android:hint="title"
-        android:padding="@dimen/margin_padding_normal"
-        android:singleLine="true"
-        android:textColor="#000000"/>
+  <EditText
+      android:id="@+id/project_title"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginBottom="@dimen/margin_padding_small"
+      android:layout_marginLeft="@dimen/margin_padding_small"
+      android:layout_marginTop="@dimen/margin_padding_small"
+      android:hint="title"
+      android:padding="@dimen/margin_padding_normal"
+      android:singleLine="true"
+      android:textColor="#000000"/>
 
-    <EditText
-        android:id="@+id/project_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginBottom="@dimen/margin_padding_small"
-        android:layout_marginLeft="@dimen/margin_padding_small"
-        android:layout_marginTop="@dimen/margin_padding_small"
-        android:hint="Description"
-        android:padding="@dimen/margin_padding_normal"
-        android:singleLine="false"
-        android:textColor="#000000"/>
+  <EditText
+      android:id="@+id/project_description"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:layout_marginBottom="@dimen/margin_padding_small"
+      android:layout_marginLeft="@dimen/margin_padding_small"
+      android:layout_marginTop="@dimen/margin_padding_small"
+      android:hint="Description"
+      android:padding="@dimen/margin_padding_normal"
+      android:singleLine="false"
+      android:textColor="#000000"/>
 
-    <TextView
-        android:id="@+id/project-images"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:text="@string/project_images_info"
-        android:textSize="17sp"/>
+  <TextView
+      android:id="@+id/project-images"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_horizontal"
+      android:text="@string/project_images_info"
+      android:textSize="17sp"/>
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
-        android:textSize="@dimen/text_size_xnormal"
-        android:textColor="#ffffff"
-        android:text="Post"/>
+  <Button
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@color/colorPrimaryDark"
+      android:textSize="@dimen/text_size_xnormal"
+      android:textColor="#ffffff"
+      android:text="Post"/>
 
 </LinearLayout>

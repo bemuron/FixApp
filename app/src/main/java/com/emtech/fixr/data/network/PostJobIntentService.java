@@ -30,47 +30,47 @@ import java.io.File;
  * screen.
  */
 public class PostJobIntentService extends IntentService {
-    private static final String LOG_TAG = PostJobIntentService.class.getSimpleName();
+  private static final String LOG_TAG = PostJobIntentService.class.getSimpleName();
 
-    public PostJobIntentService() {
-        super("PostJobIntentService");
+  public PostJobIntentService() {
+    super("PostJobIntentService");
+  }
+
+  @Override
+  protected void onHandleIntent(Intent intent) {
+
+    Bundle jobBundle = intent.getExtras();
+
+    Log.d(LOG_TAG, "Post job intent service started");
+    PostFixAppJob postFixAppJob = InjectorUtils.providePostFixAppJob(this.getApplicationContext());
+    if (jobBundle != null){
+      Log.d(LOG_TAG, "Job details not empty");
+      int userId = jobBundle.getInt("userId");
+      String jobTitle = jobBundle.getString("jobTitle");
+      String jobDesc = jobBundle.getString("jobDesc");
+      String jobLocation = jobBundle.getString("jobLocation");
+      String mustHaveOne = jobBundle.getString("mustHaveOne");
+      String mustHaveTwo = jobBundle.getString("mustHaveTwo");
+      String mustHaveThree = jobBundle.getString("mustHaveThree");
+      int isJobRemote = jobBundle.getInt("isJobRemote");
+      File file = (File) jobBundle.getSerializable("filePath");
+      int categoryId = jobBundle.getInt("categoryId");
+
+      //check if the user didn't add an image
+      if (file == null){
+        //pass the job details to the method to be posted to the server: finally
+        postFixAppJob.postJobDetailsWithoutImage(userId, jobTitle, jobDesc, jobLocation,
+                mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, categoryId);
+      }else {
+        //pass the job details to the method to be posted to the server: finally
+        postFixAppJob.postJobDetails(userId, jobTitle, jobDesc, jobLocation,
+                mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, file, categoryId);
+      }
+    }else{
+      Log.e(LOG_TAG, "Job details empty");
     }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
-
-        Bundle jobBundle = intent.getExtras();
-
-        Log.d(LOG_TAG, "Post job intent service started");
-        PostFixAppJob postFixAppJob = InjectorUtils.providePostFixAppJob(this.getApplicationContext());
-        if (jobBundle != null){
-            Log.d(LOG_TAG, "Job details not empty");
-            int userId = jobBundle.getInt("userId");
-            String jobTitle = jobBundle.getString("jobTitle");
-            String jobDesc = jobBundle.getString("jobDesc");
-            String jobLocation = jobBundle.getString("jobLocation");
-            String mustHaveOne = jobBundle.getString("mustHaveOne");
-            String mustHaveTwo = jobBundle.getString("mustHaveTwo");
-            String mustHaveThree = jobBundle.getString("mustHaveThree");
-            int isJobRemote = jobBundle.getInt("isJobRemote");
-            File file = (File) jobBundle.getSerializable("filePath");
-            int categoryId = jobBundle.getInt("categoryId");
-
-            //check if the user didn't add an image
-            if (file == null){
-                //pass the job details to the method to be posted to the server: finally
-                postFixAppJob.postJobDetailsWithoutImage(userId, jobTitle, jobDesc, jobLocation,
-                        mustHaveOne, mustHaveTwo,
-                        mustHaveThree, isJobRemote, categoryId);
-            }else {
-                //pass the job details to the method to be posted to the server: finally
-                postFixAppJob.postJobDetails(userId, jobTitle, jobDesc, jobLocation,
-                        mustHaveOne, mustHaveTwo,
-                        mustHaveThree, isJobRemote, file, categoryId);
-            }
-        }else{
-            Log.e(LOG_TAG, "Job details empty");
-        }
-
-    }
+  }
 }

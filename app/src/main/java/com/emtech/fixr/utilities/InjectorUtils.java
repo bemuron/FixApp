@@ -71,7 +71,7 @@ public class InjectorUtils {
                 BrowsedJobsDataSource.getInstance();
 
         //SearchJobsDataSource searchJobsDataSource =
-          //      SearchJobsDataSource.getInstance();
+        //      SearchJobsDataSource.getInstance();
 
         return FixAppRepository.getInstance(database.categoriesDao(), database.usersDao(), fetchCategories,
                 fixAppJob, registerUser, loginUser, getMyJobs, browsedJobsDataSource, executors);
@@ -138,13 +138,13 @@ public class InjectorUtils {
     }
 
     /*
-    * Dependency injection is the idea that you should make required components available
-    * for a class, instead of creating them within the class itself. An example of how the
-    * Sunshine code does this is that instead of constructing the WeatherNetworkDatasource
-    * within the SunshineRepository, the WeatherNetworkDatasource is created via InjectorUtilis
-    * and passed into the SunshineRepository constructor. One of the benefits of this is that
-    * components are easier to replace when you're testing. You can learn more about dependency
-    * injection here. For now, know that the methods in InjectorUtils create the classes you
-    * need, so they can be passed into constructors.
-    * */
+     * Dependency injection is the idea that you should make required components available
+     * for a class, instead of creating them within the class itself. An example of how the
+     * Sunshine code does this is that instead of constructing the WeatherNetworkDatasource
+     * within the SunshineRepository, the WeatherNetworkDatasource is created via InjectorUtilis
+     * and passed into the SunshineRepository constructor. One of the benefits of this is that
+     * components are easier to replace when you're testing. You can learn more about dependency
+     * injection here. For now, know that the methods in InjectorUtils create the classes you
+     * need, so they can be passed into constructors.
+     * */
 }

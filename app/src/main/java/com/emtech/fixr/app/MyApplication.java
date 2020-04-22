@@ -13,36 +13,38 @@ import com.emtech.fixr.helpers.MyPreferenceManager;
 public class MyApplication extends Application
         implements LifecycleObserver {
 
-        public static final String TAG = MyApplication.class
-                .getSimpleName();
+    public static final String TAG = MyApplication.class
+            .getSimpleName();
 
-        public boolean myApplicationStatus;
+    public boolean myApplicationStatus;
 
-        private static MyApplication mInstance;
+    public static boolean isAppInBg;
 
-        private MyPreferenceManager pref;
+    private static MyApplication mInstance;
 
-        @Override
-        public void onCreate() {
-            super.onCreate();
+    private MyPreferenceManager pref;
 
-            ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+    @Override
+    public void onCreate() {
+        super.onCreate();
 
-            mInstance = this;
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+
+        mInstance = this;
+    }
+
+    public static synchronized MyApplication getInstance() {
+        return mInstance;
+    }
+
+
+    public MyPreferenceManager getPrefManager() {
+        if (pref == null) {
+            pref = new MyPreferenceManager(this);
         }
 
-        public static synchronized MyApplication getInstance() {
-            return mInstance;
-        }
-
-
-        public MyPreferenceManager getPrefManager() {
-            if (pref == null) {
-                pref = new MyPreferenceManager(this);
-            }
-
-            return pref;
-        }
+        return pref;
+    }
 
     public void logout() {
         //pref.clear();
@@ -55,22 +57,26 @@ public class MyApplication extends Application
     public void connectListener() {
         Log.d(TAG, "resumed observing lifecycle.");
         mInstance.myApplicationStatus = true;
+        isAppInBg = false;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     public void disconnectListener() {
         Log.d(TAG, "paused observing lifecycle.");
         mInstance.myApplicationStatus = false;
+        isAppInBg = true;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onMoveToForeground() {
         Log.d(TAG, "Returning to foreground…");
+        isAppInBg = false;
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onMoveToBackground() {
         Log.d(TAG, "Moving to background…");
+        isAppInBg = true;
     }
 
 }

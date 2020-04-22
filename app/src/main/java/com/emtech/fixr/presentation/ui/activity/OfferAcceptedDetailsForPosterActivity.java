@@ -1,10 +1,12 @@
 package com.emtech.fixr.presentation.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -14,9 +16,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -38,17 +37,17 @@ import java.util.Locale;
 
 //import de.hdodenhof.circleimageview.CircleImageView;
 
-public class OfferDetailsForPosterActivity extends AppCompatActivity implements View.OnClickListener,
+public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity implements View.OnClickListener,
         FixAppRepository.OfferEditedListener, FixAppRepository.OfferSavedListener
         {
-    private static final String LOG_TAG = OfferDetailsForPosterActivity.class.getSimpleName();
-    private TextView jobTitleTV, offerByTV, timePostedTV, offerStatusTV,
-            toBeDoneDateTV, toBeDoneTimeTV, offeredAmountTV, offerMsgTV,
+    private static final String LOG_TAG = OfferAcceptedDetailsForPosterActivity.class.getSimpleName();
+    private TextView jobTitleTV, offerByTV, offeredAmountTV, offerMsgTV,
             lastEditDateTv;
     private MaterialButton viewJobDetailsButton;
     private Button rejectOfferButton, callFixerButton, acceptOfferButton;
     private MyJobsActivityViewModel mViewModel;
     private PostJobActivityViewModel postJobActivityViewModel;
+    public static OfferAcceptedDetailsForPosterActivity offerAcceptedDetailsForPosterActivity;
     private Offer offer;
     private ProgressBar pBar;
     private SessionManager session;
@@ -61,23 +60,18 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_offer_details_for_poster);
+        setContentView(R.layout.activity_offer_accepted_details_for_poster);
         setupActionBar();
-
-        // session manager
-        session = new SessionManager(getApplicationContext());
-        userRole = session.getUserRole();
-        userId = session.getUserId();
+        offerAcceptedDetailsForPosterActivity = this;
 
         // Progress bar
         pBar = findViewById(R.id.forPoster_progress_bar);
-        hideBar();
+        showBar();
 
+        //get the data load details from the calling activity
         offer_id = getIntent().getIntExtra("offerID", 0);
+        Log.e(LOG_TAG, "offer id received is "+ offer_id);
         jobName = getIntent().getStringExtra("jobName");
-
-        //initialise the views
-        setUpWidgets();
 
         PostJobViewModelFactory factory1 = InjectorUtils.providePostJobActivityViewModelFactory(this.getApplicationContext());
         postJobActivityViewModel = new ViewModelProvider
@@ -87,8 +81,17 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
         mViewModel = new ViewModelProvider
                 (this, factory).get(MyJobsActivityViewModel.class);
 
+        // session manager
+        session = new SessionManager(getApplicationContext());
+        userRole = session.getUserRole();
+        userId = session.getUserId();
+
+        //initialise the views
+        setUpWidgets();
+        //clear the views if they had eny data before
+        clearViews();
+
         mViewModel.getOfferDetailsForPoster(offer_id).observe(this, offerDetails -> {
-            clearViews();
 
             if (offerDetails != null) {
                 offer = new Offer();
@@ -103,18 +106,22 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
                 offer.setName(offerDetails.getName());
                 offer.setEst_tot_budget(offerDetails.getEst_tot_budget());
                 offer.setPosted_by(offerDetails.getPosted_by());
+                offer.setUser_name(offerDetails.getUser_name());
                 offer.setPosted_on(offerDetails.getPosted_on());
                 offer.setJob_date(offerDetails.getJob_date());
 
                 Log.e(LOG_TAG, "Offer details name is " + offerDetails.getName());
                 displayDetails();
-                //hideDialog();
             }else {
                 hideBar();
                 Log.e(LOG_TAG, "Offer details not retrieved");
             }
 
         });
+    }
+
+    public static OfferAcceptedDetailsForPosterActivity getInstance(){
+        return offerAcceptedDetailsForPosterActivity;
     }
 
     private void setupActionBar() {
@@ -135,9 +142,13 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
         fixerImageView = findViewById(R.id.forPoster_fixerImageView);
         fixerImageView.setOnClickListener(this);
         acceptOfferButton = findViewById(R.id.forPoster_acceptOffer_button);
+        acceptOfferButton.setOnClickListener(this);
         rejectOfferButton = findViewById(R.id.forPoster_rejectOffer_button);
+        rejectOfferButton.setOnClickListener(this);
         callFixerButton = findViewById(R.id.forPoster_callFixer_button);
+        callFixerButton.setOnClickListener(this);
         viewJobDetailsButton = findViewById(R.id.forPoster_viewJobDetails);
+        viewJobDetailsButton.setOnClickListener(this);
         afterAcceptOfferContainer = findViewById(R.id.forPoster_afterAcceptOffer_container);
         //if the current user is the one that posted this job
         //hide the edit button
@@ -147,10 +158,11 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
 
     //method to handle population of the views with the content
     private void displayDetails(){
+        hideBar();
         jobTitleTV.setText(offer.getName());
+        offerByTV.setText(offer.getUser_name());
         //toBeDoneDateTV.setText(job.getJob_date());
         formatDate();
-        toBeDoneTimeTV.setText(offer.getJob_date());
         offeredAmountTV.setText("UGX." + offer.getOffer_amount());
         offerMsgTV.setText(offer.getMessage());
         editCount = offer.getEdit_count();
@@ -169,6 +181,12 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
             Log.e(LOG_TAG, e.getMessage());
         }
 
+        //if it is the first time the poster is seeing this offer,update the seen status
+        //to 1 - seen by poster
+        if (offer.getSeen_by_poster() == 0){
+            mViewModel.updateOfferSeenByPosterStatus(offer_id);
+        }
+
         hideBar();
     }
 
@@ -177,10 +195,8 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
         showBar();
         jobTitleTV.setText("");
         offerByTV.setText("");
-        timePostedTV.setText("");
         //toBeDoneDateTV.setText(job.getJob_date());
         formatDate();
-        toBeDoneTimeTV.setText("");
         offeredAmountTV.setText("");
         offerMsgTV.setText("");
     }
@@ -208,18 +224,27 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
         lastEditDateTv.setText(lastEditedOn);
     }
 
+            /**
+             * TODO
+             *create a menu list which has items like view job details, reject offer, call
+             */
+
     @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.forPoster_acceptOffer_button:
+                showBar();
+                mViewModel.posterAcceptOffer(offer_id, offer.getJob_id());
                 /**
                  * TODO
                  * Implement what happens when poster accepts offer
-                 * This button is dsabled and the afterAcceptOffer container is made visible
+                 * This button is disabled and the afterAcceptOffer container is made visible
                  */
                 break;
 
             case R.id.forPoster_rejectOffer_button:
+                showBar();
+                mViewModel.posterRejectOffer(offer_id, offer.getJob_id());
                 /**
                  * TODO
                  * Implement what happens when poster rejects offer
@@ -235,10 +260,10 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
                 break;
 
             case R.id.forPoster_viewJobDetails:
-                /**
-                 * TODO
-                 * Take the poster to the details of the job he posted
-                 */
+                Intent intent = new Intent(this, JobDetailsActivity.class);
+                intent.putExtra("jobID", offer.getJob_id());
+                intent.putExtra("jobName", jobName);
+                startActivity(intent);
                 break;
         }
     }
@@ -250,13 +275,13 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
 
     private void showBar() {
         pBar.setVisibility(View.VISIBLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+          //      WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     private void hideBar() {
         pBar.setVisibility(View.INVISIBLE);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        //getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     @Override
@@ -277,4 +302,51 @@ public class OfferDetailsForPosterActivity extends AppCompatActivity implements 
         }
 
     }
+
+    //called in GetMyJobs to get the response after a job is accepted
+    public void updateUiAfterPosterAcceptOffer(Boolean isOfferAccepted, String message){
+        hideBar();
+        if (isOfferAccepted){
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    //called in GetMyJobs to get the response after a job is accepted
+    public void updateUiAfterPosterRejectOffer(Boolean isOfferRejected, String message){
+        hideBar();
+        if (isOfferRejected) {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+            @Override
+            public boolean onCreateOptionsMenu(Menu menu) {
+                // Inflate the menu; this adds items to the action bar if it is present.
+                getMenuInflater().inflate(R.menu.accepted_offer_menu, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onOptionsItemSelected(MenuItem item) {
+                // Handle action bar item clicks here. The action bar will
+                // automatically handle clicks on the Home/Up button, so long
+                // as you specify a parent activity in AndroidManifest.xml.
+                int id = item.getItemId();
+
+                if (id == R.id.action_call_fixer){
+                    //launch call app with number of fixer to call
+
+                } else if (id == R.id.action_delete_offer){
+                    //delete offer
+                    mViewModel.posterRejectOffer(offer_id, offer.getJob_id());
+                } else if (id == R.id.action_view_details){
+                    Intent intent = new Intent(this, JobDetailsActivity.class);
+                    intent.putExtra("jobID", offer.getJob_id());
+                    intent.putExtra("jobName", jobName);
+                    startActivity(intent);
+                }
+
+                return super.onOptionsItemSelected(item);
+            }
+
         }

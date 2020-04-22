@@ -51,7 +51,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
     private ScrollView layoutBottomSheet;
     private BottomSheetBehavior sheetBehavior;
     public static PostJobActivity postJobActivity;
-    private int jobCreatedId = 0;
+    private int job_id = 0;
     private Job job;
     private FixAppRepository repository;
     private boolean isUpdated;
@@ -67,7 +67,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         setupActionBar();
 
         int user_id = getIntent().getIntExtra("user_id", 0);
-        int job_id = getIntent().getIntExtra("job_id", 0);
+        job_id = getIntent().getIntExtra("job_id", 0);
         int category_id = getIntent().getIntExtra("category_id", 0);
         String category_name = getIntent().getStringExtra("category_name");
 
@@ -201,33 +201,11 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
     //open the next fragment(date and time) when the first(job details) is done
     private void setUpJobDateFragment(){
         mViewPager.setCurrentItem(1,true);
-        /*PostJobDateFragment jobDateFragment = new PostJobDateFragment();
-
-        if (jobDateFragment== null) {
-            jobDateFragment = PostJobDateFragment.newInstance();
-        }
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        getSupportFragmentManager().beginTransaction()
-                .addToBackStack("PostJobDateFragment")
-                .replace(R.id.post_job_fragment_container, jobDateFragment)
-                .commit();*/
     }
 
     //open the next fragment(job budget) when the previous(job date time) is done
     private void setUpJobBudgetFragment(){
         mViewPager.setCurrentItem(2,true);
-        /*PostJobBudgetFragment jobBudgetFragment = new PostJobBudgetFragment();
-
-        if (jobBudgetFragment== null) {
-            jobBudgetFragment = PostJobBudgetFragment.newInstance();
-        }
-
-        // Add the fragment to the 'fragment_container' FrameLayout
-        getSupportFragmentManager().beginTransaction()
-                .addToBackStack("PostJobBudgetFragment")
-                .replace(R.id.post_job_fragment_container, jobBudgetFragment)
-                .commit();*/
     }
 
     //post job fragment callback
@@ -241,14 +219,14 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
 
         //if job id is > 0 we are updating the job, else its at the default
         // state of 0 - posting fresh details
-        if (jobCreatedId > 0) {
+        if (job_id > 0) {
             //we are updating the existing job details
-            repository.getJobUpdateDetails(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+            repository.getJobUpdateDetails(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                     mustHaveThree, isJobRemote, file);
-            Log.e(LOG_TAG, "Inside job posted callback job id = "+jobCreatedId);
+            Log.e(LOG_TAG, "Inside job posted callback job id = "+ job_id);
             //if the file is null, then we are updating the details without an image attached
             if (file == null){
-                repository.getJobUpdateDetailsWithoutImage(jobCreatedId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                repository.getJobUpdateDetailsWithoutImage(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                         mustHaveThree, isJobRemote);
             }
 
@@ -273,7 +251,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
     public void onJobCreated(Boolean isJobCreated, String message, int job_id) {
         if (isJobCreated){
             Log.e(LOG_TAG, "New job Id = "+job_id);
-            jobCreatedId = job_id;
+            this.job_id = job_id;
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
             //go back to home activity
             /*Intent intent = new Intent(PostJobActivity.this, HomeActivity.class);
@@ -281,7 +259,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
             this.finish();*/
             hideBar();
         }else{
-            jobCreatedId = 0;
+            this.job_id = 0;
             Log.e(LOG_TAG, "something isn't right job id = "+job_id);
             //if the job wasn't posted, display error message
             Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
@@ -328,28 +306,28 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
 
         if (perHrPrice != 0 && totHrs != 0){
             //at this point we expect the job id to be present no matter the case
-            if (jobCreatedId > 0) {
+            if (job_id > 0) {
                 //we are updating the existing job details
-                repository.getJobBudgetUpdate(jobCreatedId, 0, perHrPrice, totHrs, estBudget, 1);
+                repository.getJobBudgetUpdate(job_id, 0, perHrPrice, totHrs, estBudget, 1);
             }else{
                 hideBar();
                 scrollToDetailsFragment();
                 Toast.makeText(this, "Please start with the job details", Toast.LENGTH_LONG).show();
-                Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
+                Log.e(LOG_TAG, "Job ID not present = "+ job_id);
             }
             Log.e(LOG_TAG, "From job budget frag: total budget = "+totalBudget);
             Log.e(LOG_TAG, "From job budget frag: est tot budget = "+estTotBudget);
         }
         if (totBudget != 0){
             //at this point we expect the job id to be present no matter the case
-            if (jobCreatedId > 0) {
+            if (job_id > 0) {
                 //we are updating the existing job details
-                repository.getJobBudgetUpdate(jobCreatedId, totBudget, 0, 0, estBudget, 1);
+                repository.getJobBudgetUpdate(job_id, totBudget, 0, 0, estBudget, 1);
             }else{
                 hideBar();
                 scrollToDetailsFragment();
                 Toast.makeText(this, "Please start with the job details", Toast.LENGTH_LONG).show();
-                Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
+                Log.e(LOG_TAG, "Job ID not present = "+ job_id);
             }
             Log.e(LOG_TAG, "From job budget frag: price per hour = "+pricePerHr);
             Log.e(LOG_TAG, "From job budget frag: total hrs = "+totalHrs);
@@ -363,16 +341,16 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         showBar();
         if (timeSelected == null) {
             //at this point we expect the job id to be present no matter the case
-            if (jobCreatedId > 0) {
+            if (job_id > 0) {
                 //call async task to post job update details
-                //new FixAppRepository.UpdateJobDateTimeTask(this, jobCreatedId, jobDate, null).execute();
+                //new FixAppRepository.UpdateJobDateTimeTask(this, job_id, jobDate, null).execute();
                 //we are updating the existing job details
-                repository.getJobUpdateDateTime(jobCreatedId, jobDate, null);
+                repository.getJobUpdateDateTime(job_id, jobDate, null);
                 //checking the response status from the server
                 /*if (jobDetailsSection.equals("dateTime")){
                     if (isUpdated) {
                         hideBar();
-                        Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
+                        Log.e(LOG_TAG, "Job date time updated successfully = " + job_id);
                         Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
                         //go to the next section
                         setUpJobBudgetFragment();
@@ -385,21 +363,21 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
                 hideBar();
                 scrollToDetailsFragment();
                 Toast.makeText(this, "Please start with the job details", Toast.LENGTH_LONG).show();
-                Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
+                Log.e(LOG_TAG, "Job ID not present = "+ job_id);
             }
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }else{
             //at this point we expect the job id to be present no matter the case
-            if (jobCreatedId > 0) {
+            if (job_id > 0) {
                 //we are updating the existing job details
-                repository.getJobUpdateDateTime(jobCreatedId, jobDate, timeSelected);
+                repository.getJobUpdateDateTime(job_id, jobDate, timeSelected);
                 //call async task to post job update details
-                //new FixAppRepository.UpdateJobDateTimeTask(this, jobCreatedId, jobDate, timeSelected).execute();
+                //new FixAppRepository.UpdateJobDateTimeTask(this, job_id, jobDate, timeSelected).execute();
                 //checking the response status from the server
                 /*if (jobDetailsSection.equals("dateTime")){
                     if (isUpdated) {
                         hideBar();
-                        Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
+                        Log.e(LOG_TAG, "Job date time updated successfully = " + job_id);
                         Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
                         //go to the next section
                         setUpJobBudgetFragment();
@@ -412,7 +390,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
                 hideBar();
                 scrollToDetailsFragment();
                 Toast.makeText(this, "Please start with the job details", Toast.LENGTH_LONG).show();
-                Log.e(LOG_TAG, "Job ID not present = "+jobCreatedId);
+                Log.e(LOG_TAG, "Job ID not present = "+ job_id);
             }
             Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }
@@ -427,7 +405,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         if (jobDetailsSection.equals("basicsWithImage")){
             if (isJobUpdated) {
                 //hideBar();
-                Log.e(LOG_TAG, "Job details updated successfully = " + jobCreatedId);
+                Log.e(LOG_TAG, "Job details updated successfully = " + job_id);
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
                 //go to the next section
                 setUpJobDateFragment();
@@ -441,7 +419,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         if (jobDetailsSection.equals("basicsWithoutImage")){
             if (isJobUpdated) {
                 //hideBar();
-                Log.e(LOG_TAG, "Job details updated successfully = " + jobCreatedId);
+                Log.e(LOG_TAG, "Job details updated successfully = " + job_id);
                 Toast.makeText(this, updateResponseMessage, Toast.LENGTH_SHORT).show();
                 //go to the next section
                 setUpJobDateFragment();
@@ -458,7 +436,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         //if (jobDetailsSection.equals("dateTime")){
         if (isJobUpdated) {
             //hideBar();
-            Log.e(LOG_TAG, "Job date time updated successfully = " + jobCreatedId);
+            Log.e(LOG_TAG, "Job date time updated successfully = " + job_id);
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             //go to the next section
             setUpJobBudgetFragment();
@@ -474,7 +452,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         hideBar();
         if (isJobUpdated) {
             //hideBar();
-            Log.e(LOG_TAG, "Job posted successfully = " + jobCreatedId);
+            Log.e(LOG_TAG, "Job posted successfully = " + job_id);
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(this, HomeActivity.class);
             startActivity(intent);

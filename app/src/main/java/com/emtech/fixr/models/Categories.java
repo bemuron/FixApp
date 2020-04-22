@@ -3,20 +3,20 @@ package com.emtech.fixr.models;
 import com.emtech.fixr.data.database.Category;
 
 public class Categories {
-    private Category[] categories;
+  private Category[] categories;
 
-    public Categories() {
+  public Categories() {
 
-    }
+  }
 
-    public Category[] getCategories() {
-        return categories;
-    }
+  public Category[] getCategories() {
+    return categories;
+  }
 
-    //LiveData<List<FixAppCategory>> getCategories();
+  //LiveData<List<FixAppCategory>> getCategories();
 
-    public void setMessages(Category[] categories) {
-        this.categories = categories;
-    }
+  public void setMessages(Category[] categories) {
+    this.categories = categories;
+  }
 
 }

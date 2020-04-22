@@ -17,11 +17,15 @@ public class Result {
     @SerializedName("job")
     private Job job;
 
-    public Result(Boolean error, String message, User user, Job job) {
+    @SerializedName("is_offer_already_made")
+    private Boolean is_offer_already_made;
+
+    public Result(Boolean error, String message, User user, Job job, Boolean is_offer_already_made) {
         this.error = error;
         this.message = message;
         this.user = user;
         this.job = job;
+        this.is_offer_already_made = is_offer_already_made;
     }
 
 
@@ -39,5 +43,9 @@ public class Result {
 
     public Job getJob() {
         return job;
+    }
+
+    public Boolean getIs_offer_already_made() {
+        return is_offer_already_made;
     }
 }

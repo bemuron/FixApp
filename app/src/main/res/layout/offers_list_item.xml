@@ -19,7 +19,9 @@
         android:clickable="true"
         android:orientation="vertical"
         android:paddingLeft="72dp"
-        android:paddingRight="@dimen/padding_list_row">
+        android:paddingStart="72dp"
+        android:paddingRight="@dimen/padding_list_row"
+        android:paddingEnd="@dimen/padding_list_row">
 
         <TextView
             android:id="@+id/offer_jobs_job_title"
@@ -27,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="1"
+            android:ellipsize="end"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="@dimen/text_size_xxnormal"
             android:textStyle="bold" />
@@ -83,6 +86,8 @@
 
             <ImageView
                 android:id="@+id/icon_profile"
+                android:background="@drawable/img_layer"
+                android:scaleType="centerCrop"
                 android:layout_width="@dimen/icon_width_height"
                 android:layout_height="@dimen/icon_width_height" />
         </RelativeLayout>
@@ -96,6 +101,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:textColor="@color/draft_job"
+        android:visibility="gone"
         android:textSize="@dimen/text_size_normal"
         android:textStyle="bold"
         android:text="Seen by poster"/>

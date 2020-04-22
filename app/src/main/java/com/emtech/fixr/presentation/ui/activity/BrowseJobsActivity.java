@@ -1,6 +1,8 @@
 package com.emtech.fixr.presentation.ui.activity;
 
 import android.app.SearchManager;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +24,7 @@ import android.widget.ProgressBar;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
+import com.emtech.fixr.data.network.BrowseJobsDataFactory;
 import com.emtech.fixr.presentation.adapters.BrowseJobsAdapter;
 import com.emtech.fixr.presentation.viewmodels.BrowseJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.BrowseJobsViewModelFactory;
@@ -36,7 +39,6 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
         AdapterView.OnItemSelectedListener{
     private static final String LOG_TAG = BrowseJobsActivity.class.getSimpleName();
     private BrowseJobsActivityViewModel mViewModel;
-    private SearchJobsActivityViewModel viewModel;
     private BrowseJobsAdapter jobsAdapter;
     private ProgressBar progressBar;
     private int mPosition = RecyclerView.NO_POSITION;
@@ -53,19 +55,17 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
         progressBar = findViewById(R.id.browse_jobs_progress_bar);
         showBar();
 
-        BrowseJobsViewModelFactory factory = InjectorUtils.provideBrowseJobsViewModelFactory(getApplicationContext());
-        mViewModel = ViewModelProviders.of
-                (this, factory).get(BrowseJobsActivityViewModel.class);
+        //clear previous list of it exists
+        clearData();
 
-        SearchJobsViewModelFactory searchFactory = InjectorUtils.provideSearchJobsViewModelFactory(getApplicationContext());
-        viewModel = ViewModelProviders.of
-                (this, searchFactory).get(SearchJobsActivityViewModel.class);
+        BrowseJobsViewModelFactory factory = InjectorUtils.provideBrowseJobsViewModelFactory(getApplicationContext());
+        mViewModel = new ViewModelProvider
+                (this, factory).get(BrowseJobsActivityViewModel.class);
 
         mViewModel.getBrowsedJobsLiveData().observe(this, browsedJobsList -> {
             jobList = browsedJobsList;
             jobsAdapter.submitList(browsedJobsList);
             Log.e(LOG_TAG, "Browsed jobs list size is " +browsedJobsList.size());
-            hideBar();
 
             if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
             recyclerView.smoothScrollToPosition(mPosition);
@@ -73,8 +73,6 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
 
         getAllWidgets();
         setAdapter();
-
-        handleIntent(getIntent());
     }
 
     private void setupActionBar() {
@@ -88,6 +86,7 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
     //get the widgets
     public void getAllWidgets(){
         recyclerView = findViewById(R.id.browse_jobs_recycler_view);
+        hideBar();
     }
 
     //setting up the recycler view adapter
@@ -103,53 +102,9 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
     }
 
     @Override
-    protected void onNewIntent(Intent intent) {
-        // Because this activity has set launchMode="singleTop", the system calls this method
-        // to deliver the intent if this activity is currently the foreground activity when
-        // invoked again (when the user executes a search from this activity, we don't create
-        // a new instance of this activity, so the system delivers the search intent here)
-        setIntent(intent);
-        super.onNewIntent(intent);
-        handleIntent(intent);
-    }
-
-    private void handleIntent(Intent intent) {
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            // handles a click on a search suggestion; launches activity to show word
-            //Intent wordIntent = new Intent(this, BibleVerses.class);
-            //intent.putExtra("issue_ID", issue.getId());
-            //intent.putExtra("issue_name", issue.getIssueName());
-            //wordIntent.setData(intent.getData());
-            //startActivity(wordIntent);
-        } else if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            showBar();
-            // handles a search query
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //showResults(query);
-            Log.e(LOG_TAG, "Search query = "+query);
-            //send query to server to search
-            viewModel.searchForJobs(query).observe(this, searchResultsList -> {
-                jobsAdapter.submitList(searchResultsList);
-                Log.e(LOG_TAG, "search results list size is " +searchResultsList.size());
-                hideBar();
-
-                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-                recyclerView.smoothScrollToPosition(mPosition);
-            });
-        }
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.search_menu, menu);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        //SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        //searchView.setSuggestionsAdapter(words);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setIconifiedByDefault(false);
-
+        getMenuInflater().inflate(R.menu.browse_jobs_menu, menu);
         return true;
     }
 
@@ -161,7 +116,9 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
         int id = item.getItemId();
 
         if (id == R.id.action_search){
-            return true;
+            //open the search activity if the search icon is clicked on
+            Intent intent = new Intent(this, SearchJobsActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);
@@ -185,18 +142,26 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
         intent.putExtra("jobID", job.getJob_id());
         intent.putExtra("jobName", job.getName());
         startActivity(intent);
+    }
 
-
+    //method to clear the previous list if it exists
+    private void clearData(){
+        if(jobList != null){
+            jobList.clear(); // clear list
+        }
+        if (jobsAdapter != null) {
+            jobsAdapter.notifyDataSetChanged(); // let your adapter know about the changes and reload view.
+        }
     }
 
     private void showBar() {
         progressBar.setVisibility(View.VISIBLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        //getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+          //      WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     private void hideBar() {
         progressBar.setVisibility(View.INVISIBLE);
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        //getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 }

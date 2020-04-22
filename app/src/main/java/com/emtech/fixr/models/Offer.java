@@ -27,6 +27,8 @@ public class Offer {
 
     private int posted_by;
 
+    private String user_name;
+
     private String posted_on;
 
     private String job_date;
@@ -151,5 +153,13 @@ public class Offer {
 
     public void setProfile_pic(String profile_pic) {
         this.profile_pic = profile_pic;
+    }
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 }

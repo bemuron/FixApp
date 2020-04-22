@@ -20,9 +20,9 @@ import java.util.List;
 public class BrowseJobsActivityViewModel extends ViewModel {
 
     //creating livedata for PagedList  and PagedKeyedDataSource
-    LiveData<PagedList<Job>> jobsPagedList, searchResultsList;
+    private LiveData<PagedList<Job>> jobsPagedList, searchResultsList;
     //LiveData<BrowsedJobsDataSource> liveDataSource;
-    LiveData<PageKeyedDataSource<Integer, Job>> liveDataSource;
+    private LiveData<PageKeyedDataSource<Integer, Job>> liveDataSource;
 
     //private member variable to hold reference to the repository
     private FixAppRepository mRepository;

@@ -13,112 +13,112 @@
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
     tools:context=".presentation.ui.activity.PostJobActivity">
 
-    <LinearLayout
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:layout_gravity="center_vertical"
+      android:paddingTop="@dimen/activity_vertical_margin"
+      android:paddingBottom="@dimen/activity_vertical_margin"
+      android:paddingLeft="@dimen/margin_padding_tiny"
+      android:paddingRight="@dimen/margin_padding_tiny">
+
+    <TextView
+        android:id="@+id/must_haves_instructions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="@string/job_must_haves_instructions"
+        android:padding="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xxnormal"/>
+
+    <TextView
+        android:id="@+id/must_haves_eg_one"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="@string/job_must_haves_eg_one"
+        android:paddingRight="@dimen/margin_padding_normal"
+        android:paddingLeft="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"/>
+
+    <TextView
+        android:id="@+id/must_haves_eg_two"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="@string/job_must_haves_eg_two"
+        android:paddingRight="@dimen/margin_padding_normal"
+        android:paddingLeft="@dimen/margin_padding_normal"
+        android:textSize="@dimen/text_size_xnormal"/>
+
+    <EditText
+        android:id="@+id/edit_text_must_haves_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center_vertical"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/margin_padding_tiny"
-        android:paddingRight="@dimen/margin_padding_tiny">
+        android:layout_marginBottom="@dimen/margin_padding_small"
+        android:layout_marginLeft="@dimen/margin_padding_small"
+        android:layout_marginStart="@dimen/margin_padding_small"
+        android:layout_marginTop="@dimen/margin_padding_small"
+        android:hint="@string/must_haves_hint"
+        android:padding="@dimen/margin_padding_normal"
+        android:maxLines="1"
+        android:textColor="#000000"/>
 
-        <TextView
-            android:id="@+id/must_haves_instructions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="@string/job_must_haves_instructions"
-            android:padding="@dimen/margin_padding_normal"
-            android:textSize="@dimen/text_size_xxnormal"/>
+    <Button
+        android:id="@+id/add_must_have_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/colorPrimaryDark"
+        android:textColor="@color/whiteTextColor"
+        android:text="@string/add_must_have"/>
 
-        <TextView
-            android:id="@+id/must_haves_eg_one"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="@string/job_must_haves_eg_one"
-            android:paddingRight="@dimen/margin_padding_normal"
-            android:paddingLeft="@dimen/margin_padding_normal"
-            android:textSize="@dimen/text_size_xnormal"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/must_haves_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/must_haves_eg_two"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimaryDark"
-            android:text="@string/job_must_haves_eg_two"
-            android:paddingRight="@dimen/margin_padding_normal"
-            android:paddingLeft="@dimen/margin_padding_normal"
-            android:textSize="@dimen/text_size_xnormal"/>
+    <TextView
+        android:id="@+id/must_have_one"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:paddingRight="@dimen/margin_padding_normal"
+        android:paddingLeft="@dimen/margin_padding_normal"
+        android:textColor="@color/colorPrimaryDark"/>
 
-            <EditText
-                android:id="@+id/edit_text_must_haves_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginBottom="@dimen/margin_padding_small"
-                android:layout_marginLeft="@dimen/margin_padding_small"
-                android:layout_marginStart="@dimen/margin_padding_small"
-                android:layout_marginTop="@dimen/margin_padding_small"
-                android:hint="@string/must_haves_hint"
-                android:padding="@dimen/margin_padding_normal"
-                android:maxLines="1"
-                android:textColor="#000000"/>
+    <TextView
+        android:id="@+id/must_have_two"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:paddingRight="@dimen/margin_padding_normal"
+        android:paddingLeft="@dimen/margin_padding_normal"
+        android:textColor="@color/colorPrimaryDark"/>
 
-        <Button
-            android:id="@+id/add_must_have_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="@color/whiteTextColor"
-            android:text="@string/add_must_have"/>
+    <TextView
+        android:id="@+id/must_have_three"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/text_size_xxnormal"
+        android:paddingRight="@dimen/margin_padding_normal"
+        android:paddingLeft="@dimen/margin_padding_normal"
+        android:textColor="@color/colorPrimaryDark"/>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/must_haves_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/save_must_haves_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_padding_xxnormal"
+        android:layout_gravity="center_horizontal"
+        android:textSize="@dimen/text_size_xnormal"
+        android:background="@color/save"
+        android:textColor="@color/whiteTextColor"
+        android:text="@string/save_must_have"/>
 
-        <TextView
-            android:id="@+id/must_have_one"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_xxnormal"
-            android:paddingRight="@dimen/margin_padding_normal"
-            android:paddingLeft="@dimen/margin_padding_normal"
-            android:textColor="@color/colorPrimaryDark"/>
-
-        <TextView
-            android:id="@+id/must_have_two"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_xxnormal"
-            android:paddingRight="@dimen/margin_padding_normal"
-            android:paddingLeft="@dimen/margin_padding_normal"
-            android:textColor="@color/colorPrimaryDark"/>
-
-        <TextView
-            android:id="@+id/must_have_three"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_xxnormal"
-            android:paddingRight="@dimen/margin_padding_normal"
-            android:paddingLeft="@dimen/margin_padding_normal"
-            android:textColor="@color/colorPrimaryDark"/>
-
-        <Button
-            android:id="@+id/save_must_haves_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_padding_xxnormal"
-            android:layout_gravity="center_horizontal"
-            android:textSize="@dimen/text_size_xnormal"
-            android:background="@color/save"
-            android:textColor="@color/whiteTextColor"
-            android:text="@string/save_must_have"/>
-
-    </LinearLayout>
+  </LinearLayout>
 
 </ScrollView>

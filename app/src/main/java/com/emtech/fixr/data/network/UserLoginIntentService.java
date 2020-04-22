@@ -28,34 +28,34 @@ import com.emtech.fixr.utilities.InjectorUtils;
  * screen.
  */
 public class UserLoginIntentService extends IntentService {
-    private static final String LOG_TAG = UserLoginIntentService.class.getSimpleName();
-    private boolean loginSuccess;
+  private static final String LOG_TAG = UserLoginIntentService.class.getSimpleName();
+  private boolean loginSuccess;
 
-    public UserLoginIntentService() {
-        super("UserLoginIntentService");
+  public UserLoginIntentService() {
+    super("UserLoginIntentService");
+  }
+
+  @Override
+  protected void onHandleIntent(Intent intent) {
+
+    Bundle loginBundle = intent.getExtras();
+
+    Log.d(LOG_TAG, "User login intent service started");
+    LoginUser loginUser = InjectorUtils.provideLoginUser(this.getApplicationContext());
+
+    if (loginBundle != null){
+      Log.d(LOG_TAG, "login details not empty");
+      String email = loginBundle.getString("email");
+      String password = loginBundle.getString("password");
+
+      //pass the login details to the method to be posted to the server: finally
+      loginUser.UserLogIn(email, password);
+
+    }else{
+      Log.e(LOG_TAG, "login details empty");
+      //this.loginSuccess = false;
     }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
-
-        Bundle loginBundle = intent.getExtras();
-
-        Log.d(LOG_TAG, "User login intent service started");
-        LoginUser loginUser = InjectorUtils.provideLoginUser(this.getApplicationContext());
-
-        if (loginBundle != null){
-            Log.d(LOG_TAG, "login details not empty");
-            String email = loginBundle.getString("email");
-            String password = loginBundle.getString("password");
-
-            //pass the login details to the method to be posted to the server: finally
-            loginUser.UserLogIn(email, password);
-
-        }else{
-            Log.e(LOG_TAG, "login details empty");
-            //this.loginSuccess = false;
-        }
-
-    }
+  }
 
 }
