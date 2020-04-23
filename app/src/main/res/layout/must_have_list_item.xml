@@ -8,34 +8,34 @@
     android:orientation="vertical"
     android:padding="@dimen/margin_padding_normal">
 
-    <LinearLayout
-        android:id="@+id/must_have_item_container"
-        android:layout_width="wrap_content"
+  <LinearLayout
+      android:id="@+id/must_have_item_container"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:clickable="true"
+      android:focusable="true"
+      android:orientation="vertical"
+      android:padding="@dimen/margin_padding_normal">
+
+    <TextView
+        android:id="@+id/text_view_must_have_desc"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:orientation="vertical"
-        android:padding="@dimen/margin_padding_normal">
+        android:lines="1"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/text_size_xxnormal"/>
 
-        <TextView
-            android:id="@+id/text_view_must_have_desc"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lines="1"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="@dimen/text_size_xxnormal"/>
+  </LinearLayout>
 
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/icon_delete"
-        android:layout_width="@dimen/icon_star"
-        android:layout_height="@dimen/icon_star"
-        android:padding="@dimen/padding_list_row"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentLeft="false"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="false"
-        android:src="@android:drawable/ic_menu_delete" />
+  <ImageView
+      android:id="@+id/icon_delete"
+      android:layout_width="@dimen/icon_star"
+      android:layout_height="@dimen/icon_star"
+      android:padding="@dimen/padding_list_row"
+      android:layout_alignParentRight="true"
+      android:layout_alignParentLeft="false"
+      android:layout_alignParentEnd="true"
+      android:layout_alignParentStart="false"
+      android:src="@android:drawable/ic_menu_delete" />
 
 </RelativeLayout>

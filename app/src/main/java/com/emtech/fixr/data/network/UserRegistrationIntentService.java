@@ -28,45 +28,45 @@ import com.emtech.fixr.utilities.InjectorUtils;
  * screen.
  */
 public class UserRegistrationIntentService extends IntentService {
-    private static final String LOG_TAG = UserRegistrationIntentService.class.getSimpleName();
-    private boolean registerSuccess;
+  private static final String LOG_TAG = UserRegistrationIntentService.class.getSimpleName();
+  private boolean registerSuccess;
 
-    public UserRegistrationIntentService() {
-        super("UserRegistrationIntentService");
-    }
+  public UserRegistrationIntentService() {
+    super("UserRegistrationIntentService");
+  }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
+  @Override
+  protected void onHandleIntent(Intent intent) {
 
-        Bundle registerBundle = intent.getExtras();
-        //String reg = intent.getExtras().get("name");
+    Bundle registerBundle = intent.getExtras();
+    //String reg = intent.getExtras().get("name");
 
-        Log.d(LOG_TAG, "User registration intent service started");
-        RegisterUser registerUser = InjectorUtils.provideRegisterUser(this.getApplicationContext());
+    Log.d(LOG_TAG, "User registration intent service started");
+    RegisterUser registerUser = InjectorUtils.provideRegisterUser(this.getApplicationContext());
 
-        if (registerBundle != null){
-            Log.d(LOG_TAG, "registration details not empty");
-            String name = registerBundle.getString("name");
-            String dob = registerBundle.getString("dob");
-            String gender = registerBundle.getString("gender");
-            String email = registerBundle.getString("email");
-            String password = registerBundle.getString("password");
+    if (registerBundle != null){
+      Log.d(LOG_TAG, "registration details not empty");
+      String name = registerBundle.getString("name");
+      String dob = registerBundle.getString("dob");
+      String gender = registerBundle.getString("gender");
+      String email = registerBundle.getString("email");
+      String password = registerBundle.getString("password");
 
-            //pass the reg details to the method to be posted to the server: finally
-            registerUser.UserRegister(name, dob, gender, email, password);
+      //pass the reg details to the method to be posted to the server: finally
+      registerUser.UserRegister(name, dob, gender, email, password);
                     /*
             if (registerUser.UserRegister(name, dob, gender, email, password)){
                 registerSuccess = true;
             }
             */
-        }else{
-            Log.e(LOG_TAG, "login details empty");
-        }
-
-
+    }else{
+      Log.e(LOG_TAG, "login details empty");
     }
 
-    public boolean isRegistrationSuccess() {
-        return registerSuccess;
-    }
+
+  }
+
+  public boolean isRegistrationSuccess() {
+    return registerSuccess;
+  }
 }

@@ -1,6 +1,9 @@
 package com.emtech.fixr.presentation.ui.activity;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +26,11 @@ import com.emtech.fixr.presentation.viewmodels.LoginRegisterActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.LoginRegistrationViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +45,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText inputEmail;
     private RadioGroup radioGender;
     private EditText dob;
+    private Calendar myCalendar = Calendar.getInstance();
+    private DatePickerDialog mDatePickerDialog;
     private EditText inputPassword;
     private ProgressDialog pDialog;
     private SessionManager session;
@@ -47,14 +57,21 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         LoginRegistrationViewModelFactory factory = InjectorUtils.provideLoginRegistrationViewModelFactory(this.getApplicationContext());
-        loginRegisterActivityViewModel = ViewModelProviders.of
+        loginRegisterActivityViewModel = new ViewModelProvider
                 (this, factory).get(LoginRegisterActivityViewModel.class);
 
+        setUpCalendar(); //set up the calendar
         inputFirstName = findViewById(R.id.firstName);
         inputLastName = findViewById(R.id.lastName);
         inputEmail = findViewById(R.id.edit_text_register_email);
         radioGender = findViewById(R.id.radioGender);
         dob = findViewById(R.id.date_of_birth);
+        dob.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDatePickerDialog.show();
+            }
+        }); //when clicked should show a calendar
         inputPassword = findViewById(R.id.edit_text_register_password);
         btnRegister = findViewById(R.id.btnRegister);
         btnLinkToLogin = findViewById(R.id.btnLinkToLoginScreen);
@@ -138,6 +155,22 @@ public class RegisterActivity extends AppCompatActivity {
 
     }//close onCreate()
 
+    //set up the calendar to capture the user input d.o.b
+    private void setUpCalendar() {
+        mDatePickerDialog = new DatePickerDialog(this, (view, year, monthOfYear, dayOfMonth) -> {
+            myCalendar.set(year, monthOfYear, dayOfMonth);
+            updateLabel();
+        }, myCalendar.get(Calendar.YEAR), myCalendar.get(Calendar.MONTH), myCalendar.get(Calendar.DAY_OF_MONTH));
+    }
+
+    //update the edit text with the selected date
+    private void updateLabel(){
+        String myFormat = "MMM dd, yyyy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        //update the edit text view with the time selected
+        dob.setText(sdf.format(myCalendar.getTime()));
+    }
+
     /**
      * Method to call viewmodel method to post user reg details to database
      * */
@@ -151,12 +184,24 @@ public class RegisterActivity extends AppCompatActivity {
         pDialog.setMessage("Registering ...");
         showDialog();
 
+        String mysqlDate = null;
+        //convert the date coming in to the one mysql expects
+        SimpleDateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
+
+        try{
+            Date d = sdf.parse(dob);
+            mysqlDate = mysqlDateFormat.format(d);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         //Defining retrofit api service*/
         //APIService service = retrofit.create(APIService.class);
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<Result> call = service.createUser(fullName, dob, gender, email, password);
+        Call<Result> call = service.createUser(fullName, mysqlDate, gender, email, password);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<Result>() {

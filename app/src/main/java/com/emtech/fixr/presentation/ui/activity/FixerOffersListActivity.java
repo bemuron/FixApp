@@ -55,22 +55,21 @@ public class FixerOffersListActivity extends AppCompatActivity implements
         mUserId = getIntent().getIntExtra(USER_ID, 0);
         mOfferType = getIntent().getStringExtra(OFFER_TYPE);
 
+        //first clear the previous list
+        clearData();
+
         getAllWidgets();
         setAdapter();
         showBar();
-
-        //first clear the previous list
-        offersAdapter.clearData();
 
         if (mOfferType.equals("accepted")) {
             //set title for this activity
             setTitle("Offers Accepted");
             //offers accepted for fixer
-            mViewModel.getAllOffersAccepted(mUserId).observe(this, offersAccepted -> {
+            mViewModel.getOffersAcceptedForFixer(mUserId).observe(this, offersAccepted -> {
                 hideBar();
                 offerList = offersAccepted;
-                offersAdapter.setList(offersAccepted);
-                Log.e(LOG_TAG, "offers accepted list size is " + offerList.size());
+                offersAdapter.setList(offerList);
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
@@ -80,6 +79,8 @@ public class FixerOffersListActivity extends AppCompatActivity implements
                     emptyView.setText(R.string.empty_fixer_offers_accepted_list);
                     emptyView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
+                }else{
+                    Log.e(LOG_TAG, "offers accepted list size is " + offerList.size());
                 }
             });
         }else if (mOfferType.equals("made")){
@@ -88,7 +89,7 @@ public class FixerOffersListActivity extends AppCompatActivity implements
             mViewModel.getAllOffersMade(mUserId).observe(this, offersMadeList -> {
                 hideBar();
                 offerList = offersMadeList;
-                offersAdapter.setList(offersMadeList);
+                offersAdapter.setList(offerList);
                 Log.e(LOG_TAG, "offers made list size is " +offerList.size());
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
@@ -133,6 +134,17 @@ public class FixerOffersListActivity extends AppCompatActivity implements
         recyclerView.setAdapter(offersAdapter);
     }
 
+    //method to clear the previous list if it exists
+    private void clearData(){
+        if(offerList != null){
+            offerList.clear(); // clear list
+        }
+        if (offersAdapter != null) {
+            offersAdapter.clearData();
+            offersAdapter.notifyDataSetChanged(); // let your adapter know about the changes and reload view.
+        }
+    }
+
     private void showBar() {
         progressBar.setVisibility(View.VISIBLE);
         try {
@@ -158,10 +170,18 @@ public class FixerOffersListActivity extends AppCompatActivity implements
     public void onOfferRowClicked(String jobName, int position) {
         Offer offer = offerList.get(position);
         offerList.set(position, offer);
-        Log.e(LOG_TAG, "Fixer Offer clicked ID = "+position);
-            Intent intent = new Intent(this, OfferDetailsForFixerActivity.class);
-            intent.putExtra("offerID", position);
+        if (mOfferType.equals("accepted")) {
+            Log.e(LOG_TAG, "Fixer Offer clicked ID = " + offer.getOffer_id());
+            Intent intent = new Intent(this, OfferAcceptedDetailsForFixerActivity.class);
+            intent.putExtra("offerID", offer.getOffer_id());
             intent.putExtra("jobName", jobName);
             startActivity(intent);
+        }else if (mOfferType.equals("made")){
+            Log.e(LOG_TAG, "Fixer Offer clicked ID = " + offer.getOffer_id());
+            Intent intent = new Intent(this, OfferMadeDetailsForFixerActivity.class);
+            intent.putExtra("offerID", offer.getOffer_id());
+            intent.putExtra("jobName", jobName);
+            startActivity(intent);
+        }
     }
 }

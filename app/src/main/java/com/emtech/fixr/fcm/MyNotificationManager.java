@@ -24,6 +24,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.app.Config;
+import com.emtech.fixr.app.MyApplication;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -105,32 +106,34 @@ public class MyNotificationManager {
 
         inboxStyle.addLine(message);
 
-        Notification notification;
-        notification = mBuilder.setSmallIcon(icon).setTicker(title).setWhen(0)
-                .setAutoCancel(true)
-                .setContentTitle(title)
-                .setContentIntent(resultPendingIntent)
-                .setSound(alarmSound)
+        //Notification notification;
+        //notification = mBuilder.setSmallIcon(icon).setTicker(title).setWhen(0)
+                mBuilder.setAutoCancel(true);
+                mBuilder.setContentTitle(title);
+                mBuilder.setContentIntent(resultPendingIntent);
+                //mBuilder.setSound(alarmSound);
                 //.setStyle(inboxStyle)
-                .setStyle(new NotificationCompat.BigTextStyle()
-                        .bigText(message))
-                .setWhen(getTimeMilliSec(timeStamp))
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), icon))
-                .setContentText(message)
-                .build();
+                mBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(message));
+                mBuilder.setWhen(System.currentTimeMillis());
+                mBuilder.setSmallIcon(R.mipmap.ic_launcher);
+                //mBuilder.setLargeIcon(BitmapFactory.decodeResource(mCtx.getResources(), icon));
+                mBuilder.setContentText(message);
+                //.build();
 
         NotificationManager notificationManager = (NotificationManager) mCtx.getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    channelName,
-                    NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(channel);
+        if (android.os.Build.VERSION. SDK_INT >= android.os.Build.VERSION_CODES. O ) {
+            int importance = NotificationManager. IMPORTANCE_HIGH ;
+            NotificationChannel notificationChannel = new
+                    NotificationChannel(channelId , channelName , importance) ;
+            mBuilder.setChannelId(channelId ) ;
+            notificationManager.createNotificationChannel(notificationChannel) ;
         }
 
-        notificationManager.notify(Config.NOTIFICATION_ID, notification);
+        assert notificationManager != null;
+        notificationManager.notify(( int ) System. currentTimeMillis () , mBuilder.build()) ;
     }
 
     private void showBigNotification(Bitmap bitmap, NotificationCompat.Builder mBuilder, int icon,
@@ -205,8 +208,8 @@ public class MyNotificationManager {
     /**
      * Method checks if the app is in background or not
      */
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean isAppInBackground(Context context) {
+    //@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    /*public static boolean isAppInBackground(Context context) {
         boolean isInBackground = true;
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
@@ -230,6 +233,14 @@ public class MyNotificationManager {
         Log.e(TAG, "isAppInBackground: " + isInBackground);
 
         return isInBackground;
+    }*/
+
+    public static boolean isAppInBackground(Context context) {
+        boolean isInBackground;
+        isInBackground = MyApplication.isAppInBg;
+        Log.e(TAG, "isAppInBackground: " + isInBackground);
+
+        return true;
     }
 
     // Clears notification tray messages

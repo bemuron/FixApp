@@ -48,7 +48,12 @@ public class MyJobsActivityViewModel extends ViewModel {
         return mRepository.getOffersMade(userId);
     }
 
-    //a getter method for all the jobs a fixer made an offer to and have been accepted
+    //a getter method for all the job offers by this fixer that have been accepted
+    public LiveData<List<Offer>> getOffersAcceptedForFixer(int userId){
+        return mRepository.getOffersAcceptedForFixer(userId);
+    }
+
+    //a getter method for all the jobs whose offers a poster has accepted
     public LiveData<List<Offer>> getAllOffersAccepted(int userId){
         return mRepository.getOffersAccepted(userId);
     }
@@ -58,7 +63,7 @@ public class MyJobsActivityViewModel extends ViewModel {
         return mRepository.getOfferDetailsForFixer(offerId);
     }
 
-    //a getter method for all the jobs by a poster to which offers have been made
+    //a getter method for all the jobs whose offers have been accepted by this poster
     public LiveData<List<Offer>> getAllOffersReceived(int userId){
         return mRepository.getOffersReceived(userId);
     }
@@ -68,11 +73,33 @@ public class MyJobsActivityViewModel extends ViewModel {
         return mRepository.getOfferDetailsForPoster(offerId);
     }
 
-    //a wrapper insert() method that calls the Repository's insert() method. In this way,
-    // the implementation of insert() is completely hidden from the UI.
-    //public void insert(Category category) { mRepository.insert(category); }
+    //method to update the status of this offer to 1 (seen by poster)
+    public void updateOfferSeenByPosterStatus(int offerId){
+        mRepository.updateOfferSeenByPosterStatus(offerId);
+    }
 
-    public void delete() { mRepository.deleteUser();}
+    //method to update the offer to accepted by the poster - 1
+    public void posterAcceptOffer(int offerId, int jobId){
+        mRepository.posterAcceptOffer(offerId, jobId);
+    }
+
+    //method to update the offer to rejected by the poster - 2
+    public void posterRejectOffer(int offerId, int jobId){
+        mRepository.posterRejectOffer(offerId, jobId);
+    }
+
+    //method to update the offer to rejected by the poster - 3
+    public void fixerRejectOffer(int offerId, int jobId){
+        mRepository.fixerRejectOffer(offerId, jobId);
+    }
+
+    //method to check if the fixer already made an offer for a job
+    //a fixer cant make an offer for the same job more than once
+    //they can only edit what they had already made
+    public void checkIfOfferIsAlreadyMade(int userId, int jobId){
+        mRepository.checkIfOfferIsAlreadyMade(userId, jobId);
+    }
+
 
 
 }

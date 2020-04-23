@@ -104,14 +104,22 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
         holder.job_date.setText(date + job.getJob_date());
         if (job.getIs_job_remote() == 0){
             holder.job_location.setText(location + job.getLocation());
-        }else {
+        }else if(job.getIs_job_remote() == 1){
             holder.job_location.setText(location + "Remote Job");
+        }else{
+            holder.job_location.setVisibility(View.GONE);
         }
-        holder.job_time.setText(time + job.getJob_time());
+        if (job.getJob_time() != null) {
+            holder.job_time.setText(time + job.getJob_time());
+        }else{
+            holder.job_time.setVisibility(View.GONE);
+        }
         holder.job_amount.setText(currency + job.getEst_tot_budget());
 
+        holder.job_status.setVisibility(View.GONE);
+
         // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete
-        jobStatus = job.getJob_status();
+        /*jobStatus = job.getJob_status();
         switch (jobStatus){
             case 0:
                 holder.job_status.setText("Draft");
@@ -128,7 +136,7 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
             case 4:
                 holder.job_status.setText("Complete");
                 break;
-        }
+        }*/
 
         // displaying the first letter of From in icon text
         //holder.iconText.setText(tutor.getName().substring(0, 1));

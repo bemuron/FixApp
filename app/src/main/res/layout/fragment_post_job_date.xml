@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimaryDark"
         android:clickable="true"
-        android:focusable="false"
+        android:focusable="true"
         android:inputType="date"
         android:padding="@dimen/margin_padding_normal"
         android:textSize="@dimen/text_size_xxnormal"/>

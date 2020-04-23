@@ -25,15 +25,27 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan">
-        <activity android:name=".presentation.ui.activity.MyJobsListActivity"></activity>
+        <activity android:name=".presentation.ui.activity.SearchJobsActivity"
+            android:launchMode="singleTop"
+            android:label="@string/search_jobs_activity"
+            android:parentActivityName=".presentation.ui.activity.BrowseJobsActivity"/>
+
+        <activity android:name=".presentation.ui.activity.OfferMadeDetailsForFixerActivity"
+            android:label="@string/offer_details_activity"
+            android:parentActivityName=".presentation.ui.activity.FixerOffersListActivity"/>
+
+        <activity android:name=".presentation.ui.activity.OfferReceivedDetailsForPosterActivity"
+                  android:label="@string/offer_details_activity"
+                  android:parentActivityName=".presentation.ui.activity.PosterOffersListActivity"/>
+        <activity
+            android:name=".presentation.ui.activity.MyJobsListActivity"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity" />
         <activity
             android:name=".presentation.ui.activity.PostJobActivity"
             android:label="@string/title_activity_post_job"
-            android:launchMode="standard"
             android:parentActivityName=".presentation.ui.activity.HomeActivity" /> <!-- Log in Activity -->
         <activity
             android:name=".presentation.ui.activity.LoginActivity"
-            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -44,34 +56,30 @@
         <activity
             android:name=".presentation.ui.activity.RegisterActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".presentation.ui.activity.HomeActivity"
             android:label="@string/app_name"
-            android:launchMode="singleInstance"
             android:theme="@style/AppTheme.NoActionBar" /> <!-- Job Details Activity -->
         <activity
             android:name=".presentation.ui.activity.JobDetailsActivity"
             android:label="@string/job_details_activity"
-            android:launchMode="singleInstance" /> <!-- Offer Details fro Poster Activity -->
+            android:parentActivityName=".presentation.ui.activity.BrowseJobsActivity" /> <!-- Offer Details fro Poster Activity -->
         <activity
-            android:name=".presentation.ui.activity.OfferDetailsForPosterActivity"
-            android:label="@string/job_details_activity"
-            android:launchMode="singleInstance" /> <!-- OfferDetailsForFixerActivity -->
+            android:name=".presentation.ui.activity.OfferAcceptedDetailsForPosterActivity"
+            android:label="@string/offer_details_activity"
+            android:parentActivityName=".presentation.ui.activity.PosterOffersListActivity" /> <!-- OfferDetailsForFixerActivity -->
         <activity
-            android:name=".presentation.ui.activity.OfferDetailsForFixerActivity"
-            android:label="@string/job_details_activity"
-            android:launchMode="singleInstance" />
+            android:name=".presentation.ui.activity.OfferAcceptedDetailsForFixerActivity"
+            android:label="@string/offer_details_activity"
+            android:parentActivityName=".presentation.ui.activity.FixerOffersListActivity" />
         <activity
             android:name=".presentation.ui.activity.PosterOffersListActivity"
             android:label="@string/title_activity_poster_offers_accepted"
-            android:launchMode="standard"
             android:parentActivityName=".presentation.ui.activity.HomeActivity" />
         <activity
             android:name=".presentation.ui.activity.FixerOffersListActivity"
-            android:launchMode="standard"
             android:parentActivityName=".presentation.ui.activity.HomeActivity" />
 
         <service
@@ -104,7 +112,6 @@
         <activity
             android:name=".presentation.ui.activity.BrowseJobsActivity"
             android:label="@string/browse_jobs_activity"
-            android:launchMode="singleTop"
             android:parentActivityName=".presentation.ui.activity.HomeActivity">
 
             <!-- Receives the search request. -->

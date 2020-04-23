@@ -179,7 +179,10 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
 
     @Override
     public int getItemCount() {
-        return offerList.size();
+        if (offerList != null){
+            return offerList.size();
+        }
+        return 0;
     }
 
     public void toggleSelection(int pos) {

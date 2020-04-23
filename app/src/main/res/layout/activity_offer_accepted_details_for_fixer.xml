@@ -152,15 +152,6 @@
                 android:text="Seen by job poster"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/forFixer_editOffer_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_padding_normal"
-            android:layout_gravity="center_horizontal"
-            android:padding="@dimen/margin_padding_tiny"
-            android:text="Edit Offer" />
-
         <RelativeLayout
             android:id="@+id/forFixer_afterAcceptOffer_container"
             android:layout_width="match_parent"

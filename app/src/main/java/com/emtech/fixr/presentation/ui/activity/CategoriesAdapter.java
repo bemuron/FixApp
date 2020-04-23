@@ -155,48 +155,48 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Ca
              * values passed in from observing the database.
              */
 
-            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
-                @Override
-                public int getOldListSize() {
-                    return mCategory.size();
-                }
+        DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() {
+                return mCategory.size();
+            }
 
-                @Override
-                public int getNewListSize() {
-                    return newCategories.size();
-                }
+            @Override
+            public int getNewListSize() {
+                return newCategories.size();
+            }
 
-                @Override
-                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mCategory.get(oldItemPosition).getCategory_id() ==
-                            newCategories.get(newItemPosition).getCategory_id();
-                }
+            @Override
+            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                return mCategory.get(oldItemPosition).getCategory_id() ==
+                        newCategories.get(newItemPosition).getCategory_id();
+            }
 
-                @Override
-                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    Category newCategory = newCategories.get(newItemPosition);
-                    Category oldCategory = mCategory.get(oldItemPosition);
-                    return newCategory.getCategory_id() == oldCategory.getCategory_id();
-                           // && newCategory.getCategoryName().equals(oldCategory.getCategoryName());
-                }
-            });
-            mCategory = newCategories;
-            result.dispatchUpdatesTo(this);
-        }
+            @Override
+            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                Category newCategory = newCategories.get(newItemPosition);
+                Category oldCategory = mCategory.get(oldItemPosition);
+                return newCategory.getCategory_id() == oldCategory.getCategory_id();
+                // && newCategory.getCategoryName().equals(oldCategory.getCategoryName());
+            }
+        });
+        mCategory = newCategories;
+        result.dispatchUpdatesTo(this);
+    }
 
     /**
      * get the category picture if available otherwise set a random color
      * */
     private void applyProfilePicture(CategoriesAdapterViewHolder holder, Category category) {
-            if (!TextUtils.isEmpty(category.getImageName())) {
-                Glide.with(mContext).load("http://www.emtechint.com/fixapp/assets/images/category_pics/"+category.getImageName())
-                        .thumbnail(0.5f)
-                        //.crossFade()
-                        //.transform(new CircleTransform(context))
-                        //.diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(holder.categoryImage);
-                holder.categoryImage.setColorFilter(null);
-            }
+        if (!TextUtils.isEmpty(category.getImageName())) {
+            Glide.with(mContext).load("http://www.emtechint.com/fixapp/assets/images/category_pics/"+category.getImageName())
+                    .thumbnail(0.5f)
+                    //.crossFade()
+                    //.transform(new CircleTransform(context))
+                    //.diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(holder.categoryImage);
+            holder.categoryImage.setColorFilter(null);
+        }
         else {
             holder.categoryImage.setImageResource(R.drawable.bg_square);
             holder.categoryImage.setColorFilter(category.getColor());

@@ -11,15 +11,15 @@ import com.emtech.fixr.data.FixAppRepository;
  */
 public class PostJobViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
-    private final FixAppRepository mRepository;
+  private final FixAppRepository mRepository;
 
-    public PostJobViewModelFactory(FixAppRepository repository) {
-        this.mRepository = repository;
-    }
+  public PostJobViewModelFactory(FixAppRepository repository) {
+    this.mRepository = repository;
+  }
 
-    @Override
-    public <T extends ViewModel> T create(Class<T> modelClass) {
-        //noinspection unchecked
-        return (T) new PostJobActivityViewModel(mRepository);
-    }
+  @Override
+  public <T extends ViewModel> T create(Class<T> modelClass) {
+    //noinspection unchecked
+    return (T) new PostJobActivityViewModel(mRepository);
+  }
 }

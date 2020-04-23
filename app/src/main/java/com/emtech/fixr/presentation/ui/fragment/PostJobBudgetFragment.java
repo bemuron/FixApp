@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.emtech.fixr.R;
+import com.google.android.material.snackbar.Snackbar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -200,8 +201,10 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
                             estTotBudgetTv.getText().toString(),"0","0");
                 }
             }else{
-                Toast.makeText(getActivity(),"Try checking your internet connection",
-                        Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(),"Try checking your internet connection",
+                  //      Toast.LENGTH_LONG).show();
+                Snackbar.make(view, "Try checking your internet connection", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
     }

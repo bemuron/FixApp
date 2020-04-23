@@ -7,20 +7,20 @@
     android:orientation="vertical"
     tools:context=".presentation.ui.activity.BrowseJobsActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/browse_jobs_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/margin_padding_normal"
-        android:clipToPadding="false"
-        android:scrollbars="vertical" />
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/browse_jobs_recycler_view"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="@dimen/margin_padding_normal"
+      android:clipToPadding="false"
+      android:scrollbars="vertical" />
 
-    <ProgressBar
-        android:id="@+id/browse_jobs_progress_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:backgroundTint="@color/colorPrimary"
-        android:indeterminateTint="#ea4c88"/>
+  <ProgressBar
+      android:id="@+id/browse_jobs_progress_bar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:backgroundTint="@color/colorPrimary"
+      android:indeterminateTint="#ea4c88"/>
 
 </LinearLayout>

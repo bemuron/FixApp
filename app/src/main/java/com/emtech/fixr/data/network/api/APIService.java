@@ -195,9 +195,14 @@ public interface APIService {
     Call<UserJobs> getOffersMade(
             @Path("user_id") int user_id);
 
-    //getting all the jobs the fixer has made an offer to
-    @GET("public/getOffersAccepted/{user_id}")
-    Call<UserJobs> getOffersAccepted(
+    //getting all the jobs the fixer made an offer to and have been accepted
+    @GET("public/getOffersAcceptedForFixer/{user_id}")
+    Call<UserJobs> getOffersAcceptedForFixer(
+            @Path("user_id") int user_id);
+
+    //getting all the jobs the poster has accepted
+    @GET("public/getOffersAcceptedForPoster/{user_id}")
+    Call<UserJobs> getOffersAcceptedForPoster(
             @Path("user_id") int user_id);
 
     //getting the details of an offer made for a job for the fixer
@@ -214,6 +219,44 @@ public interface APIService {
     @GET("public/getOfferDetailsForPoster/{offer_id}")
     Call<UserJobs> getOfferDetailsForPoster(
             @Path("offer_id") int offer_id);
+
+    //updating offer seen status to 1 - seen by poster
+    @FormUrlEncoded
+    @POST("public/updateOfferSeenStatus/{offer_id}")
+    Call<Result> updateOfferSeenStatus(
+            @Path("offer_id") int offer_id,
+            @Field("status") int status);
+
+    //updating offer to 1 - accepted status
+    @FormUrlEncoded
+    @POST("public/posterAcceptOffer")
+    Call<Result> posterAcceptOffer(
+            @Field("offer_id") int offer_id,
+            @Field("job_id") int job_id,
+            @Field("status") int status);
+
+    //updating offer to 2 - rejected status by poster
+    //when an offer is rejected, it is deleted from the offers table
+    @FormUrlEncoded
+    @POST("public/posterRejectOffer")
+    Call<Result> posterRejectOffer(
+            @Field("offer_id") int offer_id,
+            @Field("job_id") int job_id,
+            @Field("status") int status);
+
+    //updating offer to 3 - rejected status by fixer
+    @FormUrlEncoded
+    @POST("public/fixerRejectOffer/{offer_id}")
+    Call<Result> fixerRejectOffer(
+            @Path("offer_id") int offer_id,
+            @Field("job_id") int job_id,
+            @Field("status") int status);
+
+    //check if fixer has already made an offer for a job
+    @GET("public/checkOfferAlreadyMade/{userId}/{jobId}")
+    Call<Result> checkOfferAlreadyMade(
+            @Path("userId") int userId,
+            @Path("jobId") int jobId);
 
     /*
     //The register call

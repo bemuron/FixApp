@@ -28,21 +28,21 @@ import com.emtech.fixr.utilities.InjectorUtils;
  * screen.
  */
 public class FixAppSyncIntentService extends IntentService {
-    private static final String LOG_TAG = FixAppSyncIntentService.class.getSimpleName();
+  private static final String LOG_TAG = FixAppSyncIntentService.class.getSimpleName();
 
-    public FixAppSyncIntentService() {
-        super("FixAppSyncIntentService");
-    }
+  public FixAppSyncIntentService() {
+    super("FixAppSyncIntentService");
+  }
 
-    @Override
-    protected void onHandleIntent(Intent intent) {
-        Log.d(LOG_TAG, "Intent service started");
+  @Override
+  protected void onHandleIntent(Intent intent) {
+    Log.d(LOG_TAG, "Intent service started");
         /*
         FixAppNetworkDataSource networkDataSource = InjectorUtils.
                 provideNetworkDataSource(this.getApplicationContext());
         networkDataSource.fetchCategories();
 */
-        FetchCategories fetchCategories = InjectorUtils.provideFetchCategories(this.getApplicationContext());
-        fetchCategories.GetAppCategories();
-    }
+    FetchCategories fetchCategories = InjectorUtils.provideFetchCategories(this.getApplicationContext());
+    fetchCategories.GetAppCategories();
+  }
 }

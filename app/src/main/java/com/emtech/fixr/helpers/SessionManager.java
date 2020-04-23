@@ -11,169 +11,169 @@ import com.emtech.fixr.presentation.ui.activity.LoginActivity;
 import java.util.HashMap;
 
 /*
-*This class maintains session data across the app using shared prefs.
-* We store a boolean flag isLoggedIn in shared prefs to check the login status
-*
+ *This class maintains session data across the app using shared prefs.
+ * We store a boolean flag isLoggedIn in shared prefs to check the login status
+ *
  */
 public class SessionManager {
-	// LogCat tag
-	private static String TAG = SessionManager.class.getSimpleName();
+  // LogCat tag
+  private static String TAG = SessionManager.class.getSimpleName();
 
-	// Shared Preferences
-	SharedPreferences pref;
+  // Shared Preferences
+  SharedPreferences pref;
 
-	Editor editor;
-	Context _context;
+  Editor editor;
+  Context _context;
 
-	// Shared pref mode
-	int PRIVATE_MODE = 0;
+  // Shared pref mode
+  int PRIVATE_MODE = 0;
 
-	// Shared preferences file name
-	private static final String PREF_NAME = "FIxAppUserPref";
+  // Shared preferences file name
+  private static final String PREF_NAME = "FIxAppUserPref";
 
-	private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
+  private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
 
-    //user id
-    public static final String KEY_USER_ID = "userId";
+  //user id
+  public static final String KEY_USER_ID = "userId";
 
-    //username
-    public static final String KEY_NAME = "name";
+  //username
+  public static final String KEY_NAME = "name";
 
-    //email
-    public static final String KEY_EMAIL = "email";
+  //email
+  public static final String KEY_EMAIL = "email";
 
-    //user role (can be user or tutor)
-    public static final String KEY_ROLE = "role";
+  //user role (can be user or tutor)
+  public static final String KEY_ROLE = "role";
 
-    //user profile pic
-    public static final String KEY_PROFILE_PIC = "profile_pic";
+  //user profile pic
+  public static final String KEY_PROFILE_PIC = "profile_pic";
 
-    //session in progress
-    private static final String KEY_SESSION_IN_PROGRESS = "isSessionInProgress";
+  //session in progress
+  private static final String KEY_SESSION_IN_PROGRESS = "isSessionInProgress";
 
-    //session: payment received
-    private static final String KEY_SESSION_PAYMENT_RECEIVED = "isPaymentReceived";
+  //session: payment received
+  private static final String KEY_SESSION_PAYMENT_RECEIVED = "isPaymentReceived";
 
-    //session meeting id
-    private static final String KEY_SESSION_JOB_ID = "job_id";
+  //session meeting id
+  private static final String KEY_SESSION_JOB_ID = "job_id";
 
-    //session user id
-    //id of the user who requested for a tutor
-    //the student
-    public static final String KEY_SESSION_USER_ID = "sessionUserId";
+  //session user id
+  //id of the user who requested for a tutor
+  //the student
+  public static final String KEY_SESSION_USER_ID = "sessionUserId";
 
-	public SessionManager(Context context) {
-		this._context = context;
-		pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
-		editor = pref.edit();
-	}
+  public SessionManager(Context context) {
+    this._context = context;
+    pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+    editor = pref.edit();
+  }
 
-    //create login session
-    public void createLoginSession(int user_id, String name, String email, String role, String profile_pic){
-        // Storing login value as TRUE
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
+  //create login session
+  public void createLoginSession(int user_id, String name, String email, String role, String profile_pic){
+    // Storing login value as TRUE
+    editor.putBoolean(KEY_IS_LOGGED_IN, true);
 
-        // Storing user id in pref
-        editor.putInt(KEY_USER_ID, user_id);
+    // Storing user id in pref
+    editor.putInt(KEY_USER_ID, user_id);
 
-        // Storing name in pref
-        editor.putString(KEY_NAME, name);
+    // Storing name in pref
+    editor.putString(KEY_NAME, name);
 
-        // Storing email in pref
-        editor.putString(KEY_EMAIL, email);
+    // Storing email in pref
+    editor.putString(KEY_EMAIL, email);
 
-        // Storing role in pref
-        editor.putString(KEY_ROLE, role);
+    // Storing role in pref
+    editor.putString(KEY_ROLE, role);
 
-        // Storing role in pref
-        editor.putString(KEY_PROFILE_PIC, profile_pic);
+    // Storing role in pref
+    editor.putString(KEY_PROFILE_PIC, profile_pic);
 
-        // commit changes
-        editor.commit();
+    // commit changes
+    editor.commit();
+  }
+
+  /**
+   * Check login method wil check user login status
+   * If false it will redirect user to login page
+   * Else won't do anything
+   * */
+  public void checkLogin(){
+    // Check login status
+    if(!this.isLoggedIn()){
+      // user is not logged in redirect him to Login Activity
+      Intent i = new Intent(_context, LoginActivity.class);
+      // Closing all the Activities
+      i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+      // Add new Flag to start new Activity
+      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+      // Staring Login Activity
+      _context.startActivity(i);
     }
 
-    /**
-     * Check login method wil check user login status
-     * If false it will redirect user to login page
-     * Else won't do anything
-     * */
-    public void checkLogin(){
-        // Check login status
-        if(!this.isLoggedIn()){
-            // user is not logged in redirect him to Login Activity
-            Intent i = new Intent(_context, LoginActivity.class);
-            // Closing all the Activities
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+  }
 
-            // Add new Flag to start new Activity
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+  /**
+   * Get stored session data
+   * */
+  public HashMap<String, String> getUserDetails(){
+    HashMap<String, String> user = new HashMap<String, String>();
+    // user name
+    user.put(KEY_NAME, pref.getString(KEY_NAME, null));
 
-            // Staring Login Activity
-            _context.startActivity(i);
-        }
+    // user email id
+    user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
 
-    }
+    // return user
+    return user;
+  }
 
-    /**
-     * Get stored session data
-     * */
-    public HashMap<String, String> getUserDetails(){
-        HashMap<String, String> user = new HashMap<String, String>();
-        // user name
-        user.put(KEY_NAME, pref.getString(KEY_NAME, null));
+  /**
+   * Clear session details
+   * */
+  public void logoutUser(){
+    // Clearing all data from Shared Preferences
+    editor.clear();
+    editor.commit();
 
-        // user email id
-        user.put(KEY_EMAIL, pref.getString(KEY_EMAIL, null));
+    // After logout redirect user to Login Activity
+    Intent i = new Intent(_context, LoginActivity.class);
+    // Closing all the Activities
+    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        // return user
-        return user;
-    }
+    // Add new Flag to start new Activity
+    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-    /**
-     * Clear session details
-     * */
-    public void logoutUser(){
-        // Clearing all data from Shared Preferences
-        editor.clear();
-        editor.commit();
+    // Starting Login Activity
+    _context.startActivity(i);
+  }
 
-        // After logout redirect user to Login Activity
-        Intent i = new Intent(_context, LoginActivity.class);
-        // Closing all the Activities
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+  //get user id
+  public int  getUserId(){
+    return pref.getInt(KEY_USER_ID, 0);
+  }
 
-        // Add new Flag to start new Activity
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+  //get user role
+  public String getUserRole(){
+    return pref.getString(KEY_ROLE, null);
+  }
 
-        // Starting Login Activity
-        _context.startActivity(i);
-    }
+  /**
+   * Quick check for login
+   * **/
+  // Get Login State
+  public boolean isLoggedIn(){
+    return pref.getBoolean(KEY_IS_LOGGED_IN, false);
+  }
 
-    //get user id
-    public int  getUserId(){
-        return pref.getInt(KEY_USER_ID, 0);
-    }
+  public void setLogin(boolean isLoggedIn) {
 
-    //get user role
-    public String getUserRole(){
-        return pref.getString(KEY_ROLE, null);
-    }
+    editor.putBoolean(KEY_IS_LOGGED_IN, isLoggedIn);
 
-    /**
-     * Quick check for login
-     * **/
-    // Get Login State
-    public boolean isLoggedIn(){
-        return pref.getBoolean(KEY_IS_LOGGED_IN, false);
-    }
+    // commit changes
+    editor.commit();
 
-	public void setLogin(boolean isLoggedIn) {
-
-		editor.putBoolean(KEY_IS_LOGGED_IN, isLoggedIn);
-
-		// commit changes
-		editor.commit();
-
-		Log.d(TAG, "User login session modified!");
-	}
+    Log.d(TAG, "User login session modified!");
+  }
 }

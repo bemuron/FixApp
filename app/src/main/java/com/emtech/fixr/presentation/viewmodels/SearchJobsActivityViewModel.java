@@ -27,15 +27,9 @@ public class SearchJobsActivityViewModel extends ViewModel {
     //private member variable to hold reference to the repository
     private FixAppRepository mRepository;
 
-    //constructor that gets a reference to the repository and gets the categories
+    //constructor that gets a reference to the repository and gets the repo
     public SearchJobsActivityViewModel(FixAppRepository repository) {
         mRepository = repository;
-    }
-
-    //a getter method for all the jobs.
-    // This hides the implementation from the UI
-    public LiveData<List<Job>> browseAllJobs(){
-        return mRepository.browseAllJobs();
     }
 
     //a getter method to search jobs based on the query inserted by the user
@@ -57,10 +51,6 @@ public class SearchJobsActivityViewModel extends ViewModel {
         searchResultsList = (new LivePagedListBuilder(searchJobsDataFactory, pagedListConfig))
                 .build();
 
-        return searchResultsList;
-    }
-
-    public LiveData<PagedList<Job>> getSearchResultsList() {
         return searchResultsList;
     }
 

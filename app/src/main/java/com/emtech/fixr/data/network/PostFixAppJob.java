@@ -20,6 +20,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.emtech.fixr.presentation.ui.activity.JobDetailsActivity.jobDetailsActivity;
+import static com.emtech.fixr.presentation.ui.activity.OfferMadeDetailsForFixerActivity.offerMadeDetailsForFixerActivity;
 
 public class PostFixAppJob {
     private static final String LOG_TAG = PostFixAppJob.class.getSimpleName();
@@ -212,7 +213,8 @@ public class PostFixAppJob {
                 Log.e(LOG_TAG, t.getMessage());
                 //send response data to the repository
                 //offerSavedCallBack.onOfferCreated(false, "Offer Not Saved");
-                jobDetailsActivity.afterSaveOfferAttempt(false, "Offer Not Saved");
+                jobDetailsActivity.afterSaveOfferAttempt(false,
+                        "Offer Not Saved: "+t.getMessage());
             }
         });
 
@@ -238,7 +240,7 @@ public class PostFixAppJob {
                         Log.d(LOG_TAG, response.body().getMessage());
                         //send response data to the repository
                         //success
-                        offerEditedCallBack.onOfferEdited(true, response.body().getMessage());
+                        offerMadeDetailsForFixerActivity.onOfferEdited(true, response.body().getMessage());
                     }
                 }catch (Exception e){
                     e.printStackTrace();
@@ -252,7 +254,7 @@ public class PostFixAppJob {
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
                 //send response data to the repository
-                offerEditedCallBack.onOfferEdited(false, "Offer Edited");
+                offerMadeDetailsForFixerActivity.onOfferEdited(false, "Offer not Edited");
             }
         });
 

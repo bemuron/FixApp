@@ -180,6 +180,8 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
             // form field with an error.
             focusView.requestFocus();
         } else {
+            pDialog.setMessage("Logging in ...");
+            showDialog();
 
             //login the user
             //function to verify login details in mysql db
@@ -216,7 +218,6 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
         call.enqueue(new Callback<Result>() {
             @Override
             public void onResponse(Call<Result> call, Response<Result> response) {
-                    hideDialog();
                     //if response body is not null, we have some data
                     //successful login
                     if (!response.body().getError()) {
@@ -307,6 +308,7 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
     @Override
     public void onLoginSuccessful(Boolean isLoginSuccessful, User user) {
         if (isLoginSuccessful){
+            hideDialog();
             Log.d(TAG, "Successful login");
             //insert user to the local db
             loginRegisterActivityViewModel.insert(user);
@@ -331,8 +333,11 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
             startActivity(intent);
             LoginActivity.this.finish();
         }else{
+            hideDialog();
             Log.d(TAG, "login not successful");
             //display any error msg that may be received
+            Toast.makeText(LoginActivity.this, "login not successful",
+                    Toast.LENGTH_LONG).show();
             btnLogin.setClickable(true);
         }
 

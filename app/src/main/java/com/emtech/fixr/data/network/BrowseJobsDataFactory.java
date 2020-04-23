@@ -1,5 +1,6 @@
 package com.emtech.fixr.data.network;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.DataSource;
 import androidx.paging.PageKeyedDataSource;
@@ -14,6 +15,7 @@ public class BrowseJobsDataFactory extends DataSource.Factory {
     private MutableLiveData<PageKeyedDataSource<Integer, Job>> browsedJobsLiveDataSource = new MutableLiveData<>();
     //private MutableLiveData<BrowsedJobsDataSource> browsedJobsLiveDataSource = new MutableLiveData<>();
 
+    @NonNull
     @Override
     public DataSource<Integer, Job> create() {
         //getting our data source object
