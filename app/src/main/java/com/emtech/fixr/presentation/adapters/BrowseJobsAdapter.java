@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,11 +26,12 @@ import com.bumptech.glide.request.RequestOptions;
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.database.Job;
 import com.emtech.fixr.helpers.CircleTransform;
+import com.emtech.fixr.presentation.ui.activity.OfferMadeDetailsForFixerActivity;
 
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.ItemViewHolder> {
-
+    private static final String LOG_TAG = BrowseJobsAdapter.class.getSimpleName();
     //private List<Job> jobList;
     private LayoutInflater inflater;
     private Context context;
@@ -163,8 +165,9 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
     }
 
     private void applyProfilePicture(BrowseJobsAdapter.ItemViewHolder holder, Job job) {
-        if (!TextUtils.isEmpty(job.getImage1())) {
-            Glide.with(context).load(job.getImage1())
+        if (!TextUtils.isEmpty(job.getProfile_pic())) {
+            Log.e(LOG_TAG, "Getting profile pic "+ job.getProfile_pic());
+            Glide.with(context).load("http://emtechint.com/fixapp/assets/images/profile_pics/"+job.getProfile_pic())
                     .thumbnail(0.5f)
                     .transition(withCrossFade())
                     .apply(new RequestOptions().fitCenter()

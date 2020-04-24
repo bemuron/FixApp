@@ -145,7 +145,7 @@ public class SearchJobsAdapter extends PagedListAdapter<Job, SearchJobsAdapter.I
 
     private void applyProfilePicture(SearchJobsAdapter.ItemViewHolder holder, Job job) {
         if (!TextUtils.isEmpty(job.getImage1())) {
-            Glide.with(context).load(job.getImage1())
+            Glide.with(context).load("http://emtechint.com/fixapp/assets/images/profile_pics/"+job.getProfile_pic())
                     .thumbnail(0.5f)
                     .transition(withCrossFade())
                     .apply(new RequestOptions().fitCenter()

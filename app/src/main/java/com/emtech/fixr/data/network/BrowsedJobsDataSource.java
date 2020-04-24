@@ -131,12 +131,11 @@ public class BrowsedJobsDataSource extends PageKeyedDataSource<Integer, Job> {
                         job.setCompleted_by(response.body().getBrowsedJobsList().get(i).getCompleted_by());
                         job.setPosted_on(response.body().getBrowsedJobsList().get(i).getPosted_on());
                         job.setCompleted_on(response.body().getBrowsedJobsList().get(i).getCompleted_on());
+                        //add the profile pic of the user who posted the job
+                        job.setProfile_pic(response.body().getBrowsedJobsList().get(i).getProfile_pic());
 
                         jobList.add(job);
                     }
-
-                    //add the profile pic of the user who posted the job
-                    job.setProfile_pic(response.body().getProfilePic());
 
                     // When you are off of the main thread and want to update LiveData, use postValue.
                     // It posts the update to the main thread.
@@ -215,12 +214,11 @@ public class BrowsedJobsDataSource extends PageKeyedDataSource<Integer, Job> {
                         job.setCompleted_by(response.body().getBrowsedJobsList().get(i).getCompleted_by());
                         job.setPosted_on(response.body().getBrowsedJobsList().get(i).getPosted_on());
                         job.setCompleted_on(response.body().getBrowsedJobsList().get(i).getCompleted_on());
+                        //add the profile pic of the user who posted the job
+                        job.setProfile_pic(response.body().getBrowsedJobsList().get(i).getProfile_pic());
 
                         jobList.add(job);
                     }
-
-                    //add the profile pic of the user who posted the job
-                    job.setProfile_pic(response.body().getProfilePic());
 
                     // When you are off of the main thread and want to update LiveData, use postValue.
                     // It posts the update to the main thread.
@@ -324,12 +322,11 @@ public class BrowsedJobsDataSource extends PageKeyedDataSource<Integer, Job> {
                             job.setCompleted_by(response.body().getBrowsedJobsList().get(i).getCompleted_by());
                             job.setPosted_on(response.body().getBrowsedJobsList().get(i).getPosted_on());
                             job.setCompleted_on(response.body().getBrowsedJobsList().get(i).getCompleted_on());
+                            //add the profile pic of the user who posted the job
+                            job.setProfile_pic(response.body().getBrowsedJobsList().get(i).getProfile_pic());
 
                             jobList.add(job);
                         }
-
-                        //add the profile pic of the user who posted the job
-                        job.setProfile_pic(response.body().getProfilePic());
 
                         Log.d(LOG_TAG, "Next Size of list: "+response.body().getBrowsedJobsList().size());
                         // If the code reaches this point, we have successfully performed our sync

@@ -405,12 +405,11 @@ public class GetMyJobs {
                             offer.setPosted_by(response.body().getOffersMadeList().get(i).getPosted_by());
                             offer.setPosted_on(response.body().getOffersMadeList().get(i).getPosted_on());
                             offer.setJob_date(response.body().getOffersMadeList().get(i).getJob_date());
+                            //add the profile pic of the user who posted the job
+                            offer.setProfile_pic(response.body().getBrowsedJobsList().get(i).getProfile_pic());
 
                             offersList.add(offer);
                         }
-
-                        //add the profile pic of the user who posted the job
-                        offer.setProfile_pic(response.body().getProfilePic());
 
                         // When you are off of the main thread and want to update LiveData, use postValue.
                         // It posts the update to the main thread.
@@ -475,17 +474,19 @@ public class GetMyJobs {
                             offer.setSeen_by_poster(response.body().getFixerOffersAcceptedList().get(i).getSeen_by_poster());
                             offer.setEdit_count(response.body().getFixerOffersAcceptedList().get(i).getEdit_count());
                             offer.setOffer_accepted(response.body().getFixerOffersAcceptedList().get(i).getOffer_accepted());
+                            //name is title of the job
                             offer.setName(response.body().getFixerOffersAcceptedList().get(i).getName());
+                            //user_name is name of the job poster
+                            offer.setUser_name(response.body().getFixerOffersAcceptedList().get(i).getUser_name());
                             offer.setEst_tot_budget(response.body().getFixerOffersAcceptedList().get(i).getEst_tot_budget());
                             offer.setPosted_by(response.body().getFixerOffersAcceptedList().get(i).getPosted_by());
                             offer.setPosted_on(response.body().getFixerOffersAcceptedList().get(i).getPosted_on());
                             offer.setJob_date(response.body().getFixerOffersAcceptedList().get(i).getJob_date());
+                            //add the profile pic of the user who posted the job
+                            offer.setProfile_pic(response.body().getFixerOffersAcceptedList().get(i).getProfile_pic());
 
                             offersList.add(offer);
                         }
-
-                        //add the profile pic of the user who posted the job
-                        offer.setProfile_pic(response.body().getProfilePic());
 
                         // When you are off of the main thread and want to update LiveData, use postValue.
                         // It posts the update to the main thread.
@@ -619,17 +620,19 @@ public class GetMyJobs {
                             offer.setSeen_by_poster(response.body().getOffersReceived().get(i).getSeen_by_poster());
                             offer.setEdit_count(response.body().getOffersReceived().get(i).getEdit_count());
                             offer.setOffer_accepted(response.body().getOffersReceived().get(i).getOffer_accepted());
+                            //name of job
                             offer.setName(response.body().getOffersReceived().get(i).getName());
+                            //name of fixer who made an offer
+                            offer.setUser_name(response.body().getOffersReceived().get(i).getUser_name());
                             offer.setEst_tot_budget(response.body().getOffersReceived().get(i).getEst_tot_budget());
                             offer.setPosted_by(response.body().getOffersReceived().get(i).getPosted_by());
                             offer.setPosted_on(response.body().getOffersReceived().get(i).getPosted_on());
                             offer.setJob_date(response.body().getOffersReceived().get(i).getJob_date());
+                            //add the profile pic of the user who posted the job
+                            offer.setProfile_pic(response.body().getOffersReceived().get(i).getProfile_pic());
 
                             offersList.add(offer);
                         }
-
-                        //add the profile pic of the user who posted the job
-                        offer.setProfile_pic(response.body().getProfilePic());
 
                         // When you are off of the main thread and want to update LiveData, use postValue.
                         // It posts the update to the main thread.
@@ -694,17 +697,19 @@ public class GetMyJobs {
                             offer.setSeen_by_poster(response.body().getOffersAcceptedList().get(i).getSeen_by_poster());
                             offer.setEdit_count(response.body().getOffersAcceptedList().get(i).getEdit_count());
                             offer.setOffer_accepted(response.body().getOffersAcceptedList().get(i).getOffer_accepted());
+                            //job name
                             offer.setName(response.body().getOffersAcceptedList().get(i).getName());
+                            //name of fixer
+                            offer.setUser_name(response.body().getOffersAcceptedList().get(i).getUser_name());
                             offer.setEst_tot_budget(response.body().getOffersAcceptedList().get(i).getEst_tot_budget());
                             offer.setPosted_by(response.body().getOffersAcceptedList().get(i).getPosted_by());
                             offer.setPosted_on(response.body().getOffersAcceptedList().get(i).getPosted_on());
                             offer.setJob_date(response.body().getOffersAcceptedList().get(i).getJob_date());
+                            //add the profile pic of the user who posted the job
+                            offer.setProfile_pic(response.body().getOffersAcceptedList().get(i).getProfile_pic());
 
                             offersList.add(offer);
                         }
-
-                        //add the profile pic of the user who posted the job
-                        offer.setProfile_pic(response.body().getProfilePic());
 
                         // When you are off of the main thread and want to update LiveData, use postValue.
                         // It posts the update to the main thread.

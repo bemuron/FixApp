@@ -171,8 +171,8 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
   }
 
   private void applyProfilePicture(MyViewHolder holder, Job job) {
-    if (!TextUtils.isEmpty(job.getImage1())) {
-      Glide.with(context).load(job.getImage1())
+    if (!TextUtils.isEmpty(job.getProfile_pic())) {
+      Glide.with(context).load("http://emtechint.com/fixapp/assets/images/profile_pics/"+job.getProfile_pic())
               .thumbnail(0.5f)
               .transition(withCrossFade())
               .apply(new RequestOptions().fitCenter()

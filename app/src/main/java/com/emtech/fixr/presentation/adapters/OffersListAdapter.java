@@ -137,7 +137,7 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
         applyClickEvents(holder, offer.getName(), position);
 
         // display profile image
-        //applyProfilePicture(holder, offer);
+        applyProfilePicture(holder, offer);
 
     }
 
@@ -151,9 +151,9 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
         });
     }
 
-    private void applyProfilePicture(MyViewHolder holder, Job job) {
-        if (!TextUtils.isEmpty(job.getImage1())) {
-            Glide.with(context).load(job.getImage1())
+    private void applyProfilePicture(MyViewHolder holder, Offer offer) {
+        if (!TextUtils.isEmpty(offer.getProfile_pic())) {
+            Glide.with(context).load("http://emtechint.com/fixapp/assets/images/profile_pics/"+offer.getProfile_pic())
                     .thumbnail(0.5f)
                     .transition(withCrossFade())
                     .apply(new RequestOptions().fitCenter()

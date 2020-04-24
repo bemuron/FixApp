@@ -90,7 +90,6 @@ public class FixerOffersListActivity extends AppCompatActivity implements
                 hideBar();
                 offerList = offersMadeList;
                 offersAdapter.setList(offerList);
-                Log.e(LOG_TAG, "offers made list size is " +offerList.size());
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
                 recyclerView.smoothScrollToPosition(mPosition);
@@ -99,6 +98,8 @@ public class FixerOffersListActivity extends AppCompatActivity implements
                     emptyView.setText(R.string.empty_fixer_offers_made_list);
                     emptyView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
+                }else {
+                    Log.e(LOG_TAG, "offers made list size is " +offerList.size());
                 }
             });
         }
