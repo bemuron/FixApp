@@ -83,10 +83,10 @@
 
             <ImageView
                 android:id="@+id/icon_profile"
+                android:layout_width="27dp"
+                android:layout_height="21dp"
                 android:background="@drawable/img_layer"
-                android:scaleType="centerCrop"
-                android:layout_width="@dimen/icon_width_height"
-                android:layout_height="@dimen/icon_width_height" />
+                android:scaleType="centerCrop" />
 
             <TextView
                 android:id="@+id/icon_text"

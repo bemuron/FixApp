@@ -1,52 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presentation.ui.activity.MyProfileActivity">
-
-    <com.google.android.material.appbar.AppBarLayout android:id="@+id/app_bar"
-        android:fitsSystemWindows="true" android:layout_height="wrap_content"
-        android:layout_width="match_parent" android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-        <com.google.android.material.appbar.CollapsingToolbarLayout android:id="@+id/toolbar_layout"
-            android:fitsSystemWindows="true" android:layout_width="match_parent"
-            android:layout_height="match_parent" app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:contentScrim="?attr/colorPrimary">
-            <!--android:adjustViewBounds="true"
-                android:minHeight="100dp" -->
-
-            <ImageView
-                android:id="@+id/aboutAtesoImageView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/app_name"
-                app:srcCompat="@drawable/about"
-                app:layout_collapseMode="parallax"/>
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent" android:clipToPadding="false"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".presentation.ui.activity.MyProfileActivity">
         <!--app:layout_behavior="@string/appbar_scrolling_view_behavior"-->
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:padding="@dimen/margin_padding_normal">
+
+            <ImageView
+                android:id="@+id/profile_pic"
+                android:layout_width="107dp"
+                android:layout_height="101dp"
+                android:layout_marginTop="@dimen/margin_padding_normal"
+                android:layout_marginBottom="@dimen/margin_padding_normal"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/img_layer"
+                android:scaleType="centerCrop" />
+
+            <TextView
+                android:id="@+id/profile_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textSize="@dimen/text_size_huge"
+                android:textColor="@color/colorPrimaryDark"
+                android:text="User name"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
             <RadioGroup
                 android:id="@+id/profile_user_type_radio_group"
@@ -92,23 +80,11 @@
             </RadioGroup>
 
             <TextView
-                android:id="@+id/profile_user_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:textSize="@dimen/text_size_huge"
-                android:textColor="@color/colorPrimaryDark"
-                android:layout_below="@id/profile_user_type_radio_group"
-                android:text="User name"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"/>
-
-            <TextView
                 android:id="@+id/profile_user_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_below="@id/profile_user_name"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margin_padding_normal"
                 android:textSize="@dimen/text_size_xnormal"
                 android:textStyle="italic"
                 android:textColor="@color/colorPrimaryDark"
@@ -118,9 +94,8 @@
                 android:id="@+id/profile_member_since"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_user_location"
                 android:textSize="@dimen/text_size_xnormal"
-                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
                 android:textStyle="italic"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="Member since: 10 Aug 2019"/>
@@ -129,7 +104,6 @@
                 android:id="@+id/profile_user_rating"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_user_location"
                 android:textSize="@dimen/text_size_header"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="Rating: 4.8"
@@ -139,7 +113,6 @@
                 android:id="@+id/profile_transparency_badges_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_user_rating"
                 android:textSize="@dimen/text_size_xnormal"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="Transparency Badges;"
@@ -149,7 +122,6 @@
                 android:id="@+id/profile_about_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_transparency_badges_title"
                 android:textSize="@dimen/text_size_xnormal"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="About;"
@@ -159,9 +131,8 @@
                 android:id="@+id/profile_about_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_about_title"
                 android:textSize="@dimen/text_size_xnormal"
-                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="User written text about themselves"
                 android:layout_marginTop="@dimen/activity_vertical_margin"/>
@@ -170,12 +141,10 @@
                 android:id="@+id/profile_skills"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/profile_about_text"
                 android:textSize="@dimen/text_size_xnormal"
                 android:textColor="@color/colorPrimaryDark"
                 android:text="Skills;"
                 android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
-        </RelativeLayout>
-    </androidx.core.widget.NestedScrollView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </LinearLayout>
+    </ScrollView>

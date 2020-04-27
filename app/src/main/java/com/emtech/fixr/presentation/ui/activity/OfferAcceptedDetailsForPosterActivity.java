@@ -124,8 +124,8 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
             @Override
             public void onResume(){
                 super.onResume();
-                showBar();
-                clearViews();
+                /*showBar();
+                clearViews();*/
             }
 
     public static OfferAcceptedDetailsForPosterActivity getInstance(){

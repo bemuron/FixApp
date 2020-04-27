@@ -124,8 +124,8 @@ public class OfferMadeDetailsForFixerActivity extends AppCompatActivity implemen
     @Override
     public void onResume(){
         super.onResume();
-        showBar();
-        clearViews();
+        /*showBar();
+        clearViews();*/
     }
 
     public OfferMadeDetailsForFixerActivity getInstance(){

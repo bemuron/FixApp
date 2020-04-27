@@ -126,8 +126,8 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
             @Override
             public void onResume(){
                 super.onResume();
-                showBar();
-                clearViews();
+                /*showBar();
+                clearViews();*/
             }
 
     public OfferAcceptedDetailsForFixerActivity getInstance(){

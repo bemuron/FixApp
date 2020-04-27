@@ -4,6 +4,7 @@
     <string name="offer_details_activity">Offer Details</string>
     <string name="browse_jobs_activity">Browse jobs</string>
     <string name="search_jobs_activity">Search jobs</string>
+    <string name="title_activity_my_profile">My Profile</string>
     <string name="categories_list_instructions">In what category is the item you want fixed?</string>
     <string name="describe_project_header">Describe Your project</string>
     <string name="title">Title;</string>

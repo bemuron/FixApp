@@ -25,7 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.emtech.fixr.R;
+import com.emtech.fixr.helpers.CircleTransform;
 import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.presentation.ui.fragment.MakeOfferDialogFragment;
@@ -41,6 +44,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
         implements View.OnClickListener, NoticeDialogFragment.OnNoticeDialogListener{
@@ -129,8 +134,8 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
     @Override
     public void onResume(){
         super.onResume();
-        showBar();
-        clearViews();
+        /*showBar();
+        clearViews();*/
     }
 
     public static OfferReceivedDetailsForPosterActivity getInstance(){
@@ -186,8 +191,11 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
                 Glide.with(this)
                         .load("http://www.emtechint.com/fixapp/assets/images/profile_pics/" + offer.getProfile_pic())
                         .thumbnail(0.5f)
+                        .transition(withCrossFade())
+                        .apply(new RequestOptions().fitCenter()
+                                .transform(new CircleTransform(this)).diskCacheStrategy(DiskCacheStrategy.ALL))
                         .into(fixerImageView);
-                //fixerImageView.setColorFilter(null);
+                fixerImageView.setColorFilter(null);
             }
         }catch (Exception e){
             e.printStackTrace();

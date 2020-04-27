@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.emtech.fixr.presentation.ui.activity.MyProfileActivity">
+
+    <item android:id="@+id/action_edit_profile"
+        android:icon="@mipmap/ic_launcher"
+        android:orderInCategory="102"
+        android:title="Edit Offer"
+        app:showAsAction="ifRoom"/>
+</menu>

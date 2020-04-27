@@ -5,7 +5,7 @@
     tools:context=".presentation.ui.activity.OfferAcceptedDetailsForFixerActivity">
 
     <item android:id="@+id/action_edit_offer"
-        android:icon="@mipmap/ic_edit_white_24dp"
+        android:icon="@mipmap/ic_launcher"
         android:orderInCategory="102"
         android:title="Edit Offer"
         app:showAsAction="ifRoom"/>
