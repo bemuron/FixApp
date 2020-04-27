@@ -336,7 +336,7 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
             hideDialog();
             Log.d(TAG, "login not successful");
             //display any error msg that may be received
-            Toast.makeText(LoginActivity.this, "login not successful",
+            Toast.makeText(LoginActivity.this, "Invalid username or password",
                     Toast.LENGTH_LONG).show();
             btnLogin.setClickable(true);
         }

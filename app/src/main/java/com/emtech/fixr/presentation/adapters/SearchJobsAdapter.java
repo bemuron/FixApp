@@ -53,7 +53,8 @@ public class SearchJobsAdapter extends PagedListAdapter<Job, SearchJobsAdapter.I
 
     class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView job_name, job_location, job_date, job_time, job_amount, job_status;
+        public TextView job_name, job_location, job_date, job_time,
+                job_amount, job_status, iconText;
         public ImageView imgProfile;
         public LinearLayout jobContainer;
         public RelativeLayout iconContainer;
@@ -67,6 +68,7 @@ public class SearchJobsAdapter extends PagedListAdapter<Job, SearchJobsAdapter.I
             job_amount = view.findViewById(R.id.my_jobs_amount);
             job_status = view.findViewById(R.id.job_status);
             imgProfile = view.findViewById(R.id.icon_profile);
+            iconText = view.findViewById(R.id.icon_text);
             jobContainer = view.findViewById(R.id.my_jobs_job_container);
             iconContainer = view.findViewById(R.id.icon_container);
         }
@@ -120,7 +122,7 @@ public class SearchJobsAdapter extends PagedListAdapter<Job, SearchJobsAdapter.I
         holder.job_status.setVisibility(View.GONE);
 
         // displaying the first letter of From in icon text
-        //holder.iconText.setText(tutor.getName().substring(0, 1));
+        holder.iconText.setText(job.getUserName().substring(0, 1));
 
         // change the row state to activated
         holder.itemView.setActivated(selectedItems.get(position, false));
@@ -152,10 +154,11 @@ public class SearchJobsAdapter extends PagedListAdapter<Job, SearchJobsAdapter.I
                             .transform(new CircleTransform(context)).diskCacheStrategy(DiskCacheStrategy.ALL))
                     .into(holder.imgProfile);
             holder.imgProfile.setColorFilter(null);
+            holder.iconText.setVisibility(View.INVISIBLE);
         } else {
             holder.imgProfile.setImageResource(R.drawable.bg_circle);
-            //holder.imgProfile.setColorFilter(job.getColor());
-            //holder.iconText.setVisibility(View.VISIBLE);
+            holder.imgProfile.setColorFilter(job.getColor());
+            holder.iconText.setVisibility(View.VISIBLE);
         }
     }
 

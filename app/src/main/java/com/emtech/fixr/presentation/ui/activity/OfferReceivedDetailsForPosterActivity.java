@@ -112,6 +112,7 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
                 offer.setEst_tot_budget(offerDetails.getEst_tot_budget());
                 offer.setPosted_by(offerDetails.getPosted_by());
                 offer.setUser_name(offerDetails.getUser_name());
+                offer.setProfile_pic(offerDetails.getProfile_pic());
                 offer.setPosted_on(offerDetails.getPosted_on());
                 offer.setJob_date(offerDetails.getJob_date());
 
@@ -123,6 +124,13 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
             }
 
         });
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        showBar();
+        clearViews();
     }
 
     public static OfferReceivedDetailsForPosterActivity getInstance(){

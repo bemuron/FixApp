@@ -123,6 +123,13 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
         });
     }
 
+            @Override
+            public void onResume(){
+                super.onResume();
+                showBar();
+                clearViews();
+            }
+
     public OfferAcceptedDetailsForFixerActivity getInstance(){
         return offerAcceptedDetailsForFixerActivity;
     }

@@ -25,18 +25,20 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan">
-        <activity android:name=".presentation.ui.activity.SearchJobsActivity"
-            android:launchMode="singleTop"
+        <activity android:name=".presentation.ui.activity.MyProfileActivity"></activity>
+        <activity
+            android:name=".presentation.ui.activity.SearchJobsActivity"
             android:label="@string/search_jobs_activity"
-            android:parentActivityName=".presentation.ui.activity.BrowseJobsActivity"/>
-
-        <activity android:name=".presentation.ui.activity.OfferMadeDetailsForFixerActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".presentation.ui.activity.BrowseJobsActivity" />
+        <activity
+            android:name=".presentation.ui.activity.OfferMadeDetailsForFixerActivity"
             android:label="@string/offer_details_activity"
-            android:parentActivityName=".presentation.ui.activity.FixerOffersListActivity"/>
-
-        <activity android:name=".presentation.ui.activity.OfferReceivedDetailsForPosterActivity"
-                  android:label="@string/offer_details_activity"
-                  android:parentActivityName=".presentation.ui.activity.PosterOffersListActivity"/>
+            android:parentActivityName=".presentation.ui.activity.FixerOffersListActivity" />
+        <activity
+            android:name=".presentation.ui.activity.OfferReceivedDetailsForPosterActivity"
+            android:label="@string/offer_details_activity"
+            android:parentActivityName=".presentation.ui.activity.PosterOffersListActivity" />
         <activity
             android:name=".presentation.ui.activity.MyJobsListActivity"
             android:parentActivityName=".presentation.ui.activity.HomeActivity" />

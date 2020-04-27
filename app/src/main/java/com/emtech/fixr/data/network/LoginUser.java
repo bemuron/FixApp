@@ -126,6 +126,7 @@ public class LoginUser {
           }
         }else{
           Log.e(LOG_TAG, "response.body() is null");
+          successfulLoginCallBack.onLoginSuccessful(false, null);
         }
       }
 
@@ -134,6 +135,7 @@ public class LoginUser {
         //print out any error we may get
         //probably server connection
         Log.e(LOG_TAG, t.getMessage());
+        successfulLoginCallBack.onLoginSuccessful(false, null);
       }
     });
   }

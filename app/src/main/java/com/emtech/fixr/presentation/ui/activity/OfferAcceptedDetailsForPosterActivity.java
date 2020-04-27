@@ -106,6 +106,7 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
                 offer.setName(offerDetails.getName());
                 offer.setEst_tot_budget(offerDetails.getEst_tot_budget());
                 offer.setPosted_by(offerDetails.getPosted_by());
+                offer.setProfile_pic(offerDetails.getProfile_pic());
                 offer.setUser_name(offerDetails.getUser_name());
                 offer.setPosted_on(offerDetails.getPosted_on());
                 offer.setJob_date(offerDetails.getJob_date());
@@ -119,6 +120,13 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
 
         });
     }
+
+            @Override
+            public void onResume(){
+                super.onResume();
+                showBar();
+                clearViews();
+            }
 
     public static OfferAcceptedDetailsForPosterActivity getInstance(){
         return offerAcceptedDetailsForPosterActivity;
@@ -318,6 +326,17 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
             Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
         }
     }
+
+            /**
+             * After accepting the offer, the fixer gets a notification that the offer was accepted
+             * the fixer can go ahead to start the job, this shows "job in progress". Whe the fixer
+             * is done they can complete the job, and the poster can confirm if it is finished, if it
+             * isn't yet complete they can reject and the job status goes back to "job in progress".
+             * If the poster confirms that the job is complete, they can go ahead and make the
+             * payment to the fixer via mm, visa, cash
+             * @param menu
+             * @return
+             */
 
             @Override
             public boolean onCreateOptionsMenu(Menu menu) {

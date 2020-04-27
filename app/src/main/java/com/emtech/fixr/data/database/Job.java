@@ -85,6 +85,8 @@ public class Job {
   @ColumnInfo(name = "userName")
   private String userName;
 
+  private int color = -1;
+
 
     /*public Job(String name, String description, String location, String image1, String image2,
                String image3, int posted_by, int category_id, Date posted_on,
@@ -319,5 +321,13 @@ public class Job {
 
   public void setUserName(String userName) {
     this.userName = userName;
+  }
+
+  public int getColor() {
+    return color;
+  }
+
+  public void setColor(int color) {
+    this.color = color;
   }
 }

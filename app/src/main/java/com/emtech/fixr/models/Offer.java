@@ -35,6 +35,8 @@ public class Offer {
 
     private String profile_pic;
 
+    private int color = -1;
+
     public int getOffer_id() {
         return offer_id;
     }
@@ -161,5 +163,13 @@ public class Offer {
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

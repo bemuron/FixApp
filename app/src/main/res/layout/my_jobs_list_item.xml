@@ -87,6 +87,14 @@
                 android:scaleType="centerCrop"
                 android:layout_width="@dimen/icon_width_height"
                 android:layout_height="@dimen/icon_width_height" />
+
+            <TextView
+                android:id="@+id/icon_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/icon_text" />
         </RelativeLayout>
 
     </RelativeLayout>

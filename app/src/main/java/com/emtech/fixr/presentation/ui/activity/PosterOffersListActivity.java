@@ -47,10 +47,6 @@ public class PosterOffersListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_poster_offers_list);
         setupActionBar();
 
-        // Progress bar
-        progressBar = findViewById(R.id.poster_offers_progress_bar);
-        showBar();
-
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this);
         mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
 
@@ -67,24 +63,8 @@ public class PosterOffersListActivity extends AppCompatActivity implements
         if (mOfferType != null && mOfferType.equals("received")) {
             setTitle(R.string.title_activity_poster_offers_received);
             mViewModel.getAllOffersReceived(mUserId).observe(this, offersReceived -> {
+                hideBar();
                 offerList = offersReceived;
-                offersAdapter.setList(offerList);
-
-                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-                recyclerView.smoothScrollToPosition(mPosition);
-
-                if (offerList == null || offerList.size() == 0) {
-                    emptyView.setText(R.string.empty_poster_offers_accepted_list);
-                    emptyView.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
-                }else{
-                    Log.e(LOG_TAG, "offers to jobs for poster list size is " + offerList.size());
-                }
-            });
-        }else if (mOfferType != null && mOfferType.equals("accepted")) {
-            setTitle(R.string.title_activity_poster_offers_accepted);
-            mViewModel.getAllOffersAccepted(mUserId).observe(this, offersAccepted -> {
-                offerList = offersAccepted;
                 offersAdapter.setList(offerList);
 
                 if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
@@ -94,11 +74,41 @@ public class PosterOffersListActivity extends AppCompatActivity implements
                     emptyView.setText(R.string.empty_poster_offers_received_list);
                     emptyView.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
+                }else{
+                    Log.e(LOG_TAG, "offers to jobs for poster list size is " + offerList.size());
+                }
+            });
+        }else if (mOfferType != null && mOfferType.equals("accepted")) {
+            setTitle(R.string.title_activity_poster_offers_accepted);
+            mViewModel.getAllOffersAccepted(mUserId).observe(this, offersAccepted -> {
+                hideBar();
+                offerList = offersAccepted;
+                offersAdapter.setList(offerList);
+
+                if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+                recyclerView.smoothScrollToPosition(mPosition);
+
+                if (offerList == null || offerList.size() == 0) {
+                    emptyView.setText(R.string.empty_poster_offers_accepted_list);
+                    emptyView.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
                 }else {
                     Log.e(LOG_TAG, "offers accepted by poster list size is " + offerList.size());
                 }
             });
         }
+    }
+
+    //onResume is called when the activity is relaunched again from the back stack
+    @Override
+    public void onResume(){
+        super.onResume();
+        showBar();
+        clearData();
+        /*if (!(offersAdapter == null)) {
+            offersAdapter.notifyDataSetChanged();
+        }*/
+
     }
 
     private void setupActionBar() {
@@ -111,6 +121,10 @@ public class PosterOffersListActivity extends AppCompatActivity implements
 
     //set up the view widgets
     private void getAllWidgets(){
+        // Progress bar
+        progressBar = findViewById(R.id.poster_offers_progress_bar);
+        showBar();
+
         recyclerView = findViewById(R.id.poster_offers_list_recycler_view);
         emptyView = findViewById(R.id.posterOffers_empty_list_view);
     }
@@ -118,7 +132,6 @@ public class PosterOffersListActivity extends AppCompatActivity implements
     //setting up the recycler view adapter
     private void setAdapter()
     {
-        hideBar();
         offersAdapter = new OffersListAdapter(PosterOffersListActivity.this, offerList,this);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -133,30 +146,29 @@ public class PosterOffersListActivity extends AppCompatActivity implements
             offerList.clear(); // clear list
         }
         if (offersAdapter != null) {
-            offersAdapter.clearData();
             offersAdapter.notifyDataSetChanged(); // let your adapter know about the changes and reload view.
         }
     }
 
     private void showBar() {
         progressBar.setVisibility(View.VISIBLE);
-        try {
+        /*try {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }catch (Exception e){
             e.printStackTrace();
             Log.e(LOG_TAG, e.getMessage());
-        }
+        }*/
     }
 
     private void hideBar() {
         progressBar.setVisibility(View.INVISIBLE);
-        try {
+        /*try {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }catch (Exception e){
             e.printStackTrace();
             Log.e(LOG_TAG, e.getMessage());
-        }
+        }*/
     }
 
     @Override

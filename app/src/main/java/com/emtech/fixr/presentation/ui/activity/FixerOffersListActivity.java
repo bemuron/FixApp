@@ -105,6 +105,14 @@ public class FixerOffersListActivity extends AppCompatActivity implements
         }
     }
 
+    //onResume is called when the activity is relaunched again from the back stack
+    @Override
+    public void onResume(){
+        super.onResume();
+        showBar();
+        clearData();
+    }
+
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -141,30 +149,29 @@ public class FixerOffersListActivity extends AppCompatActivity implements
             offerList.clear(); // clear list
         }
         if (offersAdapter != null) {
-            offersAdapter.clearData();
             offersAdapter.notifyDataSetChanged(); // let your adapter know about the changes and reload view.
         }
     }
 
     private void showBar() {
         progressBar.setVisibility(View.VISIBLE);
-        try {
+        /*try {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }catch (Exception e){
             e.printStackTrace();
             Log.e(LOG_TAG, e.getMessage());
-        }
+        }*/
     }
 
     private void hideBar() {
         progressBar.setVisibility(View.INVISIBLE);
-        try {
+        /*try {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }catch (Exception e){
             e.printStackTrace();
             Log.e(LOG_TAG, e.getMessage());
-        }
+        }*/
     }
 
     @Override

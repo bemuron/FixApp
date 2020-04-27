@@ -48,7 +48,6 @@ import com.emtech.fixr.data.database.Category;
 import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.presentation.ui.fragment.DashboardFragment;
 import com.emtech.fixr.presentation.ui.fragment.MyJobsFragment;
-import com.emtech.fixr.presentation.ui.fragment.MyProfileFragment;
 import com.emtech.fixr.presentation.ui.fragment.PaymentHistoryFragment;
 import com.emtech.fixr.presentation.viewmodels.HomeActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.HomeViewModelFactory;
@@ -59,8 +58,8 @@ import java.util.ArrayList;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        CategoriesAdapter.CategoriesAdapterOnItemClickHandler, MyJobsFragment.OnMyJobsInteractionListener,
-        MyProfileFragment.OnMyProfileInteractionListener,PaymentHistoryFragment.OnPaymentHistoryInteractionListener,
+        CategoriesAdapter.CategoriesAdapterOnItemClickHandler, MyJobsFragment.OnMyJobsInteractionListener
+        ,PaymentHistoryFragment.OnPaymentHistoryInteractionListener,
         DashboardFragment.OnDashboardInteractionListener {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
@@ -352,11 +351,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMyProfileInteraction(Uri uri) {
-
-    }
-
-    @Override
     public void onPaymentHistoryInteraction(Uri uri) {
 
     }
@@ -489,8 +483,9 @@ public class HomeActivity extends AppCompatActivity
                 break;
 
             case R.id.my_profile:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
-                fragment = new MyProfileFragment();
+                intent = new Intent(this, MyProfileActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
                 break;
 
             case R.id.dashboard:
