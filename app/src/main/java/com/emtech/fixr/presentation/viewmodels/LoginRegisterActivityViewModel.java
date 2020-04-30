@@ -25,10 +25,10 @@ public class LoginRegisterActivityViewModel extends ViewModel {
         mRepository = repository;
     }
 
-    public HashMap<String, String> getUserDetails() {
+    /*public HashMap<String, String> getUserDetails() {
         mUser = new HashMap<String, String>();
 
-        userDetailsCursor = mRepository.getUser();
+        userDetailsCursor = mRepository.getUserDetails();
         // Move to first row
         userDetailsCursor.moveToFirst();
         if (userDetailsCursor.getCount() > 0) {
@@ -42,7 +42,7 @@ public class LoginRegisterActivityViewModel extends ViewModel {
         Log.d(TAG, "Got user from db: " + mUser.toString());
 
         return mUser;
-    }
+    }*/
 
     //call repository method to handle posting data to server
     public void loginUser(String email, String password){

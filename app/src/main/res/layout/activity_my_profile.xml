@@ -50,7 +50,7 @@
 
 
                 <RadioButton
-                    android:id="@+id/profile_tasker_radio_button"
+                    android:id="@+id/profile_fixer_radio_button"
                     android:layout_width="100dp"
                     android:gravity="center"
                     android:layout_height="wrap_content"
@@ -100,14 +100,58 @@
                 android:textColor="@color/colorPrimaryDark"
                 android:text="Member since: 10 Aug 2019"/>
 
-            <TextView
-                android:id="@+id/profile_user_rating"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/profile_user_rating_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_size_header"
-                android:textColor="@color/colorPrimaryDark"
-                android:text="Rating: 4.8"
-                android:layout_marginTop="@dimen/margin_padding_large"/>
+                android:clickable="true"
+                android:layout_marginTop="@dimen/margin_padding_large"
+                android:layout_marginBottom="@dimen/margin_padding_normal"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/profile_user_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/text_size_large"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:paddingRight="@dimen/margin_padding_normal"
+                    android:text="Rating"
+                    android:layout_marginTop="@dimen/margin_padding_small"/>
+
+                <ImageView
+                    android:id="@+id/profile_star_icon"
+                    android:layout_width="27dp"
+                    android:layout_height="27dp"
+                    android:layout_alignTop="@id/profile_user_rating"
+                    android:layout_toRightOf="@id/profile_user_rating"
+                    android:layout_toEndOf="@id/profile_user_rating"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/img_layer"
+                    android:scaleType="centerCrop" />
+
+                <TextView
+                    android:id="@+id/profile_rating_as_poster"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/profile_user_rating"
+                    android:textSize="@dimen/text_size_large"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_marginRight="@dimen/margin_padding_xlarge"
+                    android:text="As a poster: 4.8"
+                    android:layout_marginTop="@dimen/margin_padding_small"/>
+
+                <TextView
+                    android:id="@+id/profile_rating_as_fixer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/profile_rating_as_poster"
+                    android:textSize="@dimen/text_size_large"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:text="As a fixer: 4.8"
+                    android:layout_marginTop="@dimen/margin_padding_small"/>
+
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/profile_transparency_badges_title"

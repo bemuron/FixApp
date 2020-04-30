@@ -4,8 +4,8 @@
     tools:context="com.emtech.fixr.presentation.ui.activity.MyProfileActivity">
 
     <item android:id="@+id/action_edit_profile"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@android:drawable/ic_menu_edit"
         android:orderInCategory="102"
-        android:title="Edit Offer"
+        android:title="Edit Profile"
         app:showAsAction="ifRoom"/>
 </menu>

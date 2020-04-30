@@ -239,7 +239,7 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
                         user.setDate_of_birth(response.body().getUser().getDate_of_birth());
                         user.setGender(response.body().getUser().getGender());
                         user.setName(response.body().getUser().getName());
-                        user.setPassword(response.body().getUser().getPassword());
+                        user.setLocation(response.body().getUser().getLocation());
                         Log.d(TAG, user.getEmail() + " user email");
 
                         //insert user to the local db
@@ -259,6 +259,7 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
                         finish();
 
                     }else{
+                        hideDialog();
                         btnLogin.setClickable(true);
 
                         Toast.makeText(LoginActivity.this,response.body().getMessage(),Toast.LENGTH_SHORT).show();

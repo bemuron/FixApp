@@ -37,6 +37,7 @@ import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.PostJobViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.SearchJobsViewModelFactory;
+import com.emtech.fixr.presentation.viewmodels.UserProfileActivityViewModelFactory;
 
 import java.util.Date;
 
@@ -135,6 +136,11 @@ public class InjectorUtils {
     public static SearchJobsViewModelFactory provideSearchJobsViewModelFactory(Context context) {
         FixAppRepository repository = provideRepository(context.getApplicationContext());
         return new SearchJobsViewModelFactory(repository);
+    }
+
+    public static UserProfileActivityViewModelFactory provideUserProfileViewModelFactory(Context context) {
+        FixAppRepository repository = provideRepository(context.getApplicationContext());
+        return new UserProfileActivityViewModelFactory(repository);
     }
 
     /*

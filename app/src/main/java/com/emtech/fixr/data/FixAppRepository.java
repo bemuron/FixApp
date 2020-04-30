@@ -63,7 +63,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     private RegisterUser mRegisterUser;
     private boolean mInitialized = false;
     private UsersDao mUsersDao;
-    private Cursor mUserDetail;
+    private LiveData<User> mUserDetail;
     private int mCount;
     private static boolean isUpdated;
     private static String updateResponseMessage;
@@ -278,9 +278,15 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         mExecutors.diskIO().execute(() -> mGetMyJobs.CheckIfOfferIsAlreadyMade(userId, jobId));
     }
 
-    public Cursor getUser(){
+    /*public Cursor getUser(){
         mUserDetail = mUsersDao.getUserDetails();
 
+        return mUserDetail;
+    }*/
+
+    public LiveData<User> getUserDetails(){
+        mUserDetail = mUsersDao.getUserDetails();
+        Log.d(LOG_TAG, "Getting user details from db");
         return mUserDetail;
     }
 
@@ -298,6 +304,19 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     //required when user logs out of app
     public void deleteUser (){
         mUsersDao.deleteUser();
+    }
+
+    //updates the user details in the db
+    public void updateProfile(int user_id, String email, String created_on,
+                              String role, String description, String phone_number,
+                              String profile_pic, String date_of_birth, String gender,
+                              String name, String location){
+        mExecutors.diskIO().execute(() ->{
+            mUsersDao.updateProfile(user_id, email, created_on, role, description, phone_number,
+                    profile_pic,  date_of_birth, gender, name, location);
+
+            Log.d(LOG_TAG, " user profile updated");
+        });
     }
 
     /**

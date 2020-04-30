@@ -21,6 +21,7 @@ public final class User {
   private static final String KEY_PHONE_NUMBER = "phone_number";
   private static final String KEY_PASSWORD = "password";
   private static final String KEY_CREATED_ON = "created_on";
+  private static final String KEY_LOCATION = "location";
 
   @PrimaryKey
   @ColumnInfo(name = KEY_UID)
@@ -56,6 +57,9 @@ public final class User {
 
   @ColumnInfo(name = KEY_CREATED_ON)
   private String created_on;
+
+  @ColumnInfo(name = KEY_LOCATION)
+  private String location;
 
     /*
     @Ignore
@@ -136,6 +140,9 @@ public final class User {
     this.phone_number = phone_number;
   }
 
+  public void setLocation(String location) {
+    this.location = location;
+  }
 
   public int getUser_id() {
     return user_id;
@@ -179,5 +186,9 @@ public final class User {
 
   public String getPhone_number() {
     return phone_number;
+  }
+
+  public String getLocation() {
+    return location;
   }
 }

@@ -101,7 +101,7 @@ public class LoginUser {
             //Log.d(LOG_TAG, response.body().getMessage());
             //response.body().getUser();
 
-            // If the code reaches this point, we have successfully posted the job
+            // If the code reaches this point, we have successfully logged in
             Log.d(LOG_TAG, "Successful login");
 
             //create new user object
@@ -116,7 +116,7 @@ public class LoginUser {
             mFixappUser.setDate_of_birth(response.body().getUser().getDate_of_birth());
             mFixappUser.setGender(response.body().getUser().getGender());
             mFixappUser.setName(response.body().getUser().getName());
-            mFixappUser.setPassword(response.body().getUser().getPassword());
+            mFixappUser.setLocation(response.body().getUser().getLocation());
             Log.d(LOG_TAG, mFixappUser.getEmail() + " user email");
 
             //insert user to the local db

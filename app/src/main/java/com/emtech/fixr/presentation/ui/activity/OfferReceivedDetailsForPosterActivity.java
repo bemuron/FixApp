@@ -64,7 +64,6 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
     private String userRole, jobName, jobPoster;
     private ImageView fixerImageView;
     private RelativeLayout afterAcceptOfferContainer;
-    private NoticeDialogFragment dialogFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -388,7 +387,7 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
             ft.remove(prev);
         }
         ft.addToBackStack(null);
-        dialogFragment = NoticeDialogFragment.newInstance("Delete this offer?");
+        NoticeDialogFragment dialogFragment = NoticeDialogFragment.newInstance("Delete this offer?");
         dialogFragment.show(getSupportFragmentManager(), "posterDeleteOffer");
     }
 

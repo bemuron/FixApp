@@ -16,6 +16,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
@@ -24,6 +27,7 @@ import com.emtech.fixr.data.FixAppRepository;
 import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.presentation.ui.fragment.MakeOfferDialogFragment;
+import com.emtech.fixr.presentation.ui.fragment.NoticeDialogFragment;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
@@ -38,7 +42,7 @@ import java.util.Locale;
 //import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity implements View.OnClickListener,
-        FixAppRepository.OfferEditedListener, FixAppRepository.OfferSavedListener
+        FixAppRepository.OfferEditedListener, FixAppRepository.OfferSavedListener, NoticeDialogFragment.OnNoticeDialogListener
         {
     private static final String LOG_TAG = OfferAcceptedDetailsForPosterActivity.class.getSimpleName();
     private TextView jobTitleTV, offerByTV, offeredAmountTV, offerMsgTV,
@@ -311,6 +315,8 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
 
     }
 
+
+
     //called in GetMyJobs to get the response after a job is accepted
     public void updateUiAfterPosterAcceptOffer(Boolean isOfferAccepted, String message){
         hideBar();
@@ -356,8 +362,8 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
                     //launch call app with number of fixer to call
 
                 } else if (id == R.id.action_delete_offer){
-                    //delete offer
-                    mViewModel.posterRejectOffer(offer_id, offer.getJob_id());
+                    //confirm delete
+                    showNoticeDialog();
                 } else if (id == R.id.action_view_details){
                     Intent intent = new Intent(this, JobDetailsActivity.class);
                     intent.putExtra("jobID", offer.getJob_id());
@@ -368,4 +374,26 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
                 return super.onOptionsItemSelected(item);
             }
 
+            //show dialog to confirm with user if they really want to delete the accepted offer
+            private void showNoticeDialog(){
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                Fragment prev = getSupportFragmentManager().findFragmentByTag("posterDeleteAcceptedOffer");
+                if (prev != null) {
+                    ft.remove(prev);
+                }
+                ft.addToBackStack(null);
+                NoticeDialogFragment dialogFragment = NoticeDialogFragment.newInstance("Delete this offer?");
+                dialogFragment.show(getSupportFragmentManager(), "posterDeleteAcceptedOffer");
+            }
+
+            @Override
+            public void onDialogPositiveClick(DialogFragment dialog) {
+                //delete offer
+                mViewModel.posterRejectOffer(offer_id, offer.getJob_id());
+            }
+
+            @Override
+            public void onDialogNegativeClick(DialogFragment dialog) {
+
+            }
         }
