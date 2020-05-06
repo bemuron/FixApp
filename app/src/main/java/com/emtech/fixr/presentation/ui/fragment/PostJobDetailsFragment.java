@@ -21,6 +21,23 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.emtech.fixr.helpers.CircleTransform;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.maps.model.LatLng;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -52,6 +69,7 @@ import com.emtech.fixr.presentation.adapters.MustHavesAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +86,8 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private final static int WRITE_EXTERNAL_RESULT = 100;
     private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 55;
     private static final int SELECT_IMAGE_REQUEST_CODE =25 ;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 15;
+    private static final int M_MAX_ENTRIES = 5;
     private TextInputEditText jobTitleEditText;
     private TextInputEditText jobDescEditText,jobLocationEditText;
     private EditText mustHavesEditText;
@@ -86,6 +106,11 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private ScrollView layoutBottomSheet;
     private boolean locationSwitchChecked = false;
     private BottomSheetBehavior sheetBehavior;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private PlacesClient mPlacesClient;
+    private Boolean mLocationPermissionGranted;
+    private Boolean mDisplayedUserLocation = false;
+    private AutocompleteSupportFragment autocompleteFragment;
     //private JobMustHave mustHave;
     private String categoryName, mediaPath, currentJobImage = null,
             mustHaveOne = null, mustHaveTwo = null, mustHaveThree = null,
@@ -120,9 +145,23 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Initialize Places.
+        mPlacesClient = Places.createClient(getActivity());
+
+        // Construct a FusedLocationProviderClient.
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_post_job_details,container,false);
+        // Initialize the AutocompleteSupportFragment.
+        autocompleteFragment = (AutocompleteSupportFragment)
+                getActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Progress dialog
         pDialog = new ProgressDialog(getActivity());
@@ -144,6 +183,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         }
 
         setUpWidgets(view);
+        searchPlacesWidget();
         //if we have a job id then the user is editing a job
         if (mJobId > 0){
             inflateViews();
@@ -151,6 +191,28 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         setUpMustHavesAdapter();
         handleBottomSheet();
         return view;
+    }
+
+    private void searchPlacesWidget(){
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                jobLocationEditText.setText(place.getName() + place.getId());
+            }
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.e(TAG, "An error occurred: " + status);
+            }
+        });
+
     }
 
     //remove the must have when the uers clicks on the delete button
@@ -248,6 +310,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         jobTitleEditText = view.findViewById(R.id.edit_text_job_title);
         jobDescEditText = view.findViewById(R.id.edit_text_job_desc);
         jobLocationEditText = view.findViewById(R.id.edit_text_job_location);
+        jobLocationEditText.setOnClickListener(this);
         mustHavesEditText = view.findViewById(R.id.edit_text_must_haves_input);
         jobImage1 = view.findViewById(R.id.job_image1);
         jobImage1.setOnClickListener(this);
@@ -513,6 +576,23 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     }
                 }
                 break;
+
+            case R.id.edit_text_job_location:
+                try {
+                    if (mLocationPermissionGranted) {
+                        updateUserLocation();
+                    }else if (mDisplayedUserLocation && mLocationPermissionGranted){
+                        //show places widget
+
+                    }else{
+                        getLocationPermission();
+                    }
+                }catch (SecurityException e)  {
+                    // The user has not granted permission.
+                    Log.i(TAG, "The user did not grant location permission.");
+                    Log.e("Exception: %s", e.getMessage());
+                }
+                break;
         }
 
     }
@@ -606,6 +686,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     //get the results of the permissions request
     @Override
     public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
+        mLocationPermissionGranted = false;
         Log.d(TAG, "Permission callback called ----");
         //fill with actual results from the user
         if (requestCode == REQUEST_ID_MULTIPLE_PERMISSIONS) {
@@ -653,6 +734,87 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
                 }
             }
+        }
+        //if location permission is granted
+        if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION){
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionGranted = true;
+            }
+            updateUserLocation();
+        }
+    }
+
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    //method to update the edit text with the location of the user
+    //which the app has automatically received
+    private void updateUserLocation(){
+        try {
+            if (mLocationPermissionGranted) {
+                showCurrentPlace();
+            }else {
+                getLocationPermission();
+            }
+        }catch (SecurityException e)  {
+            // The user has not granted permission.
+            Log.i(TAG, "The user did not grant location permission.");
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    //get the current place
+    private void showCurrentPlace() {
+        mDisplayedUserLocation = false;
+        if (mLocationPermissionGranted) {
+            // Use fields to define the data types to return.
+            List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,
+                    Place.Field.LAT_LNG);
+
+            // Use the builder to create a FindCurrentPlaceRequest.
+            FindCurrentPlaceRequest request =
+                    FindCurrentPlaceRequest.newInstance(placeFields);
+
+            // Get the likely places - that is, the businesses and other points of interest that
+            // are the best match for the device's current location.
+            @SuppressWarnings("MissingPermission") final Task<FindCurrentPlaceResponse> placeResult =
+                    mPlacesClient.findCurrentPlace(request);
+            placeResult.addOnCompleteListener (task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    FindCurrentPlaceResponse likelyPlaces = task.getResult();
+
+                    for (PlaceLikelihood placeLikelihood : likelyPlaces.getPlaceLikelihoods()) {
+
+                        // update the edit text with the likely place the user is in
+                        jobLocationEditText.setText(placeLikelihood.getPlace().getName());
+                    }
+                    mDisplayedUserLocation = true;
+                }
+                else {
+                    Log.e(TAG, "Exception: %s", task.getException());
+                }
+            });
+        } else {
+            // The user has not granted permission.
+            Log.i(TAG, "The user did not grant location permission.");
+            // Prompt the user for permission.
+            getLocationPermission();
         }
     }
 
