@@ -26,6 +26,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.GeoDataClient;
 import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,8 +37,11 @@ import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -74,6 +78,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
@@ -88,6 +93,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private static final int SELECT_IMAGE_REQUEST_CODE =25 ;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 15;
     private static final int M_MAX_ENTRIES = 5;
+    private final static int AUTO_COMPLETE_REQUEST_CODE = 1;
     private TextInputEditText jobTitleEditText;
     private TextInputEditText jobDescEditText,jobLocationEditText;
     private EditText mustHavesEditText;
@@ -108,9 +114,9 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private BottomSheetBehavior sheetBehavior;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlacesClient mPlacesClient;
-    private Boolean mLocationPermissionGranted;
+    private Boolean mLocationPermissionGranted = false;
     private Boolean mDisplayedUserLocation = false;
-    private AutocompleteSupportFragment autocompleteFragment;
+    //private AutocompleteSupportFragment autocompleteFragment;
     //private JobMustHave mustHave;
     private String categoryName, mediaPath, currentJobImage = null,
             mustHaveOne = null, mustHaveTwo = null, mustHaveThree = null,
@@ -159,13 +165,15 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_post_job_details,container,false);
-        // Initialize the AutocompleteSupportFragment.
-        autocompleteFragment = (AutocompleteSupportFragment)
-                getActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         // Progress dialog
         pDialog = new ProgressDialog(getActivity());
         pDialog.setCancelable(false);
+
+        /*Initialize Places.*/
+        if (!Places.isInitialized()){
+            Places.initialize(getContext(), "AIzaSyDOLKjt9f5qDpwcTCYAhJkUJzLBeEeMz1c");
+        }
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -183,17 +191,22 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         }
 
         setUpWidgets(view);
-        searchPlacesWidget();
+        //searchPlacesWidget();
         //if we have a job id then the user is editing a job
         if (mJobId > 0){
             inflateViews();
         }
+        updateUserLocation();
         setUpMustHavesAdapter();
         handleBottomSheet();
         return view;
     }
 
-    private void searchPlacesWidget(){
+    /*private void searchPlacesWidget(){
+        // Initialize the AutocompleteSupportFragment.
+        autocompleteFragment = (AutocompleteSupportFragment)
+                getActivity().getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
 
@@ -213,6 +226,17 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             }
         });
 
+    }*/
+
+    private void getJobLocation(){
+        //set the fields to specify which types of place data to
+        //return after the user has made a selection
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+
+        //start the autocomplete intent
+        Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY,
+                fields).build(getActivity());
+        startActivityForResult(intent, AUTO_COMPLETE_REQUEST_CODE);
     }
 
     //remove the must have when the uers clicks on the delete button
@@ -580,10 +604,10 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             case R.id.edit_text_job_location:
                 try {
                     if (mLocationPermissionGranted) {
-                        updateUserLocation();
-                    }else if (mDisplayedUserLocation && mLocationPermissionGranted){
-                        //show places widget
-
+                        //if (mDisplayedUserLocation) {
+                            //show places widget
+                            getJobLocation();
+                        //}
                     }else{
                         getLocationPermission();
                     }
@@ -645,6 +669,19 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                 }
 
             }
+        }else
+        if (requestCode == AUTO_COMPLETE_REQUEST_CODE){
+            if (resultCode == RESULT_OK){
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName()+" "+place.getId());
+                jobLocationEditText.setText(place.getName());
+            }else if (resultCode == AutocompleteActivity.RESULT_ERROR){
+                Status status = Autocomplete.getStatusFromIntent(data);
+                //handle error
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED){
+                //the user cancelled the operation
+            }
         }
 
     }
@@ -686,7 +723,6 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     //get the results of the permissions request
     @Override
     public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
-        mLocationPermissionGranted = false;
         Log.d(TAG, "Permission callback called ----");
         //fill with actual results from the user
         if (requestCode == REQUEST_ID_MULTIPLE_PERMISSIONS) {
@@ -734,7 +770,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
                 }
             }
-        }
+        }else
         //if location permission is granted
         if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION){
             // If request is cancelled, the result arrays are empty.
@@ -781,7 +817,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
     //get the current place
     private void showCurrentPlace() {
-        mDisplayedUserLocation = false;
+        //mDisplayedUserLocation = false;
         if (mLocationPermissionGranted) {
             // Use fields to define the data types to return.
             List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME,
