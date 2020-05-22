@@ -30,8 +30,19 @@ android {
 
 dependencies {
     def paging_version = "1.0.1"
+    def junit_version = "4.12"
+    /*ext.arch_version = "1.0.0-alpha8"
+    ext.support_version = "28.0.0"
+    ext.constraint_layout_version = "1.1.2"
+    ext.firebase_jobdispatcher_version = "0.7.0"
+    ext.junit_version = "4.12"
+    ext.support_test_version = "1.0.0"
 
-    implementation fileTree(dir: 'libs', include: ['*.aar','*.jar'])
+// Architecture Components dependencies
+    ext.roomVersion = '1.1.1'
+    ext.archLifecycleVersion = '1.0.0'*/
+
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
@@ -41,7 +52,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'com.google.android.gms:play-services-maps:17.0.0'
     testImplementation "junit:junit:$junit_version"
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -71,25 +81,28 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 
     //firebase
-    implementation 'com.google.firebase:firebase-analytics:17.2.3'
+    implementation 'com.google.firebase:firebase-analytics:17.4.1'
     //firebase cloud messaging
-    implementation 'com.google.firebase:firebase-messaging:20.1.2'
+    implementation 'com.google.firebase:firebase-messaging:20.1.7'
 
     //circle image view
     //implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     //maps and places dependencies
     //these link with the aar files in the libs folder
-    //implementation name:'maps-sdk-3.0.0-beta', ext:'aar'
-    //implementation name:'places-maps-sdk-3.0.0-beta', ext:'aar'
+    implementation name:'maps-sdk-3.0.0-beta', ext:'aar'
+    implementation name:'places-maps-sdk-3.0.0-beta', ext:'aar'
 
     //maps and places dep
-    /*implementation 'com.google.android.gms:play-services-basement:17.2.1'
+    implementation 'com.google.android.gms:play-services-basement:17.2.1'
     implementation 'com.google.android.gms:play-services-base:17.2.1'
-    implementation 'com.google.android.gms:play-services-gcm:17.0.0'*/
+    implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
-    implementation 'com.google.android.gms:play-services-places:17.0.0'
+    implementation 'com.google.android.gms:play-services-tasks:17.0.2'
+    implementation 'com.google.android.gms:play-services-clearcut:17.0.0'
+    //implementation 'com.google.android.gms:play-services-places:17.0.0'
+    //implementation 'com.google.android.gms:play-services-maps:17.0.0'
     //implementation 'com.google.android.libraries.places:places:2.2.0'
     // volley
-    //implementation 'com.android.volley:volley:1.1.0'
+    implementation 'com.android.volley:volley:1.1.1'
 }

@@ -24,13 +24,7 @@ import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.GeoDataClient;
-import com.google.android.gms.location.places.PlaceDetectionClient;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.maps.model.LatLng;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
@@ -39,8 +33,6 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.textfield.TextInputEditText;
@@ -155,7 +147,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         super.onCreate(savedInstanceState);
 
         // Initialize Places.
-        mPlacesClient = Places.createClient(getActivity());
+        //mPlacesClient = Places.createClient(getActivity());
 
         // Construct a FusedLocationProviderClient.
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -174,6 +166,9 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         if (!Places.isInitialized()){
             Places.initialize(getContext(), "AIzaSyDOLKjt9f5qDpwcTCYAhJkUJzLBeEeMz1c");
         }
+
+        // Initialize Places.
+        mPlacesClient = Places.createClient(getActivity());
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -196,7 +191,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         if (mJobId > 0){
             inflateViews();
         }
-        updateUserLocation();
+        //updateUserLocation();
         setUpMustHavesAdapter();
         handleBottomSheet();
         return view;
@@ -231,7 +226,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private void getJobLocation(){
         //set the fields to specify which types of place data to
         //return after the user has made a selection
-        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME);
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID);
 
         //start the autocomplete intent
         Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY,
@@ -604,6 +599,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             case R.id.edit_text_job_location:
                 try {
                     if (mLocationPermissionGranted) {
+                        updateUserLocation();
                         //if (mDisplayedUserLocation) {
                             //show places widget
                             getJobLocation();
@@ -673,7 +669,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         if (requestCode == AUTO_COMPLETE_REQUEST_CODE){
             if (resultCode == RESULT_OK){
                 Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i(TAG, "Place: " + place.getName()+" "+place.getId());
+                Log.i(TAG, "Place: " + place.getName());
                 jobLocationEditText.setText(place.getName());
             }else if (resultCode == AutocompleteActivity.RESULT_ERROR){
                 Status status = Autocomplete.getStatusFromIntent(data);
@@ -778,7 +774,6 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionGranted = true;
             }
-            updateUserLocation();
         }
     }
 
@@ -802,17 +797,8 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     //method to update the edit text with the location of the user
     //which the app has automatically received
     private void updateUserLocation(){
-        try {
-            if (mLocationPermissionGranted) {
-                showCurrentPlace();
-            }else {
-                getLocationPermission();
-            }
-        }catch (SecurityException e)  {
-            // The user has not granted permission.
-            Log.i(TAG, "The user did not grant location permission.");
-            Log.e("Exception: %s", e.getMessage());
-        }
+        showCurrentPlace();
+        Log.e(TAG, "Attempt to show user selected location");
     }
 
     //get the current place
@@ -839,6 +825,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
                         // update the edit text with the likely place the user is in
                         jobLocationEditText.setText(placeLikelihood.getPlace().getName());
+                        Log.e(TAG, "Possible user location = "+placeLikelihood.getPlace().getName());
                     }
                     mDisplayedUserLocation = true;
                 }
