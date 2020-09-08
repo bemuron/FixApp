@@ -1,22 +1,28 @@
 <resources>
     <string name="app_name">FixApp</string>
+    <string name="title_activity_verify_phone">Verify Phone Number</string>
     <string name="job_details_activity">Job Details</string>
     <string name="offer_details_activity">Offer Details</string>
     <string name="browse_jobs_activity">Browse jobs</string>
     <string name="search_jobs_activity">Search jobs</string>
     <string name="title_activity_my_profile">My Profile</string>
+    <string name="title_activity_edit_profile">Edit Profile</string>
     <string name="categories_list_instructions">In what category is the item you want fixed?</string>
     <string name="describe_project_header">Describe Your project</string>
     <string name="title">Title;</string>
     <string name="job_title_sample">Job Title e.g Broken water tap</string>
     <string name="job_desc_sample">Briefly describe the job</string>
     <string name="job_post_button">Post Job</string>
+    <string name="edit_job_details">Edit Job Details</string>
     <string name="title_activity_poster_offers_accepted">Accepted Offers</string>
     <string name="title_activity_poster_offers_received">Received Offers</string>
     <string name="title_activity_fixer_offers_made">Offers Made</string>
     <string name="title_activity_fixer_offers_accepted">Accepted Offers</string>
     <string name="job_images_instructions">Upload image of what you want to be fixed (optional)</string>
     <string name="description">Description;</string>
+    <string name="rate_poster">Rate the job poster</string>
+    <string name="rate_fixer_instruction">Rate the job fixer</string>
+    <string name="payment_summary_title">Payment summary</string>
 
     <string name="hint_password">Password</string>
     <string name="hint_email">Email</string>
@@ -132,7 +138,12 @@
     <string name="job_date_tab">Job Time</string>
     <string name="job_budget_tab">Job Budget</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_accept_offer">Accept Offer</string>
+    <string name="menu_delete_offer">Delete</string>
+    <string name="menu_view_job_details">View Job details</string>
+    <string name="menu_edit_offer">Edit Offer</string>
+    <string name="menu_call">Call</string>
+    <string name="menu_save">save</string>
+    <string name="menu_edit_profile">Edit Profile</string>
 
 </resources>

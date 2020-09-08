@@ -100,6 +100,16 @@ public class MyJobsActivityViewModel extends ViewModel {
         mRepository.checkIfOfferIsAlreadyMade(userId, jobId);
     }
 
+    //handles the submission of the fixer's rating
+    public void submitFixerRating(int job_id, int poster_id, int fixer_id, float fixer_rating, String comment){
+        mRepository.submitFixerRating(job_id, poster_id, fixer_id, fixer_rating, comment);
+    }
+
+    //handles the submission of the poster's rating
+    public void submitPosterRating(int job_id, int fixer_id, int poster_id, float poster_rating, String comment){
+        mRepository.submitPosterRating(job_id, fixer_id, poster_id, poster_rating, comment);
+    }
+
 
 
 }

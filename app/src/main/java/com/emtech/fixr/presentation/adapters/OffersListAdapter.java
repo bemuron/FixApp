@@ -132,9 +132,6 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
             holder.job_status.setTextColor(context.getResources().getColor(R.color.completed_job));
         }
 
-        // displaying the first letter of From in icon text
-        holder.iconText.setText(offer.getUser_name().substring(0, 1));
-
         // change the row state to activated
         holder.itemView.setActivated(selectedItems.get(position, false));
 
@@ -169,6 +166,8 @@ public class OffersListAdapter extends RecyclerView.Adapter<OffersListAdapter.My
         } else {
             holder.imgProfile.setImageResource(R.drawable.bg_circle);
             holder.imgProfile.setColorFilter(offer.getColor());
+            // displaying the first letter of From in icon text
+            holder.iconText.setText(offer.getUser_name().substring(0, 1));
             holder.iconText.setVisibility(View.VISIBLE);
         }
     }

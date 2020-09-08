@@ -109,8 +109,6 @@ public class FixerOffersListActivity extends AppCompatActivity implements
     @Override
     public void onResume(){
         super.onResume();
-        showBar();
-        clearData();
     }
 
     private void setupActionBar() {

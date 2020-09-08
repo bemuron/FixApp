@@ -220,6 +220,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         //if job id is > 0 we are updating the job, else its at the default
         // state of 0 - posting fresh details
         if (job_id > 0) {
+            setTitle(R.string.edit_job_details);
             //we are updating the existing job details
             repository.getJobUpdateDetails(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                     mustHaveThree, isJobRemote, file);

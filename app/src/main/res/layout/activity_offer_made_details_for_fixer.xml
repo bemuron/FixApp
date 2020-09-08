@@ -8,6 +8,11 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".presentation.ui.activity.JobDetailsActivity">
 
+    <FrameLayout
+        android:id="@+id/progressBarFrame_detailsForFixer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -196,7 +201,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_padding_xnormal"
             android:text="View Job Details" />
+    </LinearLayout>
 
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
         <ProgressBar
             android:id="@+id/forFixerMd_progress_bar"
             android:layout_width="match_parent"
@@ -204,11 +214,6 @@
             android:backgroundTint="@color/colorPrimary"
             android:indeterminateTint="#ea4c88"/>
 
-        <!--<view
-            android:layout_width="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_height="1dp"
-            />-->
-    </LinearLayout>
-
+        </RelativeLayout>
+    </FrameLayout>
 </ScrollView>

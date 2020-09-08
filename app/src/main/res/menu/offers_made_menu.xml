@@ -5,20 +5,20 @@
     tools:context=".presentation.ui.activity.OfferAcceptedDetailsForFixerActivity">
 
     <item android:id="@+id/action_edit_offer"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@android:drawable/ic_menu_edit"
         android:orderInCategory="102"
-        android:title="Edit Offer"
+        android:title="@string/menu_edit_offer"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_delete"
         android:icon="@android:drawable/ic_menu_delete"
         android:orderInCategory="102"
-        android:title="Delete"
+        android:title="@string/menu_delete_offer"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_view_details"
         android:icon="@android:drawable/ic_menu_view"
-        android:title="View Job details"
+        android:title="@string/menu_view_job_details"
         app:showAsAction="never"/>
 
 </menu>

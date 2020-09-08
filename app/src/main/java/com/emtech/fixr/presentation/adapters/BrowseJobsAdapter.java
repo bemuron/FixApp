@@ -143,7 +143,7 @@ public class BrowseJobsAdapter extends PagedListAdapter<Job, BrowseJobsAdapter.I
         }*/
 
         // displaying the first letter of From in icon text
-        holder.iconText.setText(job.getUserName().substring(0, 1));
+        //holder.iconText.setText(job.getUserName().substring(0, 1));
 
         // change the row state to activated
         holder.itemView.setActivated(selectedItems.get(position, false));

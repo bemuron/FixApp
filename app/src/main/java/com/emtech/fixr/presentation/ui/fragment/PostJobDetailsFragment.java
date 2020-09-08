@@ -113,6 +113,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private String categoryName, mediaPath, currentJobImage = null,
             mustHaveOne = null, mustHaveTwo = null, mustHaveThree = null,
             mstHaveOne, mstHaveTwo, mstHaveThree, musthave, jobName, jobDescription;
+    private TextInputLayout textInputLayout;
 
     public PostJobDetailsFragment(){
 
@@ -194,6 +195,19 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         //updateUserLocation();
         setUpMustHavesAdapter();
         handleBottomSheet();
+
+        try {
+            if (mLocationPermissionGranted) {
+                updateUserLocation();
+            }else{
+                getLocationPermission();
+            }
+        }catch (SecurityException e)  {
+            // The user has not granted permission.
+            Log.i(TAG, "The user did not grant location permission.");
+            Log.e("Exception: %s", e.getMessage());
+        }
+
         return view;
     }
 
@@ -599,11 +613,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             case R.id.edit_text_job_location:
                 try {
                     if (mLocationPermissionGranted) {
-                        updateUserLocation();
-                        //if (mDisplayedUserLocation) {
-                            //show places widget
-                            getJobLocation();
-                        //}
+                        getJobLocation();
                     }else{
                         getLocationPermission();
                     }

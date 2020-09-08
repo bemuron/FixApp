@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/margin_padding_normal"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".presentation.ui.fragment.PaymentSummaryFragment">
+
+    <TextView
+        android:id="@+id/paymentSummaryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/payment_summary_title"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        android:textSize="@dimen/text_size_xlarge"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:elevation="6dp"
+        app:cardCornerRadius="5dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentSummaryTitle">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/margin_padding_xtiny"
+            android:paddingTop="@dimen/margin_padding_xtiny"
+            android:layout_gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/jobCostTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Job Cost:"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/text_size_xnormal" />
+
+            <TextView
+                android:id="@+id/jobCostValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_padding_xxlarge"
+                android:layout_marginStart="@dimen/margin_padding_xxlarge"
+                android:layout_toEndOf="@id/jobCostTv"
+                android:layout_toRightOf="@id/jobCostTv"
+                android:text="UGX.50,000"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/text_size_xnormal" />
+
+            <TextView
+                android:id="@+id/serviceFeeTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/jobCostTv"
+                android:layout_marginTop="@dimen/margin_padding_large"
+                android:text="Service Fee:"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/text_size_xnormal" />
+
+            <TextView
+                android:id="@+id/serviceFeeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/jobCostValue"
+                android:layout_alignLeft="@id/jobCostValue"
+                android:layout_marginTop="@dimen/margin_padding_large"
+                android:layout_below="@id/jobCostValue"
+                android:layout_toEndOf="@id/jobCostValue"
+                android:layout_toRightOf="@id/jobCostValue"
+                android:text="UGX.25,000"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/text_size_xnormal" />
+
+            <!--<View
+                android:id="@+id/horizontalRule"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/sessionUnitCostTv"
+                android:layout_marginTop="24dp"
+                android:background="@color/colorPrimaryDark" />-->
+
+            <TextView
+                android:id="@+id/totalCostTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/serviceFeeTv"
+                android:layout_marginEnd="@dimen/margin_padding_large"
+                android:layout_marginLeft="@dimen/margin_padding_large"
+                android:layout_marginRight="@dimen/margin_padding_large"
+                android:layout_marginTop="@dimen/margin_padding_large"
+                android:textStyle="bold"
+                android:text="Fixer receives:"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/text_size_xnormal" />
+
+            <TextView
+                android:id="@+id/totalCostValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/serviceFeeValue"
+                android:layout_alignStart="@id/serviceFeeValue"
+                android:layout_alignLeft="@id/serviceFeeValue"
+                android:layout_marginTop="@dimen/margin_padding_large"
+                android:layout_toEndOf="@id/totalCostTv"
+                android:layout_toRightOf="@id/totalCostTv"
+                android:textStyle="bold"
+                android:text="UGX.55,000"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/text_size_xnormal" />
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/paymentInstructionTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:gravity="center_horizontal"
+        android:text="This the final amount the fixer will receive"
+        android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="@dimen/text_size_xnormal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.413"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+    <TextView
+        android:id="@+id/totalCostLargeTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="UGX.55,000"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentInstructionTv" />
+
+    <Button
+        android:id="@+id/confirmPaymentButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Payment Received"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

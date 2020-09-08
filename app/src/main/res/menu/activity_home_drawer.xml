@@ -32,7 +32,8 @@
                 android:title="@string/offers_made" />
             <item
                 android:id="@+id/browse_jobs"
-                android:icon="@drawable/ic_menu_slideshow"
+                android:icon="@android:drawable/ic_menu_search"
+                android:iconTint="@color/colorPrimaryDark"
                 android:title="@string/browse_jobs"/>
         </menu>
     </item>

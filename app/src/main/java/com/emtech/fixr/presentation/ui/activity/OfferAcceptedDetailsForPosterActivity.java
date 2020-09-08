@@ -22,8 +22,11 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.emtech.fixr.R;
 import com.emtech.fixr.data.FixAppRepository;
+import com.emtech.fixr.helpers.CircleTransform;
 import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.presentation.ui.fragment.MakeOfferDialogFragment;
@@ -39,6 +42,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 //import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity implements View.OnClickListener,
@@ -52,7 +57,7 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
     private MyJobsActivityViewModel mViewModel;
     private PostJobActivityViewModel postJobActivityViewModel;
     public static OfferAcceptedDetailsForPosterActivity offerAcceptedDetailsForPosterActivity;
-    private Offer offer;
+    private Offer offer, offerDet;
     private ProgressBar pBar;
     private SessionManager session;
     private MakeOfferDialogFragment dialogFragment;
@@ -96,26 +101,26 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
         clearViews();
 
         mViewModel.getOfferDetailsForPoster(offer_id).observe(this, offerDetails -> {
-
-            if (offerDetails != null) {
+            offerDet = offerDetails;
+            if (offerDet != null) {
                 offer = new Offer();
-                offer.setOffered_by(offerDetails.getOffered_by());
-                offer.setJob_id(offerDetails.getJob_id());
-                offer.setOffer_amount(offerDetails.getOffer_amount());
-                offer.setMessage(offerDetails.getMessage());
-                offer.setLast_edited_on(offerDetails.getLast_edited_on());
-                offer.setSeen_by_poster(offerDetails.getSeen_by_poster());
-                offer.setEdit_count(offerDetails.getEdit_count());
-                offer.setOffer_accepted(offerDetails.getOffer_accepted());
-                offer.setName(offerDetails.getName());
-                offer.setEst_tot_budget(offerDetails.getEst_tot_budget());
-                offer.setPosted_by(offerDetails.getPosted_by());
-                offer.setProfile_pic(offerDetails.getProfile_pic());
-                offer.setUser_name(offerDetails.getUser_name());
-                offer.setPosted_on(offerDetails.getPosted_on());
-                offer.setJob_date(offerDetails.getJob_date());
+                offer.setOffered_by(offerDet.getOffered_by());
+                offer.setJob_id(offerDet.getJob_id());
+                offer.setOffer_amount(offerDet.getOffer_amount());
+                offer.setMessage(offerDet.getMessage());
+                offer.setLast_edited_on(offerDet.getLast_edited_on());
+                offer.setSeen_by_poster(offerDet.getSeen_by_poster());
+                offer.setEdit_count(offerDet.getEdit_count());
+                offer.setOffer_accepted(offerDet.getOffer_accepted());
+                offer.setName(offerDet.getName());
+                offer.setEst_tot_budget(offerDet.getEst_tot_budget());
+                offer.setPosted_by(offerDet.getPosted_by());
+                offer.setProfile_pic(offerDet.getProfile_pic());
+                offer.setUser_name(offerDet.getUser_name());
+                offer.setPosted_on(offerDet.getPosted_on());
+                offer.setJob_date(offerDet.getJob_date());
 
-                Log.e(LOG_TAG, "Offer details name is " + offerDetails.getName());
+                Log.e(LOG_TAG, "Offer details name is " + offerDet.getName());
                 displayDetails();
             }else {
                 hideBar();
@@ -128,8 +133,10 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
             @Override
             public void onResume(){
                 super.onResume();
-                /*showBar();
-                clearViews();*/
+                if (offerDet == null){
+                    showBar();
+                    clearViews();
+                }
             }
 
     public static OfferAcceptedDetailsForPosterActivity getInstance(){
@@ -185,6 +192,9 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
                 Glide.with(this)
                         .load("http://www.emtechint.com/fixapp/assets/images/profile_pics/" + offer.getProfile_pic())
                         .thumbnail(0.5f)
+                        .transition(withCrossFade())
+                        .apply(new RequestOptions().fitCenter()
+                                .transform(new CircleTransform(this)).diskCacheStrategy(DiskCacheStrategy.ALL))
                         .into(fixerImageView);
                 //fixerImageView.setColorFilter(null);
             }

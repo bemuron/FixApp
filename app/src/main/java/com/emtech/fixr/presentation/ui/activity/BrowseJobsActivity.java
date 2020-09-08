@@ -55,7 +55,7 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
         progressBar = findViewById(R.id.browse_jobs_progress_bar);
         showBar();
 
-        //clear previous list of it exists
+        //clear previous list if it exists
         clearData();
 
         BrowseJobsViewModelFactory factory = InjectorUtils.provideBrowseJobsViewModelFactory(getApplicationContext());

@@ -26,6 +26,7 @@ import static com.emtech.fixr.presentation.ui.activity.OfferAcceptedDetailsForFi
 import static com.emtech.fixr.presentation.ui.activity.OfferAcceptedDetailsForPosterActivity.offerAcceptedDetailsForPosterActivity;
 import static com.emtech.fixr.presentation.ui.activity.OfferMadeDetailsForFixerActivity.offerMadeDetailsForFixerActivity;
 import static com.emtech.fixr.presentation.ui.activity.OfferReceivedDetailsForPosterActivity.offerReceivedDetailsForPosterActivity;
+import static com.emtech.fixr.presentation.ui.activity.RatingActivity.ratingActivity;
 
 public class GetMyJobs {
     private static final String LOG_TAG = GetMyJobs.class.getSimpleName();
@@ -169,7 +170,10 @@ public class GetMyJobs {
                         job.setCategory_id(response.body().getUserJobs().get(i).getCategory_id());
                         job.setJob_id(response.body().getUserJobs().get(i).getJob_id());
                         job.setPosted_by(response.body().getUserJobs().get(i).getPosted_by());
+                        //name is the name of the job
                         job.setName(response.body().getUserJobs().get(i).getName());
+                        //user_name is name of the job poster
+                        job.setUserName(response.body().getUserJobs().get(i).getUserName());
                         job.setDescription(response.body().getUserJobs().get(i).getDescription());
                         job.setMust_have_one(response.body().getUserJobs().get(i).getMust_have_one());
                         job.setMust_have_two(response.body().getUserJobs().get(i).getMust_have_two());
@@ -921,10 +925,10 @@ public class GetMyJobs {
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
                 if (offerAcceptedDetailsForPosterActivity != null) {
-                    offerAcceptedDetailsForPosterActivity.updateUiAfterPosterRejectOffer(true,
+                    offerAcceptedDetailsForPosterActivity.updateUiAfterPosterRejectOffer(false,
                             t.getMessage());
                 }else{
-                    offerReceivedDetailsForPosterActivity.updateUiAfterPosterRejectOffer(true,
+                    offerReceivedDetailsForPosterActivity.updateUiAfterPosterRejectOffer(false,
                             t.getMessage());
                 }
             }
@@ -972,10 +976,10 @@ public class GetMyJobs {
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
                 if (offerMadeDetailsForFixerActivity != null) {
-                    offerMadeDetailsForFixerActivity.updateUiAfterFixerRejectOffer(true,
+                    offerMadeDetailsForFixerActivity.updateUiAfterFixerRejectOffer(false,
                             t.getMessage());
                 }else {
-                    offerAcceptedDetailsForFixerActivity.updateUiAfterFixerRejectOffer(true,
+                    offerAcceptedDetailsForFixerActivity.updateUiAfterFixerRejectOffer(false,
                             t.getMessage());
                 }
             }
@@ -1022,6 +1026,70 @@ public class GetMyJobs {
                 Log.e(LOG_TAG, "Error while checking if offer was already made: "+t.getMessage());
             }
         });
+    }
+
+//retrofit call to send fixer rating to db
+    public void submitFixerRating(int meeting_id, int poster_id, int fixer_id, float ratingValue, String comment){
+
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.submitFixerRating(meeting_id, poster_id, fixer_id, ratingValue, comment);
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                //if response body is not null, we have some data
+                //successful addition
+                if (!response.body().getError()) {
+                    Log.e(LOG_TAG, "Rating submitted successfully");
+
+                    //send response data to the activity
+                    //success
+                    if (ratingActivity != null) {
+                        ratingActivity.updateUiAfterFixerRating(true,
+                                response.body().getMessage());
+                    }else {
+                        ratingActivity.updateUiAfterFixerRating(true,
+                                response.body().getMessage());
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                Log.e(LOG_TAG, t.getMessage());
+                ratingActivity.updateUiAfterFixerRating(false,
+                        t.getMessage());
+            }
+        });
+    }
+
+//retrofit call to send poster rating to db
+    public void submitPosterRating(int job_id, int fixer_id, int poster_id, float ratingValue, String comment){
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.submitPosterRating(job_id, fixer_id, poster_id, ratingValue, comment);
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                //if response body is not null, we have some data
+                //successful addition
+                if (!response.body().getError()) {
+                    Log.e(LOG_TAG, "Poster rating submitted successfully");
+                    //send response data to the activity
+                    //success
+                    ratingActivity.updateUiAfterPosterRating(true,
+                            response.body().getMessage());
+                }
+            }
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                Log.e(LOG_TAG, t.getMessage());
+                ratingActivity.updateUiAfterPosterRating(false,
+                        t.getMessage());
+            }
+        });
+
     }
 
 }

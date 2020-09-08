@@ -62,7 +62,7 @@ public class MyProfileActivity extends AppCompatActivity implements View.OnClick
 
             mUserDetails = userDetails;
 
-            if (user != null) {
+            if (user == null) {
                 //create new user object
                 user = new User();
                 user.setUser_id(mUserDetails.getUser_id());
@@ -157,7 +157,7 @@ public class MyProfileActivity extends AppCompatActivity implements View.OnClick
             e.printStackTrace();
         }
 
-        memberSinceTv.setText(memberSince);
+        memberSinceTv.setText("Member since "+memberSince);
     }
 
     @Override
@@ -175,6 +175,9 @@ public class MyProfileActivity extends AppCompatActivity implements View.OnClick
         int id = item.getItemId();
 
         if (id == R.id.action_edit_profile){
+            Intent intent = new Intent(this, EditProfileActivity.class);
+            intent.putExtra("userId", mUserDetails.getUser_id());
+            startActivity(intent);
 
         }
 

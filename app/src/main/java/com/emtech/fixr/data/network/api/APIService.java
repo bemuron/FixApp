@@ -258,6 +258,26 @@ public interface APIService {
             @Path("userId") int userId,
             @Path("jobId") int jobId);
 
+    //submitting poster rating
+    @FormUrlEncoded
+    @POST("submitPosterRating")
+    Call<Result> submitPosterRating(
+            @Field("job_id") int job_id,
+            @Field("fixer_id") int fixer_id,
+            @Field("poster_id") int poster_id,
+            @Field("rating_value") float rating_value,
+            @Field("fixer_comment") String comment);
+
+    //submitting fixer rating
+    @FormUrlEncoded
+    @POST("submitFixerRating")
+    Call<Result> submitFixerRating(
+            @Field("job_id") int job_id,
+            @Field("poster_id") int poster_id,
+            @Field("fixer_id") int fixer_id,
+            @Field("rating_value") float rating_value,
+            @Field("poster_comment") String comment);
+
     /*
     //The register call
     @FormUrlEncoded

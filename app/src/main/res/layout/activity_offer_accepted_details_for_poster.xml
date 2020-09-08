@@ -8,18 +8,16 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".presentation.ui.activity.JobDetailsActivity">
 
+    <FrameLayout
+        android:id="@+id/progressBarFrame_forPoster"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="@dimen/margin_padding_normal">
-
-        <ProgressBar
-            android:id="@+id/forPoster_progress_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/colorPrimary"
-            android:indeterminateTint="#ea4c88"/>
 
         <TextView
             android:id="@+id/forPoster_job_title"
@@ -190,8 +188,20 @@
             android:layout_gravity="center_horizontal"
             android:layout_height="1dp"
             />-->
-
-
     </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center">
+
+        <ProgressBar
+            android:id="@+id/forPoster_progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/colorPrimary"
+            android:indeterminateTint="#ea4c88"/>
+        </RelativeLayout>
+    </FrameLayout>
 
 </ScrollView>

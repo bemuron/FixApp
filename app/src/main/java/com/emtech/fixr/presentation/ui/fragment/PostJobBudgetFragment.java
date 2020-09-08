@@ -73,10 +73,11 @@ public class PostJobBudgetFragment extends Fragment implements RadioGroup.OnChec
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mJobId = getArguments().getInt(JOB_ID);
-            mEstTotBudget = getArguments().getString(EST_TOT_BUDGET);
-            mTotBudget = getArguments().getString(TOT_BUDGET);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mJobId = bundle.getInt(JOB_ID);
+            mEstTotBudget = bundle.getString(EST_TOT_BUDGET);
+            mTotBudget = bundle.getString(TOT_BUDGET);
         }
     }
 

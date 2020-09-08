@@ -6,19 +6,19 @@
 
     <item android:id="@+id/action_accept_offer"
         android:orderInCategory="101"
-        android:icon="@mipmap/ic_launcher"
-        android:title="Accept Offer"
+        android:icon="@mipmap/ic_done_white_24dp"
+        android:title="@string/menu_accept_offer"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_delete_offer"
         android:icon="@android:drawable/ic_menu_delete"
         android:orderInCategory="102"
-        android:title="Delete"
+        android:title="@string/menu_delete_offer"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_view_details"
         android:icon="@android:drawable/ic_menu_view"
-        android:title="View Job details"
+        android:title="@string/menu_view_job_details"
         app:showAsAction="never"/>
 
 </menu>

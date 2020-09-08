@@ -7,18 +7,18 @@
     <item android:id="@+id/action_call_fixer"
         android:orderInCategory="101"
         android:icon="@android:drawable/ic_menu_call"
-        android:title="Call"
+        android:title="@string/menu_call"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_delete_offer"
         android:icon="@android:drawable/ic_menu_delete"
         android:orderInCategory="102"
-        android:title="Delete"
+        android:title="@string/menu_delete_offer"
         app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/action_view_details"
         android:icon="@android:drawable/ic_menu_view"
-        android:title="View Job Details"
+        android:title="@string/menu_view_job_details"
         app:showAsAction="never"/>
 
 </menu>

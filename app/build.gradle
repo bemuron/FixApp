@@ -86,12 +86,12 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.1.7'
 
     //circle image view
-    //implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
     //maps and places dependencies
     //these link with the aar files in the libs folder
-    implementation name:'maps-sdk-3.0.0-beta', ext:'aar'
-    implementation name:'places-maps-sdk-3.0.0-beta', ext:'aar'
+    implementation name: 'maps-sdk-3.0.0-beta', ext: 'aar'
+    implementation name: 'places-maps-sdk-3.0.0-beta', ext: 'aar'
 
     //maps and places dep
     implementation 'com.google.android.gms:play-services-basement:17.2.1'
@@ -105,4 +105,8 @@ dependencies {
     //implementation 'com.google.android.libraries.places:places:2.2.0'
     // volley
     implementation 'com.android.volley:volley:1.1.1'
+
+    //SMS verification
+    implementation 'com.google.android.gms:play-services-auth:18.0.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.4.0'
 }

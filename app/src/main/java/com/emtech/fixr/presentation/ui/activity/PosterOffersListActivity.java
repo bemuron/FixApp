@@ -47,6 +47,11 @@ public class PosterOffersListActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_poster_offers_list);
         setupActionBar();
 
+        //first clear the previous list
+        clearData();
+
+        getAllWidgets();
+
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this);
         mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
 
@@ -54,10 +59,6 @@ public class PosterOffersListActivity extends AppCompatActivity implements
         mUserId = getIntent().getIntExtra(USER_ID, 0);
         mOfferType = getIntent().getStringExtra(OFFER_TYPE);
 
-        //first clear the previous list
-        clearData();
-
-        getAllWidgets();
         setAdapter();
 
         if (mOfferType != null && mOfferType.equals("received")) {
@@ -103,8 +104,8 @@ public class PosterOffersListActivity extends AppCompatActivity implements
     @Override
     public void onResume(){
         super.onResume();
-        showBar();
-        clearData();
+        //showBar();
+        //clearData();
         /*if (!(offersAdapter == null)) {
             offersAdapter.notifyDataSetChanged();
         }*/

@@ -1,14 +1,11 @@
 package com.emtech.fixr.data.network;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.emtech.fixr.AppExecutors;
-import com.emtech.fixr.app.Config;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.User;
@@ -122,11 +119,14 @@ public class LoginUser {
                         //insert user to the local db
                         //mRepository.insertUser(mFixappUser);
 
-                        successfulLoginCallBack.onLoginSuccessful(true, mFixappUser);
+                        successfulLoginCallBack.onLoginSuccessful(true, mFixappUser, "successful login");
+                    }else{
+                        Log.e(LOG_TAG, "we have an error logging in");
+                        successfulLoginCallBack.onLoginSuccessful(false, null, response.body().getMessage());
                     }
                 }else{
                     Log.e(LOG_TAG, "response.body() is null");
-                    successfulLoginCallBack.onLoginSuccessful(false, null);
+                    successfulLoginCallBack.onLoginSuccessful(false, null, "Null response received");
                 }
             }
 
@@ -135,7 +135,7 @@ public class LoginUser {
                 //print out any error we may get
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
-                successfulLoginCallBack.onLoginSuccessful(false, null);
+                successfulLoginCallBack.onLoginSuccessful(false, null, "Login failure");
             }
         });
     }
@@ -144,7 +144,7 @@ public class LoginUser {
      * The interface that receives whether the login was successful or not
      */
     public interface SuccessfulLoginCallBack {
-        void onLoginSuccessful(Boolean isLoginSuccessful, User user);
+        void onLoginSuccessful(Boolean isLoginSuccessful, User user, String null_response_received);
     }
 
 }

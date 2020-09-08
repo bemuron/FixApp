@@ -148,9 +148,6 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
         break;
     }
 
-    // displaying the first letter of From in icon text
-    holder.iconText.setText(job.getUserName().substring(0, 1));
-
     // change the row state to activated
     holder.itemView.setActivated(selectedItems.get(position, false));
 
@@ -185,6 +182,9 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
     } else {
       holder.imgProfile.setImageResource(R.drawable.bg_circle);
       holder.imgProfile.setColorFilter(job.getColor());
+      // displaying the first letter of From in icon text
+      //job.getUserName()
+      //holder.iconText.setText("username".substring(0, 1));
       holder.iconText.setVisibility(View.VISIBLE);
     }
   }

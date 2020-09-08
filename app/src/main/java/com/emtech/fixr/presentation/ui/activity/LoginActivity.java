@@ -307,7 +307,7 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
 
     //callback from the login user service
     @Override
-    public void onLoginSuccessful(Boolean isLoginSuccessful, User user) {
+    public void onLoginSuccessful(Boolean isLoginSuccessful, User user, String responseMessage) {
         if (isLoginSuccessful){
             hideDialog();
             Log.d(TAG, "Successful login");
@@ -337,7 +337,9 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
             hideDialog();
             Log.d(TAG, "login not successful");
             //display any error msg that may be received
-            Toast.makeText(LoginActivity.this, "Invalid username or password",
+            //Toast.makeText(LoginActivity.this, "Invalid username or password",
+              //      Toast.LENGTH_LONG).show();
+            Toast.makeText(LoginActivity.this, responseMessage,
                     Toast.LENGTH_LONG).show();
             btnLogin.setClickable(true);
         }

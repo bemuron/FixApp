@@ -6,6 +6,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,7 +66,6 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
      *
      * @return A new instance of fragment PostJobDateFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static PostJobDateFragment newInstance(int jobId, String jobDate, String jobTime) {
         PostJobDateFragment fragment = new PostJobDateFragment();
         Bundle args = new Bundle();
@@ -78,10 +79,11 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mJobId = getArguments().getInt(JOB_ID);
-            mJobDate = getArguments().getString(JOB_DATE);
-            mJobTime = getArguments().getString(JOB_TIME);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            mJobId = bundle.getInt(JOB_ID);
+            mJobDate = bundle.getString(JOB_DATE);
+            mJobTime = bundle.getString(JOB_TIME);
         }
     }
 
@@ -90,6 +92,9 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_post_job_date, container, false);
+
+        //set up the calendar
+        setUpCalendar();
 
         //inflate the views
         setUpWidgetViews(view);
@@ -108,7 +113,8 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
         try {
             if (mJobDate != null){
                 //when the job is expected to be done
-                jobDateEt.setText(formatDate(mJobDate));
+                formatDate();
+                Log.e(TAG, "job date to be edited is "+ mJobDate);
             }
 
             if (mJobTime != null) {
@@ -143,26 +149,27 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
     }
 
     //change the date received from mysql to a more eye pleasing one
-    private String formatDate(String date_of_job){
-        date_of_job = null;
+    private void formatDate(){
+        String date_of_job = null;
 
         SimpleDateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
 
         try{
-            Date d = mysqlDateFormat.parse(date_of_job);
+            Date d = mysqlDateFormat.parse(mJobDate);
             date_of_job = sdf.format(d);
         }catch (Exception e){
             e.printStackTrace();
         }
 
-        return date_of_job;
+        jobDateEt.setText(date_of_job);
     }
 
     //setup the views
     private void setUpWidgetViews(View view){
         jobDateEt = view.findViewById(R.id.job_date_edit_text);
-        setUpCalendar(); //set up the calendar
+        //prevent the system keyboard from showing up when the edit text is clicked
+        jobDateEt.setRawInputType(InputType.TYPE_CLASS_TEXT);
         jobDateEt.setOnClickListener(this); //when clicked should show a calendar
 
         morningCheck = view.findViewById(R.id.checkbox_morning_time);

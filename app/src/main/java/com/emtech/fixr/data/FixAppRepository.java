@@ -278,6 +278,20 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         mExecutors.diskIO().execute(() -> mGetMyJobs.CheckIfOfferIsAlreadyMade(userId, jobId));
     }
 
+    //submitting the fixer rating
+    public void submitFixerRating(int job_id, int poster_id, int fixer_id, float fixer_rating, String comment){
+        Log.e(LOG_TAG, "calling method to submit fixer rating");
+        //call retrofit in background to submit fixer rating
+        mExecutors.diskIO().execute(() -> mGetMyJobs.submitFixerRating(job_id, poster_id, fixer_id, fixer_rating, comment));
+    }
+
+    //updating the offer to rejected by the fixer
+    public void submitPosterRating(int job_id, int fixer_id, int poster_id, float poster_rating, String comment){
+        Log.e(LOG_TAG, "calling method to submit poster rating");
+        //call retrofit in background to submit poster rating
+        mExecutors.diskIO().execute(() -> mGetMyJobs.submitPosterRating(job_id, fixer_id, poster_id, poster_rating, comment));
+    }
+
     /*public Cursor getUser(){
         mUserDetail = mUsersDao.getUserDetails();
 
