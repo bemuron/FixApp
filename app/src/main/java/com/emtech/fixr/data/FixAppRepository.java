@@ -292,6 +292,17 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         mExecutors.diskIO().execute(() -> mGetMyJobs.submitPosterRating(job_id, fixer_id, poster_id, poster_rating, comment));
     }
 
+    public void sendPhoneNumber(int userId, String phoneNumber){
+        Log.e(LOG_TAG, "calling method to send phone number to server");
+        mExecutors.diskIO().execute(() -> mLoginUser.sendPhoneNumber(userId, phoneNumber));
+    }
+
+    //sends OTP received via sms to the server for verification
+    public void verifyOtpReceived(int userId, String otc){
+        Log.e(LOG_TAG, "calling method to send OTP to server");
+        mExecutors.diskIO().execute(() -> mLoginUser.sendOtpReceived(userId, otc));
+    }
+
     /*public Cursor getUser(){
         mUserDetail = mUsersDao.getUserDetails();
 

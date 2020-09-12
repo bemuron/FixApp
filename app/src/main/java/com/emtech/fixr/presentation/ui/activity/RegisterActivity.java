@@ -132,7 +132,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 if (!firstName.isEmpty() && !lastName.isEmpty()  && !birth_date.isEmpty()
                         && !email.isEmpty() && !password.isEmpty() && !gender.isEmpty()) {
-                    String fullName = firstName + "" + lastName;
+                    String fullName = firstName + " " + lastName;
                     registerUser(fullName, birth_date, gender, email, password);
                 } else {
                     Toast.makeText(getApplicationContext(),
@@ -209,21 +209,25 @@ public class RegisterActivity extends AppCompatActivity {
             public void onResponse(Call<Result> call, Response<Result> response) {
                 hideDialog();
 
-                //ResBeanSignup resBean = response.body();
-                //String response_status = Encryption.decrypt(resBean.getResponse_status());
                 try {
 
                     if (!response.body().getError()) {
                         hideDialog();
-                        //Log.d(LOG_TAG, EnumAppMessages.REGISTER_SUCCESS_TITLE.getValue());
                         Log.d(TAG, response.body().getMessage());
 
-                        Toast toast = Toast.makeText(RegisterActivity.this,
-                                "Registration successful. Login now", Toast.LENGTH_LONG);
+                        int user_id = response.body().getUser().getUser_id();
+                        Log.e(TAG, "Registered user id is " + user_id);
 
+                        Toast toast = Toast.makeText(RegisterActivity.this,
+                                "Registration successful. Verify phone number", Toast.LENGTH_LONG);
                         toast.show();
-                        startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+
+                        //go and verify the user's phone
+                        Intent intent = new Intent(RegisterActivity.this, VerifyPhoneActivity.class);
+                        intent.putExtra("user_id", user_id);
+                        startActivity(intent);
                         finish();
+
                     }
                 }catch(Exception e){
                     e.printStackTrace();

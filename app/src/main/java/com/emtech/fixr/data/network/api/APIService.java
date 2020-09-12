@@ -278,6 +278,21 @@ public interface APIService {
             @Field("rating_value") float rating_value,
             @Field("poster_comment") String comment);
 
+    //send the phone number o which the otp will be
+    //sent
+    @FormUrlEncoded
+    @POST("public/sendVerifyCode/{user_id}")
+    Call<Result> sendPhoneNumber(
+            @Path("user_id") int user_id,
+            @Field("phone_number") String phone_number);
+
+    //send the otp received on the user's phone
+    @FormUrlEncoded
+    @POST("public/verifyPhoneNumber/{user_id}")
+    Call<Result> sendOtp(
+            @Path("user_id") int user_id,
+            @Field("otp") String otp);
+
     /*
     //The register call
     @FormUrlEncoded

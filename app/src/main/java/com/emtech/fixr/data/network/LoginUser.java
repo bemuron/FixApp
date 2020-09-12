@@ -15,6 +15,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.emtech.fixr.presentation.ui.activity.RatingActivity.ratingActivity;
+import static com.emtech.fixr.presentation.ui.activity.VerifyPhoneActivity.verifyPhoneActivity;
+
 public class LoginUser {
     private static final String LOG_TAG = LoginUser.class.getSimpleName();
 
@@ -136,6 +139,62 @@ public class LoginUser {
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
                 successfulLoginCallBack.onLoginSuccessful(false, null, "Login failure");
+            }
+        });
+    }
+
+    //retrofit call to send phone number to db
+    public void sendPhoneNumber(int user_id, String phonenumber){
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.sendPhoneNumber(user_id, phonenumber);
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                //if response body is not null, we have some data
+                //successful addition
+                if (!response.body().getError()) {
+                    Log.e(LOG_TAG, "Phone number sent successfully");
+                    //send response data to the activity
+                    //success
+                    verifyPhoneActivity.onPhoneNumberSent(true,
+                            response.body().getMessage());
+                }
+            }
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                Log.e(LOG_TAG, t.getMessage());
+                verifyPhoneActivity.onPhoneNumberSent(false,
+                        t.getMessage());
+            }
+        });
+    }
+
+    //retrofit call to send the otp to the server for verification
+    public void sendOtpReceived(int user_id, String otc){
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.sendOtp(user_id, otc);
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+                //if response body is not null, we have some data
+                //successful addition
+                if (!response.body().getError()) {
+                    Log.e(LOG_TAG, "OTP sent successfully");
+                    //send response data to the activity
+                    //success
+                    verifyPhoneActivity.onOtpSent(true,
+                            response.body().getMessage());
+                }
+            }
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                Log.e(LOG_TAG, t.getMessage());
+                verifyPhoneActivity.onOtpSent(false,
+                        t.getMessage());
             }
         });
     }
