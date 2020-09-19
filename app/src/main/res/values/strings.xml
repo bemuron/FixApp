@@ -29,12 +29,19 @@
     <string name="hint_first_name">First Name</string>
     <string name="hint_last_name">Last Name</string>
     <string name="hint_dob">Date of Birth</string>
+    <string name="hint_your_number">Your Phone number</string>
+    <string name="hint_otp_code">OTP Code</string>
     <string name="hint_gender">Gender</string>
     <string name="btn_login">LOGIN</string>
     <string name="btn_register">REGISTER</string>
+    <string name="btn_verify">VERIFY</string>
+    <string name="btn_send_number">SEND</string>
     <string name="btn_link_to_register">Not a member? Sign up now.</string>
-    <string name="btn_link_to_login">Already registred! Login.</string>
+    <string name="btn_link_to_login">Already registered! Login.</string>
     <string name="register_on_fixapp">Register with FixApp</string>
+    <string name="verify_phone_title">Please enter you phone number</string>
+    <string name="otp_title">Enter the code that you received via sms</string>
+    <string name="verifying_text">Verifying</string>
 
     <string name="project_images_info">Pictures of what has to be fixed</string>
     <string name="title_activity_home">HomeActivity</string>
@@ -145,5 +152,7 @@
     <string name="menu_call">Call</string>
     <string name="menu_save">save</string>
     <string name="menu_edit_profile">Edit Profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

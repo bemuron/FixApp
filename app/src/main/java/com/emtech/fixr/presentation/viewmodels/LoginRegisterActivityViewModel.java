@@ -67,4 +67,15 @@ public class LoginRegisterActivityViewModel extends ViewModel {
     public void insert(User user) { mRepository.insertUser(user); }
 
     public void delete() { mRepository.deleteUser();}
+
+    //handles sending the users phone number to the server for verification
+    //process to start
+    public void sendPhoneNumber(int userId, String phoneNumber){
+        mRepository.sendPhoneNumber(userId, phoneNumber);
+    }
+
+    //sends OTP received via sms to the server for verification
+    public void verifyOtpReceived(int userId, String otc){
+        mRepository.verifyOtpReceived(userId, otc);
+    }
 }
