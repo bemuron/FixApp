@@ -28,7 +28,7 @@ import com.emtech.fixr.data.network.LoginUser;
 import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
-import com.emtech.fixr.helpers.AppSignatureHelper;
+//import com.emtech.fixr.helpers.AppSignatureHelper;
 import com.emtech.fixr.helpers.InputValidator;
 import com.emtech.fixr.helpers.SessionManager;
 import com.emtech.fixr.models.User;
@@ -65,8 +65,8 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
         loginRegisterActivityViewModel = new ViewModelProvider
                 (this, factory).get(LoginRegisterActivityViewModel.class);
 
-        AppSignatureHelper appSignatureHelper = new AppSignatureHelper(this);
-        appSignatureHelper.getAppSignatures();
+        /*AppSignatureHelper appSignatureHelper = new AppSignatureHelper(this);
+        appSignatureHelper.getAppSignatures();*/
 
         inputEmail = (EditText) findViewById(R.id.edit_text_email);
         inputPassword = (EditText) findViewById(R.id.edit_text_password);
