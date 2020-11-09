@@ -642,8 +642,8 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     //MediaStore.Images.Media.DATA
                     //MediaStore.Images.ImageColumns.DATA
 
-                    Cursor cursor = getActivity().getContentResolver().query(path,
-                            null, null, null, null);
+                    Cursor cursor = getActivity().getContentResolver().query(path, filePathcolumn,
+                            null, null, null);
                     if (cursor == null) {
                         mediaPath = path.getPath();
                     }else {
