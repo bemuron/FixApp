@@ -20,6 +20,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.emtech.fixr.helpers.CircleTransform;
+import com.emtech.fixr.models.UploadImage;
+import com.emtech.fixr.presentation.adapters.UploadImagesAdapter;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -43,6 +45,7 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
@@ -64,6 +67,7 @@ import com.emtech.fixr.presentation.adapters.MustHavesAdapter;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -75,7 +79,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class PostJobDetailsFragment extends Fragment implements View.OnClickListener,
-        MustHavesAdapter.MustHavesAdapterListener
+        MustHavesAdapter.MustHavesAdapterListener, UploadImagesAdapter.UploadImagesAdapterListener
 {
     private static final String TAG = PostJobDetailsFragment.class.getSimpleName();
     OnPostButtonListener mCallback;
@@ -93,11 +97,14 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private ImageView jobImage1, jobImage2, jobImage3;
     private TextView mustHaveOneTv, mustHaveTwoTv, mustHaveThreeTv;
     private ProgressDialog pDialog;
-    private Button postButton, addMustHaveButton, saveMustHavesButton;
+    private Button postButton, addMustHaveButton, saveMustHavesButton, addImage;
     private Bitmap bitmap;
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView,imagesRecyclerView;
+    private int mPosition = RecyclerView.NO_POSITION;
     private ArrayList<JobMustHave> mustHavesArrayList = new ArrayList<>();
+    private ArrayList<UploadImage> uploadImageArrayList = new ArrayList<>();
     private MustHavesAdapter mAdapter;
+    private UploadImagesAdapter uploadImagesAdapter;
     private File file;
     private Switch isJobRemoteSwitch;
     private int categoryId, userId, mJobId, isJobRemote = 0;
@@ -194,6 +201,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         }
         //updateUserLocation();
         setUpMustHavesAdapter();
+        setUpJobImagesAdapter();
         handleBottomSheet();
 
         try {
@@ -248,7 +256,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         startActivityForResult(intent, AUTO_COMPLETE_REQUEST_CODE);
     }
 
-    //remove the must have when the uers clicks on the delete button
+    //remove the must have when the user clicks on the delete button
     @Override
     public void onIconDeleteClicked(int position) {
         //mAdapter.resetAnimationIndex();
@@ -259,6 +267,18 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         mAdapter.removeData(position);
         //}
         mAdapter.notifyDataSetChanged();
+    }
+
+    //remove the image the user had selected for upload
+    @Override
+    public void onDeleteImageClicked(int position) {
+
+    }
+
+    //show full screen of image when clicked on
+    @Override
+    public void onImageClicked(int position) {
+
     }
 
     // Container Activity must implement this interface
@@ -318,6 +338,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     //initialise the views
     private void setUpWidgets(View view){
         recyclerView = view.findViewById(R.id.must_haves_list);
+        imagesRecyclerView = view.findViewById(R.id.recyclerview_upload_images);
         //find the bottom sheet layout
         layoutBottomSheet = view.findViewById(R.id.bottom_sheet);
         sheetBehavior = BottomSheetBehavior.from(layoutBottomSheet);
@@ -360,6 +381,8 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         mustHaveOneTv = view.findViewById(R.id.must_have_one);
         mustHaveTwoTv = view.findViewById(R.id.must_have_two);
         mustHaveThreeTv = view.findViewById(R.id.must_have_three);
+        addImage = view.findViewById(R.id.addImage);
+        addImage.setOnClickListener(this);
         //postButton.setVisibility(View.INVISIBLE);
         //jobImage1 = (ImageView) view.findViewById(R.id.)
         //radgrp = (RadioGroup) view.findViewById(R.id.radiogroup);
@@ -375,6 +398,18 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         recyclerView.addItemDecoration(new DividerItemDecoration(PostJobActivity.getInstance(),
                 LinearLayoutManager.VERTICAL));
         recyclerView.setAdapter(mAdapter);
+    }
+
+    //set up the list adapter to handle the images the user adds for upload
+    private void setUpJobImagesAdapter(){
+        uploadImagesAdapter = new UploadImagesAdapter(PostJobActivity.getInstance(), uploadImageArrayList,this);
+        RecyclerView.LayoutManager layoutManager =
+                new GridLayoutManager(PostJobActivity.getInstance().getApplicationContext(), 2);
+        imagesRecyclerView.setLayoutManager(layoutManager);
+        //imagesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        //imagesRecyclerView.addItemDecoration(new DividerItemDecoration(PostJobActivity.getInstance(),
+           //     LinearLayoutManager.VERTICAL));
+        imagesRecyclerView.setAdapter(uploadImagesAdapter);
     }
 
     //handle bottom sheet state
@@ -623,6 +658,10 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     Log.e("Exception: %s", e.getMessage());
                 }
                 break;
+
+            case R.id.addImage:
+                selectJobImage("job_image1");
+                break;
         }
 
     }
@@ -652,9 +691,18 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                         mediaPath = cursor.getString(columnIndex);
                     }
 
+                    UploadImage imagePath = new UploadImage();
+                    imagePath.setImagePath(path);
+                    Log.e(TAG, "image path object "+imagePath);
+                    uploadImageArrayList.add(imagePath);
+
+                    uploadImagesAdapter.refreshImageList(uploadImageArrayList);
+                    //uploadImageArrayList.add(imagePath);
+                    uploadImagesAdapter.notifyDataSetChanged();
+
                     //get the image from the gallery
                     bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
-                    jobImage1.setImageBitmap(bitmap);
+                    //jobImage1.setImageBitmap(bitmap);
 
                     /*
                     //get which image position this is

@@ -23,15 +23,15 @@ public class SearchJobsDataFactory extends DataSource.Factory {
     //getting our data source object
     SearchJobsDataSource searchJobsDataSource = new SearchJobsDataSource(searchQuery);
 
-    //posting the datasource to get the values
+    //posting the data source to get the values
     searchedJobsLiveDataSource.postValue(searchJobsDataSource);
 
-    //returning the datasource
+    //returning the data source
     return searchJobsDataSource;
   }
 
 
-  //getter for itemlivedatasource
+  //getter for item live data source
   public MutableLiveData<PageKeyedDataSource<Integer, Job>> getSearchedJobsLiveDataSource() {
     return searchedJobsLiveDataSource;
   }

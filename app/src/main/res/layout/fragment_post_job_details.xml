@@ -150,12 +150,25 @@
         android:textColor="@color/colorPrimaryDark"
         android:text="@string/job_images_instructions"/>
 
+    <Button
+        android:id="@+id/addImage"
+        android:text="Add Image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="@dimen/card_margin"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_upload_images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp"/>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/job_image1"
