@@ -1,13 +1,12 @@
 package com.emtech.fixr.presentation.adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -16,20 +15,24 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.emtech.fixr.R;
 import com.emtech.fixr.models.UploadImage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadImagesAdapter extends RecyclerView.Adapter<UploadImagesAdapter.ImageUploadViewHolder> {
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
+public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
   private static final String TAG = UploadImagesAdapter.class.getSimpleName();
   //private ArrayList<Uri> uriArrayList;
   private ArrayList<UploadImage> uploadImages;
   private LayoutInflater inflater;
   Context context;
-  private Bitmap bitmap;
+  private static OnItemClickListener onItemClickListener;
+  private final static int IMAGE_LIST = 0;
+  private final static int IMAGE_PICKER = 1;
   private UploadImagesAdapterListener listener;
   private SparseBooleanArray selectedItems;
 
@@ -54,6 +57,12 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<UploadImagesAdapte
       uploadImg = view.findViewById(R.id.uploadJobImage);
       imgContainer = view.findViewById(R.id.uploadImageContainer);
       //view.setOnLongClickListener(this);
+      view.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          onItemClickListener.onItemClick(getAdapterPosition(), v);
+        }
+      });
     }
   }
 
@@ -67,54 +76,74 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<UploadImagesAdapte
   }
 
   @Override
-  public ImageUploadViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    View itemView = LayoutInflater.from(parent.getContext())
-            .inflate(R.layout.upload_image_list_item, parent, false);
+  public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    //View itemView = LayoutInflater.from(parent.getContext())
+      //      .inflate(R.layout.upload_image_list_item, parent, false);
 
-    return new ImageUploadViewHolder(itemView);
+    if (viewType == IMAGE_LIST) {;
+    //layout to show the images selected
+      View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.upload_image_list_item, parent, false);
+      return new ImageListViewHolder(view);
+    } else {
+      //layout to show the camera and folder options
+      View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.upload_image_picker, parent, false);
+      return new ImagePickerViewHolder(view);
+    }
+
+    //return new ImageUploadViewHolder(itemView);
   }
 
   @Override
-  public void onBindViewHolder(final ImageUploadViewHolder holder, int position) {
-    UploadImage uploadImage = uploadImages.get(position);
+  public int getItemViewType(int position) {
+    return position < 2 ? IMAGE_PICKER : IMAGE_LIST;
+  }
 
-    //display image in grid
-    try {
-      bitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uploadImage.getImagePath());
+  @Override
+  public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
+    if (holder.getItemViewType() == IMAGE_LIST) {;
+      final ImageListViewHolder viewHolder = (ImageListViewHolder) holder;
+      Glide.with(context)
+              .load(uploadImages.get(position).getImage())
+              //.placeholder(R.color.codeGray)
+              //.centerCrop()
+              .transition(DrawableTransitionOptions.withCrossFade(500))
+              .into(viewHolder.image);
 
-      Log.e(TAG, "Image path "+bitmap);
-
-      //holder.uploadImg.setImageBitmap(bitmap);
-
-      Glide.with(context).load(uploadImage.getImage())
-              .thumbnail(0.5f)
-              /*.placeholder(R.color.qu_grey_600)
-              .centerCrop()
-              .transition(DrawableTransitionOptions.withCrossFade(500))*/
-              .into(holder.uploadImg);
-      holder.uploadImg.setColorFilter(null);
-
-    } catch (IOException e) {
-      e.printStackTrace();
+      if (uploadImages.get(position).isSelected()) {;
+        viewHolder.checkBox.setChecked(true);
+      } else {;
+        viewHolder.checkBox.setChecked(false);
+      }
+    } else {;
+      ImagePickerViewHolder viewHolder = (ImagePickerViewHolder) holder;
+      viewHolder.image.setImageResource(uploadImages.get(position).getResImg());
+      viewHolder.title.setText(uploadImages.get(position).getTitle());
     }
 
     // handle delete icon
-    applyDeleteItem(holder, position);
+    //applyDeleteItem(holder, position);
 
     // apply click events
-    //applyClickEvents(holder, position);
+    applyClickEvents(holder, position);
 
   }
 
   //handling different click events
-  private void applyClickEvents(ImageUploadViewHolder holder, final int position) {
+  private void applyClickEvents(RecyclerView.ViewHolder holder, final int position) {
 
-    holder.iconDel.setOnClickListener(new View.OnClickListener() {
+    /*holder.iconDel.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         listener.onDeleteImageClicked(position);
       }
-    });
+    });*/
+
+    /*holder.uploadImg.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        listener.onImageClicked(position);
+      }
+    });*/
 /*
         holder.messageContainer.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -147,6 +176,40 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<UploadImagesAdapte
   @Override
   public int getItemCount() {
     return uploadImages.size();
+  }
+
+  public class ImageListViewHolder extends RecyclerView.ViewHolder {
+    ImageView image;
+    CheckBox checkBox;
+
+    public ImageListViewHolder(View itemView) {
+      super(itemView);
+      image = itemView.findViewById(R.id.image);
+      //checkBox = itemView.findViewById(R.id.circle);
+      itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          onItemClickListener.onItemClick(getAdapterPosition(), v);
+        }
+      });
+    }
+  }
+
+  public class ImagePickerViewHolder extends RecyclerView.ViewHolder {
+    ImageView image;
+    TextView title;
+
+    public ImagePickerViewHolder(View itemView) {
+      super(itemView);
+      image = itemView.findViewById(R.id.image);
+      title = itemView.findViewById(R.id.title);
+      itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          onItemClickListener.onItemClick(getAdapterPosition(), v);
+        }
+      });
+    }
   }
 
   public void toggleSelection(int pos) {
@@ -195,6 +258,16 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<UploadImagesAdapte
 
     void onImageClicked(int position);
 
+    //void onItemClick(int position, View v);
+
+  }
+
+  public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+    UploadImagesAdapter.onItemClickListener = onItemClickListener;
+  }
+
+  public interface OnItemClickListener {
+    void onItemClick(int position, View v);
   }
 
 }

@@ -26,7 +26,7 @@
       <ImageView
           android:id="@+id/uploadJobImage"
           android:layout_width="match_parent"
-          android:layout_height="@dimen/album_cover_height"
+          android:layout_height="match_parent"
           android:layout_alignParentStart="true"
           android:layout_alignParentLeft="true"
           android:layout_alignParentEnd="true"
@@ -35,24 +35,17 @@
           android:focusable="true"
           android:scaleType="fitXY" />
       <!--android:background="?attr/selectableItemBackgroundBorderless"-->
-      <ImageView
+      <CheckBox
+          android:id="@+id/circle"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:src="@android:drawable/ic_menu_delete"
-          app:tint="@color/colorPrimaryDark" />
-
-      <!--<TextView
-          android:id="@+id/category_name"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_below="@+id/category_pic"
-          android:gravity="center"
-          android:paddingLeft="@dimen/album_title_padding"
-          android:paddingTop="@dimen/album_title_padding"
-          android:paddingRight="@dimen/album_title_padding"
-          android:text="Greetings"
-          android:textColor="@color/colorPrimaryDark"
-          android:textSize="@dimen/text_size_xnormal" />-->
+          android:layout_alignParentEnd="true"
+          android:layout_alignParentRight="true"
+          android:layout_marginTop="2dp"
+          android:layout_marginEnd="2dp"
+          android:layout_marginRight="2dp"
+          android:button="@drawable/custom_checkbox"
+          android:clickable="false" />
 
     </RelativeLayout>
 

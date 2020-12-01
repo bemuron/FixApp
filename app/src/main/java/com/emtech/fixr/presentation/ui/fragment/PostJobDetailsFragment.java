@@ -2,17 +2,22 @@ package com.emtech.fixr.presentation.ui.fragment;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import androidx.annotation.NonNull;
 
@@ -22,6 +27,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.emtech.fixr.helpers.CircleTransform;
 import com.emtech.fixr.models.UploadImage;
 import com.emtech.fixr.presentation.adapters.UploadImagesAdapter;
+import com.emtech.fixr.presentation.ui.activity.HomeActivity;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -50,6 +56,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,8 +75,10 @@ import com.emtech.fixr.presentation.adapters.MustHavesAdapter;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,11 +99,14 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 15;
     private static final int M_MAX_ENTRIES = 5;
     private final static int AUTO_COMPLETE_REQUEST_CODE = 1;
+    public static final int REQUEST_IMAGE_CAPTURE = 4;
     private TextInputEditText jobTitleEditText;
     private TextInputEditText jobDescEditText,jobLocationEditText;
+    int[] resImg = {R.mipmap.ic_account_circle_black, R.mipmap.ic_account_circle_black};
+    String[] title = {"Camera", "Folder"};
     private EditText mustHavesEditText;
     private TextInputLayout jobLocationTextInputLayout;
-    private ImageView jobImage1, jobImage2, jobImage3;
+    private ImageView jobImage1;
     private TextView mustHaveOneTv, mustHaveTwoTv, mustHaveThreeTv;
     private ProgressDialog pDialog;
     private Button postButton, addMustHaveButton, saveMustHavesButton, addImage;
@@ -119,8 +131,10 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     //private JobMustHave mustHave;
     private String categoryName, mediaPath, currentJobImage = null,
             mustHaveOne = null, mustHaveTwo = null, mustHaveThree = null,
-            mstHaveOne, mstHaveTwo, mstHaveThree, musthave, jobName, jobDescription;
+            mstHaveOne, mstHaveTwo, mstHaveThree, musthave, jobName, jobDescription, mCurrentPhotoPath;
     private TextInputLayout textInputLayout;
+    String[] projection = {MediaStore.MediaColumns.DATA};
+    private File imageFile;
 
     public PostJobDetailsFragment(){
 
@@ -275,10 +289,24 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
     }
 
-    //show full screen of image when clicked on
+    //handle different actions when the image position is clicked
     @Override
     public void onImageClicked(int position) {
-
+        if (position == 0) {
+            takePicture();
+        } else if (position == 1) {
+            setImagePickerList();
+        } /*else {
+            try {
+                if (!uploadImageArrayList.get(position).isSelected) {
+                    selectImage(position);
+                } else {
+                    unSelectImage(position);
+                }
+            } catch (ArrayIndexOutOfBoundsException ed) {
+                ed.printStackTrace();
+            }
+        }*/
     }
 
     // Container Activity must implement this interface
@@ -368,10 +396,6 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         mustHavesEditText = view.findViewById(R.id.edit_text_must_haves_input);
         jobImage1 = view.findViewById(R.id.job_image1);
         jobImage1.setOnClickListener(this);
-        jobImage2 = view.findViewById(R.id.job_image2);
-        jobImage2.setOnClickListener(this);
-        jobImage3 = view.findViewById(R.id.job_image3);
-        jobImage3.setOnClickListener(this);
         postButton = view.findViewById(R.id.continue_one);
         postButton.setOnClickListener(this);
         addMustHaveButton = view.findViewById(R.id.add_must_have_button);
@@ -402,14 +426,15 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
     //set up the list adapter to handle the images the user adds for upload
     private void setUpJobImagesAdapter(){
-        uploadImagesAdapter = new UploadImagesAdapter(PostJobActivity.getInstance(), uploadImageArrayList,this);
         RecyclerView.LayoutManager layoutManager =
-                new GridLayoutManager(PostJobActivity.getInstance().getApplicationContext(), 2);
+                new GridLayoutManager(PostJobActivity.getInstance().getApplicationContext(), 4);
         imagesRecyclerView.setLayoutManager(layoutManager);
+        //imagesRecyclerView.setHasFixedSize(true);
+        //imagesRecyclerView.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         //imagesRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        //imagesRecyclerView.addItemDecoration(new DividerItemDecoration(PostJobActivity.getInstance(),
-           //     LinearLayoutManager.VERTICAL));
+        uploadImagesAdapter = new UploadImagesAdapter(PostJobActivity.getInstance(), uploadImageArrayList,this);
         imagesRecyclerView.setAdapter(uploadImagesAdapter);
+        setImagePickerList();
     }
 
     //handle bottom sheet state
@@ -450,10 +475,50 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private void selectJobImage(String jobImage){
         Intent intent = new Intent();
         intent.putExtra("image_pos", jobImage);
+        //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, SELECT_IMAGE_REQUEST_CODE);
 
+    }
+
+    // Add Camera and Folder in ArrayList
+    public void setImagePickerList(){
+        for (int i = 0; i < resImg.length; i++) {
+            UploadImage imageModel = new UploadImage();
+            imageModel.setResImg(resImg[i]);
+            imageModel.setTitle(title[i]);
+            uploadImageArrayList.add(i, imageModel);
+        }
+        uploadImagesAdapter.notifyDataSetChanged();
+    }
+
+    // start the image capture Intent
+    public void takePicture(){
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // Continue only if the File was successfully created;
+        File photoFile = createImageFile();
+        if (photoFile != null) {
+            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+            startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
+        }
+    }
+
+    public File createImageFile() {
+        // Create an image file name
+        String dateTime = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "IMG_" + dateTime + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        try {
+            imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = "file:" + imageFile.getAbsolutePath();
+        return imageFile;
     }
 
     //method to get what user has filled in
@@ -570,30 +635,6 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                 }
                 break;
 
-            case R.id.job_image2:
-                //handle click on job image 2 to select the image
-                //checking if we have been given the permission
-                boolean result1 = checkAndRequestPermissions();
-                if (result1) {
-                    selectJobImage("job_image2");
-                    currentJobImage = "job_image2";
-                    postButton.setEnabled(true);
-                    //getJobDetails("job_image2");
-                }
-                break;
-
-            case R.id.job_image3:
-                //handle click on job image 1 to select the image
-                //checking if we have been given the permission
-                boolean result2 = checkAndRequestPermissions();
-                if (result2) {
-                    selectJobImage("job_image3");
-                    currentJobImage = "job_image3";
-                    postButton.setEnabled(true);
-                    //getJobDetails("job_image3");
-                }
-                break;
-
             case R.id.job_must_haves:
                 //handle click on the job must haves text view
                 //it will slide up the bottom sheet
@@ -660,7 +701,11 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                 break;
 
             case R.id.addImage:
-                selectJobImage("job_image1");
+                boolean result3 = checkAndRequestPermissions();
+                if (result3) {
+                    selectJobImage("job_image1");
+                    postButton.setEnabled(true);
+                }
                 break;
         }
 
@@ -670,12 +715,52 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         //check for our request code
-        if (requestCode == SELECT_IMAGE_REQUEST_CODE){
+        if (resultCode == RESULT_OK) {
+            if (requestCode == SELECT_IMAGE_REQUEST_CODE){
+                if (data.getClipData() != null) {
+                    ClipData mClipData = data.getClipData();
+                    for (int i = 0; i < mClipData.getItemCount(); i++) {
+                        ClipData.Item item = mClipData.getItemAt(i);
+                        Uri uri = item.getUri();
+                        getImageFilePath(uri);
+                    }
+                } else if (data.getData() != null) {
+                    Uri uri = data.getData();
+                    getImageFilePath(uri);
+                }
+            }else if (requestCode == REQUEST_IMAGE_CAPTURE) {
+                if (mCurrentPhotoPath != null) {
+                    addImage(mCurrentPhotoPath);
+                }
+            }else if (requestCode == AUTO_COMPLETE_REQUEST_CODE){
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName());
+                jobLocationEditText.setText(place.getName());
+            }
+        }else if (resultCode == AutocompleteActivity.RESULT_ERROR){
+            Status status = Autocomplete.getStatusFromIntent(data);
+            //handle error
+            Log.i(TAG, status.getStatusMessage());
+        } else if (resultCode == RESULT_CANCELED){
+            //the user cancelled the operation
+        }
+        /*if (requestCode == SELECT_IMAGE_REQUEST_CODE){
             //check if the request was successful
-            if (resultCode == RESULT_OK && data != null){
+            if (resultCode == RESULT_OK){
                 //Uri path = data.getData();
+                if (data.getClipData() != null) {
+                    ClipData mClipData = data.getClipData();
+                    for (int i = 0; i < mClipData.getItemCount(); i++) {
+                        ClipData.Item item = mClipData.getItemAt(i);
+                        Uri uri = item.getUri();
+                        getImageFilePath(uri);
+                    }
+                } else if (data.getData() != null) {
+                    Uri uri = data.getData();
+                    getImageFilePath(uri);
+                }
 
-                try {
+                *//*try {
                     Uri path = data.getData();
                     String[] filePathcolumn = {MediaStore.Images.Media.DATA};
                     //MediaStore.Images.Media.DATA
@@ -687,56 +772,33 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                         mediaPath = path.getPath();
                     }else {
                         cursor.moveToFirst();
+                        absolutePathOfImage = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
                         int columnIndex = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
                         mediaPath = cursor.getString(columnIndex);
                     }
 
                     UploadImage imagePath = new UploadImage();
+                    imagePath.setImage(absolutePathOfImage);
                     imagePath.setImagePath(path);
-                    Log.e(TAG, "image path object "+imagePath);
+                    //Log.e(TAG, "mediapath is "+mediaPath);
+                    Log.e(TAG, "image path object "+imagePath.getImagePath());
                     uploadImageArrayList.add(imagePath);
 
-                    uploadImagesAdapter.refreshImageList(uploadImageArrayList);
-                    //uploadImageArrayList.add(imagePath);
+                    //uploadImagesAdapter.refreshImageList(uploadImageArrayList);
                     uploadImagesAdapter.notifyDataSetChanged();
 
                     //get the image from the gallery
                     bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
+                    Log.e(TAG, "Mediapath is "+mediaPath);
                     //jobImage1.setImageBitmap(bitmap);
-
-                    /*
-                    //get which image position this is
-                    String jobImage = data.getStringExtra("image_pos");
-                    //set the image to our image view
-                    if (jobImage.equals("job_image1")) {
-                        jobImage1.setImageBitmap(bitmap);
-                    }else if (jobImage.equals("job_image2")){
-                        jobImage2.setImageBitmap(bitmap);
-                    }else if (jobImage.equals("job_image3")){
-                        jobImage3.setImageBitmap(bitmap);
-                    }
-                    */
 
                     cursor.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                }
+                }*//*
 
             }
-        }else
-        if (requestCode == AUTO_COMPLETE_REQUEST_CODE){
-            if (resultCode == RESULT_OK){
-                Place place = Autocomplete.getPlaceFromIntent(data);
-                Log.i(TAG, "Place: " + place.getName());
-                jobLocationEditText.setText(place.getName());
-            }else if (resultCode == AutocompleteActivity.RESULT_ERROR){
-                Status status = Autocomplete.getStatusFromIntent(data);
-                //handle error
-                Log.i(TAG, status.getStatusMessage());
-            } else if (resultCode == RESULT_CANCELED){
-                //the user cancelled the operation
-            }
-        }
+        }*/
 
     }
 
@@ -899,6 +961,47 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         }
     }
 
+    // Get image file path
+    public void getImageFilePath(Uri uri) {
+        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null,    null, null);
+        if (cursor != null) {
+            while  (cursor.moveToNext()) {
+                String absolutePathOfImage = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
+                if (absolutePathOfImage != null) {
+                    checkImage(absolutePathOfImage);
+                } else {
+                    checkImage(String.valueOf(uri));
+                }
+            }
+        }
+    }
+
+    public void checkImage(String filePath) {
+        // Check before adding a new image to ArrayList to avoid duplicate images
+        //if (!selectedImageList.contains(filePath)) {
+            for (int pos = 0; pos < uploadImageArrayList.size(); pos++) {
+                if (uploadImageArrayList.get(pos).getImage() != null) {
+                    if (uploadImageArrayList.get(pos).getImage().equalsIgnoreCase(filePath)) {
+                        uploadImageArrayList.remove(pos);
+                    }
+                }
+            }
+            addImage(filePath);
+        //}
+    }
+
+    // add image in selectedImageList and imageList
+    public void addImage(String filePath) {
+        UploadImage imageModel = new UploadImage();
+        imageModel.setImage(filePath);
+        imageModel.setSelected(true);
+        uploadImageArrayList.add(2,imageModel);
+        Log.e(TAG, "filepath object "+filePath);
+        //selectedImageList.add(0, filePath);
+        uploadImagesAdapter.notifyDataSetChanged();
+        //imageAdapter.notifyDataSetChanged();
+    }
+
     //method to check for internet connection
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
@@ -915,6 +1018,52 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private void hideDialog() {
         if (pDialog.isShowing())
             pDialog.dismiss();
+    }
+
+    /**
+     * RecyclerView item decoration - give equal margin around grid item
+     */
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+    }
+
+    /**
+     * Converting dp to pixel
+     */
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
 
 }

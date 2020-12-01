@@ -161,7 +161,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/card_margin"
         android:gravity="center_horizontal"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_upload_images"
@@ -174,22 +174,6 @@
             android:id="@+id/job_image1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/card_margin"
-            android:src="@mipmap/ic_crop_original_black_48dp"/>
-
-        <ImageView
-            android:id="@+id/job_image2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:padding="@dimen/card_margin"
-            android:src="@mipmap/ic_crop_original_black_48dp"/>
-
-        <ImageView
-            android:id="@+id/job_image3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
             android:padding="@dimen/card_margin"
             android:src="@mipmap/ic_crop_original_black_48dp"/>
 
