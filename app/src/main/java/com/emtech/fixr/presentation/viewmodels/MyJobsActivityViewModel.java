@@ -110,6 +110,8 @@ public class MyJobsActivityViewModel extends ViewModel {
         mRepository.submitPosterRating(job_id, fixer_id, poster_id, poster_rating, comment);
     }
 
+    //get the details for the job in progress
+
 
 
 }

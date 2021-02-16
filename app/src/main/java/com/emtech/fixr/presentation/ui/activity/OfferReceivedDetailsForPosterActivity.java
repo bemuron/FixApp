@@ -128,6 +128,15 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
             }
 
         });
+
+        /*
+        * TODO
+        *  check if poster accepted this offer (status - 1)
+        *  if accepted, check if job is in progress (jip - 5)
+        *  if offer status = 1 and jip status = 5 launch JobInProgress activity
+        * */
+
+        
     }
 
     @Override
@@ -287,6 +296,7 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
                 intent.putExtra("jobID", offer.getJob_id());
                 intent.putExtra("jobName", jobName);
                 startActivity(intent);
+                this.finish();
                 break;
         }
     }
