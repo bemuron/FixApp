@@ -1,179 +1,205 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-package="com.emtech.fixr">
+    package="com.emtech.fixr">
 
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.GET_ACCOUNTS" />
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature android:name="android.hardware.flash" />
 
-<application
-    android:name=".app.MyApplication"
-    android:allowBackup="true"
-    android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
-    android:launchMode="singleTop"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/AppTheme"
-    android:usesCleartextTraffic="true"
-    android:windowSoftInputMode="adjustPan">
-    <!-- Log in Activity -->
-    <activity
-        android:name=".presentation.ui.activity.LoginActivity"
-        android:theme="@style/AppTheme.NoActionBar">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-    </activity> <!-- Register Activity -->
-    <activity
-        android:name=".presentation.ui.activity.RegisterActivity"
+    <application
+        android:name=".app.MyApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme.NoActionBar"
-        android:windowSoftInputMode="adjustPan" />
-    <activity android:name=".presentation.ui.activity.VerifyPhoneActivity"
-        android:label="@string/title_activity_verify_phone" />
-    <activity
-        android:name=".presentation.ui.activity.HomeActivity"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme.NoActionBar" /> <!-- Job Details Activity -->
-    <activity
-        android:name=".presentation.ui.activity.JobDetailsActivity"
-        android:label="@string/job_details_activity"
-        android:parentActivityName=".presentation.ui.activity.BrowseJobsActivity" /> <!-- Offer Details fro Poster Activity -->
-    <activity
-        android:name=".presentation.ui.activity.OfferAcceptedDetailsForPosterActivity"
-        android:label="@string/offer_details_activity"
-        android:parentActivityName=".presentation.ui.activity.PosterOffersListActivity" /> <!-- OfferDetailsForFixerActivity -->
-    <activity
-        android:name=".presentation.ui.activity.OfferAcceptedDetailsForFixerActivity"
-        android:label="@string/offer_details_activity"
-        android:parentActivityName=".presentation.ui.activity.FixerOffersListActivity" />
-    <activity
-        android:name=".presentation.ui.activity.PosterOffersListActivity"
-        android:label="@string/title_activity_poster_offers_accepted"
         android:launchMode="singleTop"
-        android:parentActivityName=".presentation.ui.activity.HomeActivity" />
-    <activity
-        android:name=".presentation.ui.activity.FixerOffersListActivity"
-        android:launchMode="singleTop"
-        android:parentActivityName=".presentation.ui.activity.HomeActivity" />
-    <activity
-        android:name=".presentation.ui.activity.MyProfileActivity"
-        android:label="@string/title_activity_my_profile"
-        android:parentActivityName=".presentation.ui.activity.HomeActivity" />
-    <activity
-        android:name=".presentation.ui.activity.EditProfileActivity"
-        android:label="@string/title_activity_edit_profile"
-        android:parentActivityName=".presentation.ui.activity.MyProfileActivity" />
-    <activity
-        android:name=".presentation.ui.activity.SearchJobsActivity"
-        android:label="@string/search_jobs_activity"
-        android:launchMode="singleTop"
-        android:parentActivityName=".presentation.ui.activity.BrowseJobsActivity" />
-    <activity
-        android:name=".presentation.ui.activity.OfferMadeDetailsForFixerActivity"
-        android:label="@string/offer_details_activity"
-        android:parentActivityName=".presentation.ui.activity.FixerOffersListActivity" />
-    <activity
-        android:name=".presentation.ui.activity.OfferReceivedDetailsForPosterActivity"
-        android:label="@string/offer_details_activity"
-        android:parentActivityName=".presentation.ui.activity.PosterOffersListActivity" />
-    <activity
-        android:name=".presentation.ui.activity.MyJobsListActivity"
-        android:label="@string/my_jobs"
-        android:parentActivityName=".presentation.ui.activity.HomeActivity" />
-    <activity
-        android:name=".presentation.ui.activity.PostJobActivity"
-        android:label="@string/title_activity_post_job"
-        android:parentActivityName=".presentation.ui.activity.HomeActivity"
-        android:windowSoftInputMode="stateHidden" />
-    <activity android:name=".presentation.ui.activity.RatingActivity"
-        android:screenOrientation="portrait">
-    </activity>
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        android:windowSoftInputMode="adjustPan">
+        <activity android:name=".presentation.ui.activity.JobInProgressActivity"></activity>
+        <!-- Log in Activity -->
+        <activity
+            android:name=".presentation.ui.activity.LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-    <activity android:name=".presentation.ui.activity.PaymentActivity"
-        android:screenOrientation="portrait">
-    </activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- Register Activity -->
+        <activity
+            android:name=".presentation.ui.activity.RegisterActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".presentation.ui.activity.VerifyPhoneActivity"
+            android:label="@string/title_activity_verify_phone" />
+        <activity
+            android:name=".presentation.ui.activity.HomeActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" /> <!-- Job Details Activity -->
+        <activity
+            android:name=".presentation.ui.activity.JobDetailsActivity"
+            android:label="@string/job_details_activity"
+            android:parentActivityName=".presentation.ui.activity.BrowseJobsActivity" /> <!-- Offer Details fro Poster Activity -->
+        <activity
+            android:name=".presentation.ui.activity.OfferAcceptedDetailsForPosterActivity"
+            android:label="@string/offer_details_activity"
+            android:parentActivityName=".presentation.ui.activity.PosterOffersListActivity" /> <!-- OfferDetailsForFixerActivity -->
+        <activity
+            android:name=".presentation.ui.activity.OfferAcceptedDetailsForFixerActivity"
+            android:label="@string/offer_details_activity"
+            android:parentActivityName=".presentation.ui.activity.FixerOffersListActivity" />
+        <activity
+            android:name=".presentation.ui.activity.PosterOffersListActivity"
+            android:label="@string/title_activity_poster_offers_accepted"
+            android:launchMode="singleTop"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity" />
+        <activity
+            android:name=".presentation.ui.activity.FixerOffersListActivity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity" />
+        <activity
+            android:name=".presentation.ui.activity.MyProfileActivity"
+            android:label="@string/title_activity_my_profile"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity" />
+        <activity
+            android:name=".presentation.ui.activity.EditProfileActivity"
+            android:label="@string/title_activity_edit_profile"
+            android:parentActivityName=".presentation.ui.activity.MyProfileActivity" />
+        <activity
+            android:name=".presentation.ui.activity.SearchJobsActivity"
+            android:label="@string/search_jobs_activity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".presentation.ui.activity.BrowseJobsActivity" />
+        <activity
+            android:name=".presentation.ui.activity.OfferMadeDetailsForFixerActivity"
+            android:label="@string/offer_details_activity"
+            android:parentActivityName=".presentation.ui.activity.FixerOffersListActivity" />
+        <activity
+            android:name=".presentation.ui.activity.OfferReceivedDetailsForPosterActivity"
+            android:label="@string/offer_details_activity"
+            android:parentActivityName=".presentation.ui.activity.PosterOffersListActivity" />
+        <activity
+            android:name=".presentation.ui.activity.MyJobsListActivity"
+            android:label="@string/my_jobs"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity" />
+        <activity
+            android:name=".presentation.ui.activity.PostJobActivity"
+            android:label="@string/title_activity_post_job"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".presentation.ui.activity.RatingActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presentation.ui.activity.PaymentActivity"
+            android:screenOrientation="portrait" /> <!-- upload image preview activity -->
+        <activity
+            android:name=".presentation.ui.activity.ImagePreviewActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_image_preview"
+            android:parentActivityName=".presentation.ui.activity.PostJobActivity"
+            android:theme="@style/FullscreenTheme" />
 
-    <service
-        android:name=".fcm.MyFirebaseMessagingService"
-        android:enabled="true"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="com.google.firebase.MESSAGING_EVENT" />
-        </intent-filter>
-    </service> <!-- [START fcm_default_icon] -->
-    <!--
+        <service
+            android:name=".fcm.MyFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service> <!-- [START fcm_default_icon] -->
+        <!--
          Set custom default icon. This is used when no icon is set for incoming notification messages.
          See README(https://goo.gl/l4GJaQ) for more.
-    -->
-    <meta-data
-        android:name="com.google.firebase.messaging.default_notification_icon"
-        android:resource="@mipmap/ic_launcher" />
-    <!--
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+        <!--
          Set color used with incoming notification messages. This is used when no color is set for the incoming
          notification message. See README(https://goo.gl/6BKBk7) for more.
-    -->
-    <meta-data
-        android:name="com.google.firebase.messaging.default_notification_color"
-        android:resource="@color/colorAccent" /> <!-- [END fcm_default_icon] -->
-    <!-- [START fcm_default_channel] -->
-    <meta-data
-        android:name="com.google.firebase.messaging.default_notification_channel_id"
-        android:value="@string/default_notification_channel_id" /> <!-- [END fcm_default_channel] -->
-    <!-- Search jobs Activity -->
-    <activity
-        android:name=".presentation.ui.activity.BrowseJobsActivity"
-        android:label="@string/browse_jobs_activity"
-        android:launchMode="singleTop"
-        android:parentActivityName=".presentation.ui.activity.HomeActivity">
-
-        <!-- Receives the search request. -->
-        <intent-filter>
-            <action android:name="android.intent.action.SEARCH" />
-            <!-- No category needed, because the Intent will specify this class component -->
-        </intent-filter>
-
-        <!-- Points to searchable meta data. -->
+        -->
         <meta-data
-            android:name="android.app.searchable"
-            android:resource="@xml/searchable" />
-    </activity>
-    <!--
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" /> <!-- [END fcm_default_icon] -->
+        <!-- [START fcm_default_channel] -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" /> <!-- [END fcm_default_channel] -->
+        <!-- Search jobs Activity -->
+        <activity
+            android:name=".presentation.ui.activity.BrowseJobsActivity"
+            android:label="@string/browse_jobs_activity"
+            android:launchMode="singleTop"
+            android:parentActivityName=".presentation.ui.activity.HomeActivity">
+
+            <!-- Receives the search request. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <!-- No category needed, because the Intent will specify this class component -->
+            </intent-filter>
+
+            <!-- Points to searchable meta data. -->
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <!--
          The API key for Google Maps-based APIs is defined as a string resource.
          (See the file "res/values/google_maps_api.xml").
          Note that the API key is linked to the encryption key used to sign the APK.
          You need a different API key for each encryption key, including the release key that is used to
          sign the APK for publishing.
          You can define the keys for the debug and release targets in src/debug/ and src/release/.
-    -->
-    <meta-data
-        android:name="com.google.android.geo.API_KEY"
-        android:value="@string/google_maps_key" /> <!-- This is required for immediate syncs -->
-    <service
-        android:name=".data.network.FixAppSyncIntentService"
-        android:exported="false" />
-    <service
-        android:name=".data.network.PostJobIntentService"
-        android:exported="false" />
-    <service
-        android:name=".data.network.UserLoginIntentService"
-        android:exported="false" />
-    <service
-        android:name=".data.network.UserRegistrationIntentService"
-        android:exported="false" />
-    <receiver android:name=".helpers.SMSBroadcastReceiver" android:exported="true"
-              android:permission="com.google.android.gms.auth.api.phone.permission.SEND">
-        <intent-filter>
-            <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED"/>
-        </intent-filter>
-    </receiver>
-</application>
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" /> <!-- This is required for immediate syncs -->
+        <service
+            android:name=".data.network.FixAppSyncIntentService"
+            android:exported="false" />
+        <service
+            android:name=".data.network.PostJobIntentService"
+            android:exported="false" />
+        <service
+            android:name=".data.network.UserLoginIntentService"
+            android:exported="false" />
+        <service
+            android:name=".data.network.UserRegistrationIntentService"
+            android:exported="false" />
+
+        <receiver
+            android:name=".helpers.SMSBroadcastReceiver"
+            android:exported="true"
+            android:permission="com.google.android.gms.auth.api.phone.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_provider_paths" />
+        </provider>
+    </application>
 
 </manifest>

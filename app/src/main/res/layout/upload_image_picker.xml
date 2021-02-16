@@ -6,7 +6,7 @@
     android:layout_marginLeft="2dp"
     android:layout_marginTop="5dp"
     android:layout_marginRight="2dp"
-    android:background="@color/qu_grey_600"
+    android:background="@color/cardview_dark_background"
     android:gravity="center"
     android:orientation="vertical">
 

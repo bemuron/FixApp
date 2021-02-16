@@ -23,6 +23,7 @@ import android.util.Log;
 import com.emtech.fixr.utilities.InjectorUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * An {@link IntentService} subclass for immediately scheduling a sync with the server off of the
@@ -53,11 +54,11 @@ public class PostJobIntentService extends IntentService {
       String mustHaveTwo = jobBundle.getString("mustHaveTwo");
       String mustHaveThree = jobBundle.getString("mustHaveThree");
       int isJobRemote = jobBundle.getInt("isJobRemote");
-      File file = (File) jobBundle.getSerializable("filePath");
+      ArrayList<File> imageFilesList = (ArrayList<File>) jobBundle.getSerializable("filePath");
       int categoryId = jobBundle.getInt("categoryId");
 
       //check if the user didn't add an image
-      if (file == null){
+      if (imageFilesList == null){
         //pass the job details to the method to be posted to the server: finally
         postFixAppJob.postJobDetailsWithoutImage(userId, jobTitle, jobDesc, jobLocation,
                 mustHaveOne, mustHaveTwo,
@@ -66,7 +67,7 @@ public class PostJobIntentService extends IntentService {
         //pass the job details to the method to be posted to the server: finally
         postFixAppJob.postJobDetails(userId, jobTitle, jobDesc, jobLocation,
                 mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, file, categoryId);
+                mustHaveThree, isJobRemote, imageFilesList, categoryId);
       }
     }else{
       Log.e(LOG_TAG, "Job details empty");

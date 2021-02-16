@@ -1,6 +1,11 @@
 package com.emtech.fixr.presentation.ui.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -44,7 +49,7 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
     private TextView jobTitleTV, postedByTV, timePostedTV, offerStatusTV,
             toBeDoneDateTV, toBeDoneTimeTV, offeredAmountTV, offerMsgTV,
             lastEditDateTv;
-    private MaterialButton viewJobDetailsButton;
+    private MaterialButton viewJobDetailsButton, startJobButton;
     private Button rejectJobButton, callPosterButton;
     private MyJobsActivityViewModel mViewModel;
     private PostJobActivityViewModel postJobActivityViewModel;
@@ -152,6 +157,8 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
         offeredAmountTV = findViewById(R.id.forFixer_offer_amount_content);
         offerMsgTV = findViewById(R.id.forFixer_offer_details_message);
         lastEditDateTv = findViewById(R.id.forFixer_offer_last_edit_date);
+        startJobButton = findViewById(R.id.forFixer_startJob);
+        viewJobDetailsButton = findViewById(R.id.forFixer_viewJobDetails);
         //if the current user is the one that posted this job
         //hide the edit button
         //if (userId == offer.getPosted_by()) {
@@ -252,6 +259,15 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
                 startActivity(intent);
                 break;
 
+            //launch activity to show job is in progress
+            case R.id.forFixer_startJob:
+                //change job status in db to in progress
+                updateJobStatus(5);
+                Intent intent2 = new Intent(this, JobInProgressActivity.class);
+                intent2.putExtra("jobID", offer.getJob_id());
+                intent2.putExtra("jobName", jobName);
+                startActivity(intent2);
+                break;
         }
     }
 
@@ -317,6 +333,11 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
         }
     }
 
+    //update job status in the db if fixer starts the job to 5 - in progress
+    private void updateJobStatus(int status){
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -359,5 +380,40 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
                 dialogFragment.show(getSupportFragmentManager(), "fixerDeleteAcceptedOffer");
             }
 
+            //method to check for internet connection
+            public static boolean isNetworkAvailable(Context context) {
+                if(context == null)  return false;
 
+                ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                if (connectivityManager != null) {
+                    if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.getActiveNetwork());
+                        if (capabilities != null) {
+                            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                                return true;
+                            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                                return true;
+                            }  else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)){
+                                return true;
+                            }
+                        }
+                    }
+
+                    else {
+
+                        try {
+                            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+                            if (activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+                                Log.i("update_status", "Network is available : true");
+                                return true;
+                            }
+                        } catch (Exception e) {
+                            Log.i("update_status", "" + e.getMessage());
+                        }
+                    }
+                }
+                Log.i("update_status","Network is available : FALSE ");
+                return false;
+            }
 }

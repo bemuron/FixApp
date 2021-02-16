@@ -15,6 +15,8 @@ import android.os.Bundle;
 
 import com.emtech.fixr.app.Config;
 import com.emtech.fixr.fcm.MyNotificationManager;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -520,6 +522,25 @@ public class HomeActivity extends AppCompatActivity
 
         //calling the method displayselectedscreen and passing the id of selected menu
         displaySelectedScreen(id);
+        return true;
+    }
+
+    //check for google play services in device
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+                Log.e(TAG, "Google play services check result code = "+resultCode);
+            } else {
+                Log.i(TAG, "This device is not supported. Google Play Services not installed!");
+                Toast.makeText(getApplicationContext(), "This device is not supported. Google Play Services not installed!", Toast.LENGTH_LONG).show();
+                finish();
+            }
+            return false;
+        }
         return true;
     }
 

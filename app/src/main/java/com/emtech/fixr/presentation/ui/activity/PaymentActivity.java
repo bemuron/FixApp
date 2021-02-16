@@ -43,10 +43,10 @@ public class PaymentActivity extends AppCompatActivity implements PaymentSummary
         int poster_id = getIntent().getIntExtra("poster_id", 0);
         if (userRole.equals("poster") || userId == poster_id) {
             //get intent from which this activity is called and the id of the job
-            //this mainly targets a user/student
+            //this mainly targets a user/poster
             //this is coming from the fcm notification received
             int job_id = getIntent().getIntExtra("job_id", 0);
-            boolean session_finished = getIntent().getBooleanExtra("session_finished", false);
+            boolean session_finished = getIntent().getBooleanExtra("job_finished", false);
             if (session_finished) {
                 int job_cost = getIntent().getIntExtra("job_cost", 0);
                 PaymentSummaryFragment paymentSummaryFragment =

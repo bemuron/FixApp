@@ -37,12 +37,15 @@ import android.widget.Toast;
 import com.emtech.fixr.presentation.adapters.SectionsPagerAdapter;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import static com.emtech.fixr.utilities.InjectorUtils.provideRepository;
 
 public class PostJobActivity extends AppCompatActivity implements PostJobDetailsFragment.OnPostButtonListener,
         PostFixAppJob.JobCreatedCallBack, PostJobBudgetFragment.OnJobBudgetFragmentInteractionListener,
-        PostJobDateFragment.OnJobDateFragmentInteractionListener, FixAppRepository.UpdateJobDetailsTaskListener
+        PostJobDateFragment.OnJobDateFragmentInteractionListener, FixAppRepository.UpdateJobDetailsTaskListener,
+        PostJobDetailsFragment.OnImageClickListener, PostJobDetailsFragment.OnCreateJobButtonListener,
+        PostFixAppJob.JobDetailsUpdatedCallBack, PostFixAppJob.JobDetailsNoImageUpdatedCallBack
 {
     private static final String LOG_TAG = PostJobActivity.class.getSimpleName();
     private PostJobActivityViewModel postJobActivityViewModel;
@@ -71,6 +74,10 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         int category_id = getIntent().getIntExtra("category_id", 0);
         String category_name = getIntent().getStringExtra("category_name");
 
+        if (job_id > 0){
+            setTitle(R.string.edit_job_details);
+        }
+
         postJobActivity = this;
 
         repository = provideRepository(getApplicationContext());
@@ -91,8 +98,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         hideBar();
 
         PostJobViewModelFactory factory = InjectorUtils.providePostJobActivityViewModelFactory(this.getApplicationContext());
-        postJobActivityViewModel = new ViewModelProvider
-                (this, factory).get(PostJobActivityViewModel.class);
+        postJobActivityViewModel = new ViewModelProvider(this, factory).get(PostJobActivityViewModel.class);
 
         TabLayout tabs = findViewById(R.id.tabs);
         mViewPager = findViewById(R.id.view_pager);
@@ -142,6 +148,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
 
                     tabs.setupWithViewPager(mViewPager);
                     mViewPager.setAdapter(sectionsPagerAdapter);
+                    mViewPager.setOffscreenPageLimit(3);
                     //hideBar();
                 } else {
                     hideBar();
@@ -158,6 +165,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
 
             tabs.setupWithViewPager(mViewPager);
             mViewPager.setAdapter(sectionsPagerAdapter);
+            mViewPager.setOffscreenPageLimit(3);
         }
 
 
@@ -208,40 +216,52 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         mViewPager.setCurrentItem(2,true);
     }
 
+    //create a new job
+    @Override
+    public void createJobCallback(int userId, String jobTitle, String jobDesc,
+                                  int categoryId){
+        showBar();
+        //create a job in the db getting back a job id
+        //postJobActivityViewModel.createJob(userId,jobTitle,jobDesc,categoryId,PostJobActivity.getInstance());
+        postJobActivityViewModel.createNewJob(userId,jobTitle,jobDesc,
+                categoryId,PostJobActivity.getInstance()).observe(this, jobId ->{
+            job_id = jobId;
+        });
+        //Log.e(LOG_TAG, "Job details: userid = " + userId+ ", job title = "+ jobTitle+
+          //      ", job desc = " +jobDesc+", categoryid = " +categoryId);
+    }
+
     //post job fragment callback
     @Override
     public void jobPostDataCallback(int userId, String jobTitle, String jobDesc, String jobLocation,
                                     String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
-                                    File file, int categoryId, PostJobActivity postJobActivityInstance) {
+                                    ArrayList<File> imageFilesList, int categoryId, PostJobActivity postJobActivityInstance) {
         showBar();
-        //call the viewmodel method to send the job to the server
-        //Log.d(LOG_TAG, "Passing job details to view model");
+        //at this point we expect the job id to be present no matter the case
 
         //if job id is > 0 we are updating the job, else its at the default
         // state of 0 - posting fresh details
         if (job_id > 0) {
-            setTitle(R.string.edit_job_details);
             //we are updating the existing job details
-            repository.getJobUpdateDetails(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                    mustHaveThree, isJobRemote, file);
+            postJobActivityViewModel.updateJobDetails(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                    mustHaveThree, isJobRemote, imageFilesList, PostJobActivity.getInstance());
             Log.e(LOG_TAG, "Inside job posted callback job id = "+ job_id);
             //if the file is null, then we are updating the details without an image attached
-            if (file == null){
-                repository.getJobUpdateDetailsWithoutImage(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                        mustHaveThree, isJobRemote);
+            if (imageFilesList == null){
+                postJobActivityViewModel.updateJobDetailsWithoutImage(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                        mustHaveThree, isJobRemote, PostJobActivity.getInstance());
             }
 
-        }else {
+        }/*else {
             //post details to local db and get the id of that record to keep updating with more
             //input from the user
             postJobActivityViewModel.postJob(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                    mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
-            setUpJobDateFragment();
-        }
+                    mustHaveThree, isJobRemote, imageFilesList, categoryId, PostJobActivity.getInstance());
+        }*/
         Log.e(LOG_TAG, "Job details: userid = " + userId+ ", job title = "+ jobTitle+
                 ", job desc = " +jobDesc+", job location = "+jobLocation+ ", musthaveone = "
                 +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
-                mustHaveThree+ ", isJobRemote = " +isJobRemote+ ", file = " +file+", categoryid = " +categoryId);
+                mustHaveThree+ ", isJobRemote = " +isJobRemote+ ", file = " +imageFilesList+", categoryid = " +categoryId);
 
     }
 
@@ -251,21 +271,15 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
     @Override
     public void onJobCreated(Boolean isJobCreated, String message, int job_id) {
         if (isJobCreated){
-            Log.e(LOG_TAG, "New job Id = "+job_id);
+            //Log.e(LOG_TAG, "New job Id = "+job_id);
             this.job_id = job_id;
-            Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
-            //go back to home activity
-            /*Intent intent = new Intent(PostJobActivity.this, HomeActivity.class);
-            startActivity(intent);
-            this.finish();*/
-            hideBar();
         }else{
             this.job_id = 0;
             Log.e(LOG_TAG, "something isn't right job id = "+job_id);
             //if the job wasn't posted, display error message
-            Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
-            hideBar();
         }
+        Toast.makeText(postJobActivity, message, Toast.LENGTH_SHORT).show();
+        hideBar();
 
     }
 
@@ -289,6 +303,16 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         session.logoutUser();
         //mViewModel.delete();
     }
+
+    //show a fullscreen preview of the the image selected
+    @Override
+    public void onUploadImageClicked(String imagePath) {
+        Intent intent = new Intent(this,ImagePreviewActivity.class);
+        intent.putExtra("imagePath", imagePath);
+        startActivity(intent);
+    }
+
+
 
     //receive the user input from the job budget fragment
     //store in the local db if there is no network connection *** up for debate
@@ -366,7 +390,6 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
                 Toast.makeText(this, "Please start with the job details", Toast.LENGTH_LONG).show();
                 Log.e(LOG_TAG, "Job ID not present = "+ job_id);
             }
-            Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }else{
             //at this point we expect the job id to be present no matter the case
             if (job_id > 0) {
@@ -393,8 +416,8 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
                 Toast.makeText(this, "Please start with the job details", Toast.LENGTH_LONG).show();
                 Log.e(LOG_TAG, "Job ID not present = "+ job_id);
             }
-            Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timselected = " + timeSelected);
         }
+        Log.e(LOG_TAG, "From Date Frag: jobDate = " + jobDate + " timeselected = " + timeSelected);
 
     }
 
@@ -403,7 +426,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
     public void updateUiAfterJobDetailsWithoutImage(Boolean isJobUpdated, String message, String jobSection){
         hideBar();
         //checking the response status from the server
-        if (jobDetailsSection.equals("basicsWithImage")){
+        if (jobSection.equals("basicsWithImage")){
             if (isJobUpdated) {
                 //hideBar();
                 Log.e(LOG_TAG, "Job details updated successfully = " + job_id);
@@ -417,7 +440,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         }
 
         //checking the response status from the server
-        if (jobDetailsSection.equals("basicsWithoutImage")){
+        if (jobSection.equals("basicsWithoutImage")){
             if (isJobUpdated) {
                 //hideBar();
                 Log.e(LOG_TAG, "Job details updated successfully = " + job_id);
@@ -470,5 +493,34 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         isUpdated = isJobUpdated;
         updateResponseMessage = message;
         jobDetailsSection = jobSection;
+    }
+
+    @Override
+    public void onJobDetailsNoImageUpdated(Boolean isJobUpdated, String message, String jobSection) {
+        if (isJobUpdated) {
+            //hideBar();
+            Log.e(LOG_TAG, "Job details updated successfully = " + job_id);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            //go to the next section
+            setUpJobDateFragment();
+        }else {
+            //hideBar();
+            Log.e(LOG_TAG, "Job date time not updated");
+        }
+        hideBar();
+    }
+
+    @Override
+    public void onJobDetailsUpdated(Boolean isJobUpdated, String message, String jobSection) {
+        if (isJobUpdated) {
+            hideBar();
+            Log.e(LOG_TAG, "Job details updated successfully = " + job_id);
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            //go to the next section
+            setUpJobDateFragment();
+        }else {
+            hideBar();
+            Log.e(LOG_TAG, "Job details not updated");
+        }
     }
 }

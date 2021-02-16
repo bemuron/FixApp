@@ -41,7 +41,7 @@ public class Job {
   private String posted_on;
 
   @ColumnInfo(name = "job_status")
-  private int job_status; // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete
+  private int job_status; // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete, 5 - in progress
 
   @ColumnInfo(name = "completed_by")
   private int completed_by; //professional's id

@@ -1,10 +1,14 @@
 package com.emtech.fixr.presentation.ui.fragment;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import android.text.InputType;
@@ -13,6 +17,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -93,6 +99,11 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_post_job_date, container, false);
 
+        //hide the keyboard
+        /*final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);*/
+        //getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
         //set up the calendar
         setUpCalendar();
 
@@ -104,6 +115,11 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
         }
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
     //if we have a job id then the user is just editing a job
@@ -302,7 +318,11 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
                 break;
 
             case R.id.job_date_edit_text:
-                //send the data to PostJobActivity to be posted to the server
+                //hideKeyboard(getActivity());
+
+                //InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                //show the date dialog picker
                 mDatePickerDialog.show();
                 break;
 
@@ -346,6 +366,17 @@ public class PostJobDateFragment extends Fragment implements View.OnClickListene
     public interface OnJobDateFragmentInteractionListener{
         // TODO: Update argument type and name
         void onJobDateFragmentInteraction(String date, String timeOfDay);
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager inputManager = (InputMethodManager) activity
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        // check if no view has focus:
+        EditText currentFocusedView = (EditText) activity.getCurrentFocus();
+        if (currentFocusedView != null) {
+            inputManager.hideSoftInputFromWindow(currentFocusedView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 
     //method to check for internet connection

@@ -1,12 +1,17 @@
 package com.emtech.fixr.data.network.api;
 
+import android.database.Observable;
+
 import com.emtech.fixr.data.network.Result;
 import com.emtech.fixr.models.Categories;
 import com.emtech.fixr.models.UserJobs;
 
+import java.util.List;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -51,7 +56,18 @@ public interface APIService {
     @GET("public/messages/{image}")
     Call<Result> getMessages(@Path("image") String image);
 
-    //posting a job
+    //creating a job
+    //only job name, user id, job desc and category
+    //are needed to create the job
+    @FormUrlEncoded
+    @POST("public/createJob")
+    Call<Result> createJob(
+            @Field("posted_by") int posted_by,
+            @Field("job_title") String job_title,
+            @Field("description") String description,
+            @Field("category_id") int category_id);
+
+    //updating a job
     @Multipart
     @POST("public/postjob")
     Call<Result> postJob(
@@ -63,9 +79,14 @@ public interface APIService {
             @Part("must_have_two") String must_have_two,
             @Part("must_have_three") String must_have_three,
             @Part("is_job_remote") int is_job_remote,
-            @Part MultipartBody.Part file,
-            @Part("name") RequestBody name,
+            @Part MultipartBody.Part[] file,
+            @Part("size") int partsSize,
             @Part("category_id") int category_id);
+
+    /*@Multipart
+    @POST("/UploadFileDemo/android_upload_file/uploads.php")
+    Observable<Result> uploadFiles(
+            @Body MultipartTypedOutput multipartTypedOutput);*/
 
     //posting a job without an image
     @FormUrlEncoded
@@ -93,8 +114,8 @@ public interface APIService {
             @Part("must_have_two") String must_have_two,
             @Part("must_have_three") String must_have_three,
             @Part("is_job_remote") int is_job_remote,
-            @Part MultipartBody.Part file,
-            @Part("name") RequestBody name);
+            @Part MultipartBody.Part[] file,
+            @Part("size") int partsSize);
 
     //updating a job without an image
     @FormUrlEncoded
@@ -137,11 +158,21 @@ public interface APIService {
             @Part("name") RequestBody name);
 
     //getting all the jobs associated with this user based on the status they have chosen
-    // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete
+    // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete, 5 - in progress
     @GET("public/getJobsByStatus/{user_id}/{status}")
     Call<UserJobs> getJobsByStatus(
             @Path("user_id") int user_id,
             @Path("status") int status);
+
+    //get the job status for the poster
+    @GET("public/getJobStatusForPoster/{job_id}")
+    Call<Result> getStatusForPoster(
+            @Path("job_id") int job_id);
+
+    //get the job status for the fixer
+    @GET("public/getJobStatusForFixer/{job_id}")
+    Call<Result> getStatusForFixer(
+            @Path("job_id") int job_id);
 
     //getting the details of a job
     @GET("public/getJobDetailsByStatus/{job_id}")

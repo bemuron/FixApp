@@ -12,7 +12,7 @@
     android:paddingRight="@dimen/margin_padding_normal"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-<ScrollView
+<androidx.core.widget.NestedScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -79,6 +79,25 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/createJobButton"
+        android:layout_marginRight="@dimen/margin_padding_xxnormal"
+        android:layout_marginEnd="@dimen/margin_padding_xxnormal"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:text="@string/create_job_button"/>
+
+    <!-- This view layout is to be slid upwards with animation when the job is created-->
+    <LinearLayout
+        android:id="@+id/slide_up_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:paddingTop="@dimen/margin_padding_normal">
     <!--Add must haves-->
     <TextView
         android:id="@+id/job_must_haves"
@@ -92,7 +111,7 @@
     <!--Switch to select if the job can be completed remotely or not
     if job can be completed remotely, then location input area should be
     invisible-->
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/is_remote_job_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -150,35 +169,12 @@
         android:textColor="@color/colorPrimaryDark"
         android:text="@string/job_images_instructions"/>
 
-    <Button
-        android:id="@+id/addImage"
-        android:text="Add Image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/card_margin"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_upload_images"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
             android:paddingBottom="8dp"/>
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/job_image1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/card_margin"
-            android:src="@mipmap/ic_crop_original_black_48dp"/>
-
-    </LinearLayout>
-
     <Button
         android:id="@+id/continue_one"
         android:layout_width="match_parent"
@@ -187,8 +183,10 @@
         android:textColor="@color/whiteTextColor"
         android:text="@string/continue_button"/>
 
+    </LinearLayout>
+
 </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>
     <!-- Adding bottom sheet after main content -->
 <include layout="@layout/bottom_sheet_post_job" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

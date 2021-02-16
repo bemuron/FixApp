@@ -3,6 +3,8 @@ package com.emtech.fixr.presentation.ui.fragment;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,11 +26,16 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.emtech.fixr.BuildConfig;
+import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.helpers.CircleTransform;
 import com.emtech.fixr.models.UploadImage;
 import com.emtech.fixr.presentation.adapters.UploadImagesAdapter;
 import com.emtech.fixr.presentation.ui.activity.HomeActivity;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
+import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
+import com.emtech.fixr.presentation.viewmodels.PostJobViewModelFactory;
+import com.emtech.fixr.utilities.InjectorUtils;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -43,26 +50,38 @@ import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.loader.content.CursorLoader;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -73,7 +92,10 @@ import com.emtech.fixr.models.JobMustHave;
 import com.emtech.fixr.presentation.adapters.MustHavesAdapter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -81,10 +103,18 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.CAMERA_SERVICE;
+import static android.os.Environment.DIRECTORY_PICTURES;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class PostJobDetailsFragment extends Fragment implements View.OnClickListener,
@@ -92,8 +122,10 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 {
     private static final String TAG = PostJobDetailsFragment.class.getSimpleName();
     OnPostButtonListener mCallback;
+    OnImageClickListener mImageClickedCallback;
+    OnCreateJobButtonListener mCreateJobCallback;
+    private PostJobActivityViewModel postJobActivityViewModel;
     private TextView postJobInstructionsTextView, jobMustHaves;
-    private final static int WRITE_EXTERNAL_RESULT = 100;
     private final static int REQUEST_ID_MULTIPLE_PERMISSIONS = 55;
     private static final int SELECT_IMAGE_REQUEST_CODE =25 ;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 15;
@@ -102,24 +134,27 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     public static final int REQUEST_IMAGE_CAPTURE = 4;
     private TextInputEditText jobTitleEditText;
     private TextInputEditText jobDescEditText,jobLocationEditText;
-    int[] resImg = {R.mipmap.ic_account_circle_black, R.mipmap.ic_account_circle_black};
-    String[] title = {"Camera", "Folder"};
+    int[] resImg = {R.mipmap.ic_camera, R.drawable.ic_menu_gallery};
+    String[] title = {"Camera", "Gallery"};
     private EditText mustHavesEditText;
     private TextInputLayout jobLocationTextInputLayout;
-    private ImageView jobImage1;
     private TextView mustHaveOneTv, mustHaveTwoTv, mustHaveThreeTv;
     private ProgressDialog pDialog;
     private Button postButton, addMustHaveButton, saveMustHavesButton, addImage;
+    private MaterialButton createJobButton;
     private Bitmap bitmap;
     private RecyclerView recyclerView,imagesRecyclerView;
     private int mPosition = RecyclerView.NO_POSITION;
-    private ArrayList<JobMustHave> mustHavesArrayList = new ArrayList<>();
-    private ArrayList<UploadImage> uploadImageArrayList = new ArrayList<>();
+    private ArrayList<JobMustHave> mustHavesArrayList;
+    private ArrayList<UploadImage> uploadImageArrayList;
+    private ArrayList<File> imageFilesList = new ArrayList<>();
+    private ArrayList<String> selectedImageList;
     private MustHavesAdapter mAdapter;
     private UploadImagesAdapter uploadImagesAdapter;
     private File file;
-    private Switch isJobRemoteSwitch;
-    private int categoryId, userId, mJobId, isJobRemote = 0;
+    private LinearLayout slideUpView;
+    private SwitchMaterial isJobRemoteSwitch;
+    private int categoryId, userId, mJobId = 0, isJobRemote = 0, imagePos;
     private ScrollView layoutBottomSheet;
     private boolean locationSwitchChecked = false;
     private BottomSheetBehavior sheetBehavior;
@@ -127,14 +162,16 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     private PlacesClient mPlacesClient;
     private Boolean mLocationPermissionGranted = false;
     private Boolean mDisplayedUserLocation = false;
+    private UploadImage imageModel;
     //private AutocompleteSupportFragment autocompleteFragment;
     //private JobMustHave mustHave;
     private String categoryName, mediaPath, currentJobImage = null,
             mustHaveOne = null, mustHaveTwo = null, mustHaveThree = null,
-            mstHaveOne, mstHaveTwo, mstHaveThree, musthave, jobName, jobDescription, mCurrentPhotoPath;
+            mstHaveOne, mstHaveTwo, mstHaveThree, musthave,
+            jobName, jobDescription, mCurrentPhotoPath, jobTitle, jobDesc;
     private TextInputLayout textInputLayout;
     String[] projection = {MediaStore.MediaColumns.DATA};
-    private File imageFile;
+    private File imageFile, mPhotoFile;
 
     public PostJobDetailsFragment(){
 
@@ -211,12 +248,18 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         //searchPlacesWidget();
         //if we have a job id then the user is editing a job
         if (mJobId > 0){
+            slideUp(slideUpView);
             inflateViews();
+        }else{
+            slideDown(slideUpView);
+            createJobButton.setVisibility(View.VISIBLE);
         }
         //updateUserLocation();
         setUpMustHavesAdapter();
+
         setUpJobImagesAdapter();
-        handleBottomSheet();
+
+        //handleBottomSheet();
 
         try {
             if (mLocationPermissionGranted) {
@@ -231,6 +274,27 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         }
 
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        PostJobViewModelFactory factory = InjectorUtils.providePostJobActivityViewModelFactory
+                (PostJobActivity.getInstance().getApplicationContext());
+        postJobActivityViewModel = new ViewModelProvider(PostJobActivity.getInstance(),
+                factory).get(PostJobActivityViewModel.class);
+
+        /*postJobActivityViewModel.getNewJobId().observe(PostJobActivity.getInstance(), jobId ->{
+            mJobId = jobId;
+            Log.e(TAG,"Created job id "+mJobId);
+
+            if (mJobId > 0){
+                slideUp(slideUpView);
+            }else{
+                slideDown(slideUpView);
+                createJobButton.setVisibility(View.VISIBLE);
+            }
+        });*/
     }
 
     /*private void searchPlacesWidget(){
@@ -291,14 +355,28 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
     //handle different actions when the image position is clicked
     @Override
-    public void onImageClicked(int position) {
+    public void onImageClicked(int position, String imagePath) {
         if (position == 0) {
-            takePicture();
+            if (checkAndRequestPermissions()){
+                takePicture();
+            }
         } else if (position == 1) {
-            setImagePickerList();
-        } /*else {
+            if (checkAndRequestPermissions())
+                selectJobImage();
+        }else{
+            //show full screen image
+            Log.e(TAG, "Image at Position clicked " +position);
+            mImageClickedCallback.onUploadImageClicked(imagePath);
+
+        }
+    }
+
+    @Override
+    public void onImageLongClicked(int position) {
+         if (position > 1){
+             Log.e(TAG, "Image picker Position " +position);
             try {
-                if (!uploadImageArrayList.get(position).isSelected) {
+                if (!uploadImageArrayList.get(position).isSelected()) {
                     selectImage(position);
                 } else {
                     unSelectImage(position);
@@ -306,14 +384,25 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             } catch (ArrayIndexOutOfBoundsException ed) {
                 ed.printStackTrace();
             }
-        }*/
+        }
+    }
+
+    // create the new job using mainly the title and description
+    public interface OnCreateJobButtonListener {
+        void createJobCallback(int userId, String jobTitle, String jobDesc,
+                               int categoryId);
     }
 
     // Container Activity must implement this interface
     public interface OnPostButtonListener {
         void jobPostDataCallback(int userId, String jobTitle, String jobDesc, String jobLocation,
                                  String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
-                                 File file, int categoryId, PostJobActivity postJobActivityInstance);
+                                 ArrayList<File> imageFilesList, int categoryId, PostJobActivity postJobActivityInstance);
+    }
+
+    //display full screen of the image the user selected for upload
+    public interface OnImageClickListener{
+        void onUploadImageClicked(String imagePath);
     }
 
     @Override
@@ -324,9 +413,11 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         // the callback interface. If not, it throws an exception
         try {
             mCallback = (OnPostButtonListener) context;
+            mImageClickedCallback = (OnImageClickListener) context;
+            mCreateJobCallback = (OnCreateJobButtonListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnPostButtonListener");
+                    + " must implement OnPostButtonListener or OnImageClickListener or OnCreateJobButtonListener");
         }
     }
 
@@ -351,20 +442,19 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         }
 
         //Attached image
-        if (currentJobImage != null){
-            Glide.with(getActivity()).load("http://www.emtechint.com/fixapp/assets/images/"+currentJobImage)
-                    .thumbnail(0.5f)
-                    .transition(withCrossFade())
-                    .apply(new RequestOptions().fitCenter()
-                            .transform(new CircleTransform(getActivity())).diskCacheStrategy(DiskCacheStrategy.ALL))
-                    .into(jobImage1);
-            jobImage1.setColorFilter(null);
-        }
+        /*Glide.with(getActivity()).load("http://www.emtechint.com/fixapp/assets/images/"+currentJobImage)
+                .thumbnail(0.5f)
+                .transition(withCrossFade())
+                .apply(new RequestOptions().fitCenter()
+                        .transform(new CircleTransform(getActivity())).diskCacheStrategy(DiskCacheStrategy.ALL))
+                .into(jobImage1);
+        jobImage1.setColorFilter(null);*/
 
     }
 
     //initialise the views
     private void setUpWidgets(View view){
+        slideUpView = view.findViewById(R.id.slide_up_layout);
         recyclerView = view.findViewById(R.id.must_haves_list);
         imagesRecyclerView = view.findViewById(R.id.recyclerview_upload_images);
         //find the bottom sheet layout
@@ -394,8 +484,6 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         jobLocationEditText = view.findViewById(R.id.edit_text_job_location);
         jobLocationEditText.setOnClickListener(this);
         mustHavesEditText = view.findViewById(R.id.edit_text_must_haves_input);
-        jobImage1 = view.findViewById(R.id.job_image1);
-        jobImage1.setOnClickListener(this);
         postButton = view.findViewById(R.id.continue_one);
         postButton.setOnClickListener(this);
         addMustHaveButton = view.findViewById(R.id.add_must_have_button);
@@ -405,12 +493,28 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         mustHaveOneTv = view.findViewById(R.id.must_have_one);
         mustHaveTwoTv = view.findViewById(R.id.must_have_two);
         mustHaveThreeTv = view.findViewById(R.id.must_have_three);
-        addImage = view.findViewById(R.id.addImage);
-        addImage.setOnClickListener(this);
-        //postButton.setVisibility(View.INVISIBLE);
-        //jobImage1 = (ImageView) view.findViewById(R.id.)
-        //radgrp = (RadioGroup) view.findViewById(R.id.radiogroup);
-        //hint = view.findViewById(R.id.hintId);
+        mustHavesArrayList = new ArrayList<>();
+        selectedImageList = new ArrayList<>();
+        uploadImageArrayList = new ArrayList<>();
+        createJobButton = view.findViewById(R.id.createJobButton);
+        createJobButton.setOnClickListener(this);
+    }
+
+    //slide the view from below itself to the current position
+    public void slideUp(LinearLayout view){
+        view.setVisibility(View.VISIBLE);
+        TranslateAnimation animation = new TranslateAnimation(0,0,view.getHeight(),0);
+        animation.setDuration(700);
+        animation.setFillAfter(true);
+        view.startAnimation(animation);
+    }
+
+    //slide the view from current position to below itself
+    public void slideDown(LinearLayout view){
+        TranslateAnimation animation = new TranslateAnimation(0,0,0,view.getHeight());
+        animation.setDuration(700);
+        animation.setFillAfter(true);
+        view.startAnimation(animation);
     }
 
     //set up the list adapter to handle the job must haves
@@ -472,14 +576,38 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     }
 
     //handles user selection of image
-    private void selectJobImage(String jobImage){
+    private void selectJobImage(){
         Intent intent = new Intent();
-        intent.putExtra("image_pos", jobImage);
+        //intent.putExtra("image_pos", jobImage);
         //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, SELECT_IMAGE_REQUEST_CODE);
+    }
 
+    // Add image in SelectedArrayList
+    public void selectImage(int position) {
+        // Check before add new item in ArrayList;
+        if (!selectedImageList.contains(uploadImageArrayList.get(position).getImage())) {
+            uploadImageArrayList.get(position).setSelected(true);
+            selectedImageList.add(0, uploadImageArrayList.get(position).getImage());
+            //selectedImageAdapter.notifyDataSetChanged();
+            uploadImagesAdapter.notifyDataSetChanged();
+        }
+    }
+
+    // Remove image from selectedImageList
+    public void unSelectImage(int position) {
+        for (int i = 0; i < selectedImageList.size(); i++) {
+            if (uploadImageArrayList.get(position).getImage() != null) {
+                if (selectedImageList.get(i).equals(uploadImageArrayList.get(position).getImage())) {
+                    uploadImageArrayList.get(position).setSelected(false);
+                    selectedImageList.remove(i);
+                    //selectedImageAdapter.notifyDataSetChanged();
+                    uploadImagesAdapter.notifyDataSetChanged();
+                }
+            }
+        }
     }
 
     // Add Camera and Folder in ArrayList
@@ -501,24 +629,87 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         // Continue only if the File was successfully created;
         File photoFile = createImageFile();
         if (photoFile != null) {
-            cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                Uri imageUri = FileProvider.getUriForFile(PostJobActivity.getInstance(),
+                        BuildConfig.APPLICATION_ID + ".provider",photoFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            }else{
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+            }
             startActivityForResult(cameraIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
     public File createImageFile() {
         // Create an image file name
-        String dateTime = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "IMG_" + dateTime + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        try {
-            imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
-        } catch (IOException e) {
-            e.printStackTrace();
+        String formattedDate = new SimpleDateFormat("yyyyMMdd",Locale.US).format(new Date());
+        String imageFileName = "FAIMG_" + formattedDate + "_";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            File mFile = null;
+
+            try {
+                //imageFile = createImageFile();
+                File storageDir = getActivity().getExternalFilesDir(DIRECTORY_PICTURES);
+                mFile = File.createTempFile(imageFileName,".jpg",storageDir);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            assert mFile != null;
+            mPhotoFile = mFile;
+            mCurrentPhotoPath = mFile.getAbsolutePath();
+            Log.e(TAG,"Abs Path = "+ mFile.getAbsolutePath());
+            //mCurrentPhotoPath = file.getAbsolutePath();
+            return mFile;
+        }else {
+            File storageDir = Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES);
+            try {
+                imageFile = File.createTempFile(imageFileName, ".jpg", storageDir);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            // Save a file: path for use with ACTION_VIEW intents
+            mCurrentPhotoPath = "file:" + imageFile.getAbsolutePath();
+            Log.e(TAG,"Path = "+mCurrentPhotoPath);
+            return imageFile;
         }
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + imageFile.getAbsolutePath();
-        return imageFile;
+    }
+
+    //method to create the job
+    private void createNewJob(){
+        jobTitle = jobTitleEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(jobTitle)) {
+            jobTitleEditText.setError("Job Title is required");
+            //return false;
+        }
+
+        jobDesc = jobDescEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(jobDesc)) {
+            jobDescEditText.setError("Job description is required");
+            //return false;
+        }
+
+        if (!jobTitle.isEmpty() && !jobDesc.isEmpty()){
+            Log.e(TAG, "Job details: userid = " + userId+ ", job title = "+ jobTitle+
+                    ", job desc = " +jobDesc+", categoryid = " +categoryId);
+            mCreateJobCallback.createJobCallback(userId, jobTitle, jobDesc, categoryId);
+            //observes for a new job id received
+            postJobActivityViewModel.getNewJobId().observe(PostJobActivity.getInstance(), jobId ->{
+                mJobId = jobId;
+
+                if (mJobId > 0){
+                    slideUp(slideUpView);
+                    createJobButton.setVisibility(View.GONE);
+                }else{
+                    slideDown(slideUpView);
+                    createJobButton.setVisibility(View.VISIBLE);
+                }
+
+                Log.e(TAG,"New Job id "+mJobId);
+            });
+        }else{
+            Toast.makeText(getActivity(), "Please provide a job title " +
+                    "and description to continue.", Toast.LENGTH_LONG).show();
+        }
     }
 
     //method to get what user has filled in
@@ -538,7 +729,8 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         String jobLocation = jobLocationEditText.getText().toString().trim();
 
         //job title and description are mandatory
-        //after making making sure they are there we can check for the rest
+        //after making making sure they are there we create the job using this data, return the job id,
+        //then just keep updating with more details as the user adds
         if (!jobTitle.isEmpty() && !jobDesc.isEmpty()){
             //if location is specified
             //if location switch is not on then location should be specified
@@ -556,17 +748,17 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                         mustHaveThree);
                 //if image has been added
                 //Map is used to multipart the file using okhttp3.RequestBody
-                if (mediaPath != null) {
-                    file = new File(mediaPath);
-                    if (file.exists()) {//image is added
+                if (imageFilesList != null) {
+                    //file = new File(mediaPath);
+                    //if (file.exists()) {//image is added
 
                             //send data to parent activity to be posted to the server
                             mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                                    mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
+                                    mustHaveThree, isJobRemote, imageFilesList, categoryId, PostJobActivity.getInstance());
                         Log.e(TAG, "2nd musthaveone = "
                                 +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
                                 mustHaveThree);
-                    }
+                    //}
                 }
                 //image is not added but location is
             }/*else if (!locationSwitchChecked && mediaPath == null){
@@ -575,18 +767,18 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                             mustHaveThree, isJobRemote, null, categoryId, PostJobActivity.getInstance());
             }*/
             //image selected but location not
-            if (mediaPath != null && locationSwitchChecked){
-                file = new File(mediaPath);
-                if (file.exists()) {//image is added
+            if (imageFilesList != null && locationSwitchChecked){
+                //file = new File(mediaPath);
+                //if (file.exists()) {//image is added
 
                     //send data to parent activity to be posted to the server
                     mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, null, mustHaveOne, mustHaveTwo,
-                            mustHaveThree, isJobRemote, file, categoryId, PostJobActivity.getInstance());
+                            mustHaveThree, isJobRemote, imageFilesList, categoryId, PostJobActivity.getInstance());
                     Log.e(TAG, "3rd musthaveone = "
                             +mustHaveOne+ ", musthavetwo = "+mustHaveTwo+ ", musthavethree = "+
                             mustHaveThree);
-                }
-            }else if (mediaPath == null && locationSwitchChecked){
+                //}
+            }else if (imageFilesList == null && locationSwitchChecked){
 
                     //send data to parent activity to be posted to the server
                     mCallback.jobPostDataCallback(userId, jobTitle, jobDesc, null, mustHaveOne, mustHaveTwo,
@@ -596,7 +788,79 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                         mustHaveThree);
             }
 
+        }else{
+            Toast.makeText(PostJobActivity.getInstance(),
+                    "Job title and description are required", Toast.LENGTH_LONG).show();
         }
+    }
+
+    //getting the file name
+    private void getFileName(Uri uri){
+        Cursor returnCursor = PostJobActivity.getInstance().getContentResolver().query(uri,null,
+                null, null, null);
+        assert returnCursor != null;
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        returnCursor.moveToFirst();
+        String name = returnCursor.getString(nameIndex);
+        returnCursor.close();
+        createTempFile(name, uri);
+        Log.e(TAG, "Name of file = "+name);
+        //return name;
+    }
+
+    //creating a temp file
+    private File createTempFile(String name,Uri uri){
+        File file = null;
+        try {
+            File storageDir = PostJobActivity.getInstance().getExternalFilesDir(DIRECTORY_PICTURES);
+            file = File.createTempFile("sample_dem", ".jpg", storageDir);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        saveContentToFile(uri, file);
+        return file;
+    }
+
+    //save the temp file using Okio
+    private void saveContentToFile(Uri uri, File file){
+        try {
+            InputStream stream = PostJobActivity.getInstance().getContentResolver().openInputStream(uri);
+            BufferedSource source = Okio.buffer(Okio.source(stream));
+            BufferedSink sink = Okio.buffer(Okio.sink(file));
+            sink.writeAll(source);
+            sink.close();
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        //imageFilesList = new ArrayList<>();
+        imageFilesList.add(file);
+        Log.e(TAG, "Uri added = "+uri);
+        Log.e(TAG, "Image file added = "+file);
+        //return file;
+    }
+
+    private void getImageFile(Uri uri){
+
+        File file = null;
+        String[] project = {MediaStore.Images.Media.DATA};
+        Cursor cursor = PostJobActivity.getInstance().getContentResolver().query(uri,null,
+                null, null, null);
+        if (cursor != null) {
+            try {
+                cursor.moveToFirst();
+                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+                cursor.moveToFirst();
+                imageFilesList = new ArrayList<>();
+                file = new File(cursor.getString(column_index));
+                Log.e(TAG, "Image file added = "+file);
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.e(TAG,"Error "+e.getMessage());
+            }
+        }
+        imageFilesList.add(file);
     }
 
     //method to display appropriate instructions for posting a job based
@@ -612,6 +876,17 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     public void onClick(View view) {
 
         switch (view.getId()){
+            case R.id.createJobButton:
+                //check for internet connectivity
+                if (isNetworkAvailable()) {
+                    //send the data to PostJobActivity to be posted to the server
+                    createNewJob();
+                }else{
+                    Toast.makeText(getActivity(),"Try checking your internet connection",
+                            Toast.LENGTH_LONG).show();
+                }
+                break;
+
             case R.id.continue_one:
                 //check for internet connectivity
                 if (isNetworkAvailable()) {
@@ -620,18 +895,6 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                 }else{
                     Toast.makeText(getActivity(),"Try checking your internet connection",
                             Toast.LENGTH_LONG).show();
-                }
-                break;
-
-            case R.id.job_image1:
-                //handle click on job image 1 to select the image
-                //checking if we have been given the permission
-                boolean result = checkAndRequestPermissions();
-                if (result) {
-                    selectJobImage("job_image1");
-                    currentJobImage = "job_image1";
-                    postButton.setEnabled(true);
-                    //getJobDetails("job_image1");
                 }
                 break;
 
@@ -699,14 +962,6 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     Log.e("Exception: %s", e.getMessage());
                 }
                 break;
-
-            case R.id.addImage:
-                boolean result3 = checkAndRequestPermissions();
-                if (result3) {
-                    selectJobImage("job_image1");
-                    postButton.setEnabled(true);
-                }
-                break;
         }
 
     }
@@ -722,10 +977,12 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     for (int i = 0; i < mClipData.getItemCount(); i++) {
                         ClipData.Item item = mClipData.getItemAt(i);
                         Uri uri = item.getUri();
+                        Log.e(TAG, "URI when getClipData not null: " + uri);
                         getImageFilePath(uri);
                     }
                 } else if (data.getData() != null) {
                     Uri uri = data.getData();
+                    Log.e(TAG, "URI when getData not null: " + uri);
                     getImageFilePath(uri);
                 }
             }else if (requestCode == REQUEST_IMAGE_CAPTURE) {
@@ -744,65 +1001,9 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         } else if (resultCode == RESULT_CANCELED){
             //the user cancelled the operation
         }
-        /*if (requestCode == SELECT_IMAGE_REQUEST_CODE){
-            //check if the request was successful
-            if (resultCode == RESULT_OK){
-                //Uri path = data.getData();
-                if (data.getClipData() != null) {
-                    ClipData mClipData = data.getClipData();
-                    for (int i = 0; i < mClipData.getItemCount(); i++) {
-                        ClipData.Item item = mClipData.getItemAt(i);
-                        Uri uri = item.getUri();
-                        getImageFilePath(uri);
-                    }
-                } else if (data.getData() != null) {
-                    Uri uri = data.getData();
-                    getImageFilePath(uri);
-                }
-
-                *//*try {
-                    Uri path = data.getData();
-                    String[] filePathcolumn = {MediaStore.Images.Media.DATA};
-                    //MediaStore.Images.Media.DATA
-                    //MediaStore.Images.ImageColumns.DATA
-
-                    Cursor cursor = getActivity().getContentResolver().query(path, filePathcolumn,
-                            null, null, null);
-                    if (cursor == null) {
-                        mediaPath = path.getPath();
-                    }else {
-                        cursor.moveToFirst();
-                        absolutePathOfImage = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
-                        int columnIndex = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
-                        mediaPath = cursor.getString(columnIndex);
-                    }
-
-                    UploadImage imagePath = new UploadImage();
-                    imagePath.setImage(absolutePathOfImage);
-                    imagePath.setImagePath(path);
-                    //Log.e(TAG, "mediapath is "+mediaPath);
-                    Log.e(TAG, "image path object "+imagePath.getImagePath());
-                    uploadImageArrayList.add(imagePath);
-
-                    //uploadImagesAdapter.refreshImageList(uploadImageArrayList);
-                    uploadImagesAdapter.notifyDataSetChanged();
-
-                    //get the image from the gallery
-                    bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), path);
-                    Log.e(TAG, "Mediapath is "+mediaPath);
-                    //jobImage1.setImageBitmap(bitmap);
-
-                    cursor.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }*//*
-
-            }
-        }*/
-
     }
 
-    //check if we have permission to write external storage
+    //check if we have permission to camera and write external storage
     private boolean checkAndRequestPermissions() {
 
         //checking for marshmallow devices and above in order to execute runtime
@@ -813,6 +1014,8 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     Manifest.permission.WRITE_EXTERNAL_STORAGE);
             int permissionReadExternalStorage = ContextCompat.checkSelfPermission(getActivity(),
                     Manifest.permission.READ_EXTERNAL_STORAGE);
+            int permissionCamera = ContextCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.CAMERA);
 
             //declare a list to hold the permissions we want to ask the user for
             List<String> listPermissionsNeeded = new ArrayList<>();
@@ -821,6 +1024,9 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             }
             if (permissionReadExternalStorage != PackageManager.PERMISSION_GRANTED){
                 listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+            if (permissionCamera != PackageManager.PERMISSION_GRANTED){
+                listPermissionsNeeded.add(Manifest.permission.CAMERA);
             }
             //if the permissions list is not empty, then request for the permission
             if (!listPermissionsNeeded.isEmpty()){
@@ -845,25 +1051,29 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             int currentAPIVersion = Build.VERSION.SDK_INT;
             Map<String, Integer> perms = new HashMap<>();
             if (currentAPIVersion >= Build.VERSION_CODES.M) {
-                //initialize the map with both permissions
+                //initialize the map with the permissions
                 perms.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
                 perms.put(Manifest.permission.READ_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                perms.put(Manifest.permission.CAMERA, PackageManager.PERMISSION_GRANTED);
             }
             if (grantResults.length > 0) {
                 for (int i = 0; i < permissions.length; i++)
                     perms.put(permissions[i], grantResults[i]);
-                //check for both permissions
+                //check for the permissions
                 if (perms.get(Manifest.permission.READ_EXTERNAL_STORAGE) ==
                         PackageManager.PERMISSION_GRANTED && perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) ==
+                        PackageManager.PERMISSION_GRANTED && perms.get(Manifest.permission.CAMERA) ==
                         PackageManager.PERMISSION_GRANTED) {
-                    Log.d(TAG, "Write and Read external storage permissions granted");
-                    selectJobImage(currentJobImage);
+                    Log.d(TAG, "Write, Read external storage and Camera permissions granted");
+                    selectJobImage();
+                    takePicture();
                 } else {
                     Log.d(TAG, "Some permissions are not granted, ask again");
                     //permission is denied (this is the first time, when "never ask again" is not checked)
                     //so ask again explaining the use of the permissions
                     if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            || ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                            || ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                            || ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)){
                         new AlertDialog.Builder(getActivity())
                                 .setTitle("Permission Request")
                                 .setMessage("Permission is required for the app to write and read from storage")
@@ -871,8 +1081,9 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         ActivityCompat.requestPermissions(getActivity(),
-                                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                                WRITE_EXTERNAL_RESULT);
+                                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                        Manifest.permission.CAMERA},
+                                                REQUEST_ID_MULTIPLE_PERMISSIONS);
                                     }
                                 })
                                 .show();
@@ -880,7 +1091,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     //permission is denied and never ask again is checked
                     //shouldShowRequestPermissionRationale will return false
                     else {
-                        Toast.makeText(getActivity(), "Go to settings and enable permissions",
+                        Toast.makeText(getActivity(), "Please go to settings and enable required permissions",
                                 Toast.LENGTH_LONG).show();
                     }
 
@@ -961,9 +1172,26 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         }
     }
 
+    public String getRealPathFromURI(Uri uri){
+            String[] proj = {MediaStore.Images.Media.DATA};
+            CursorLoader loader = new CursorLoader(PostJobActivity.getInstance(),uri,proj,
+                    null,null,null);
+
+        Cursor cursor = loader.loadInBackground();
+        assert cursor != null;
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        return result;
+    }
+
     // Get image file path
     public void getImageFilePath(Uri uri) {
-        Cursor cursor = getActivity().getContentResolver().query(uri, projection, null,    null, null);
+        imageModel = new UploadImage();
+        imageModel.setImagePath(uri);
+        getFileName(uri);
+        Cursor cursor = PostJobActivity.getInstance().getContentResolver()
+                .query(uri, projection, null,    null, null);
         if (cursor != null) {
             while  (cursor.moveToNext()) {
                 String absolutePathOfImage = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DATA));
@@ -978,7 +1206,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
     public void checkImage(String filePath) {
         // Check before adding a new image to ArrayList to avoid duplicate images
-        //if (!selectedImageList.contains(filePath)) {
+        if (!selectedImageList.contains(filePath)) {
             for (int pos = 0; pos < uploadImageArrayList.size(); pos++) {
                 if (uploadImageArrayList.get(pos).getImage() != null) {
                     if (uploadImageArrayList.get(pos).getImage().equalsIgnoreCase(filePath)) {
@@ -986,20 +1214,35 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                     }
                 }
             }
-            addImage(filePath);
-        //}
+            //addImage(filePath);
+            addImageFromGallery(filePath);
+        }
     }
 
     // add image in selectedImageList and imageList
     public void addImage(String filePath) {
-        UploadImage imageModel = new UploadImage();
+        imageModel = new UploadImage();
         imageModel.setImage(filePath);
-        imageModel.setSelected(true);
-        uploadImageArrayList.add(2,imageModel);
+        imageModel.setSelected(false);
+        uploadImageArrayList.add(imageModel);
+        imageFilesList.add(mPhotoFile);
         Log.e(TAG, "filepath object "+filePath);
-        //selectedImageList.add(0, filePath);
-        uploadImagesAdapter.notifyDataSetChanged();
-        //imageAdapter.notifyDataSetChanged();
+        uploadImagesAdapter.refreshImageList(uploadImageArrayList);
+    }
+
+    private void addImageFromGallery(String filePath){
+        imagePos = uploadImageArrayList.size();
+        Log.e(TAG, "Image list size "+uploadImageArrayList.size());
+        //uploadImagesAdapter.addNewImageToList(filePath);
+
+        //imageModel = new UploadImage();
+        imageModel.setImage(filePath);
+        imageModel.setSelected(false);
+        uploadImageArrayList.add(imageModel);
+        //get the actual files for uploading
+        //using the uri
+        //getFileName(uploadImageArrayList);
+        uploadImagesAdapter.refreshImageList(uploadImageArrayList);
     }
 
     //method to check for internet connection

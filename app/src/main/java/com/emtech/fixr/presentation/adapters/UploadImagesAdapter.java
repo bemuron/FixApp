@@ -3,6 +3,7 @@ package com.emtech.fixr.presentation.adapters;
 import android.content.Context;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
   private ArrayList<UploadImage> uploadImages;
   private LayoutInflater inflater;
   Context context;
-  private static OnItemClickListener onItemClickListener;
+  private OnItemClickListener onItemClickListener;
   private final static int IMAGE_LIST = 0;
   private final static int IMAGE_PICKER = 1;
   private UploadImagesAdapterListener listener;
@@ -55,14 +56,8 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
       //title = view.findViewById(R.id.text_view_must_have_desc);
       //iconDel = view.findViewById(R.id.icon_delete);
       uploadImg = view.findViewById(R.id.uploadJobImage);
-      imgContainer = view.findViewById(R.id.uploadImageContainer);
+
       //view.setOnLongClickListener(this);
-      view.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          onItemClickListener.onItemClick(getAdapterPosition(), v);
-        }
-      });
     }
   }
 
@@ -77,9 +72,6 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
   @Override
   public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    //View itemView = LayoutInflater.from(parent.getContext())
-      //      .inflate(R.layout.upload_image_list_item, parent, false);
-
     if (viewType == IMAGE_LIST) {;
     //layout to show the images selected
       View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.upload_image_list_item, parent, false);
@@ -89,8 +81,6 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
       View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.upload_image_picker, parent, false);
       return new ImagePickerViewHolder(view);
     }
-
-    //return new ImageUploadViewHolder(itemView);
   }
 
   @Override
@@ -100,48 +90,67 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
   @Override
   public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
-    if (holder.getItemViewType() == IMAGE_LIST) {;
-      final ImageListViewHolder viewHolder = (ImageListViewHolder) holder;
+    UploadImage uploadImage = uploadImages.get(position);
+
+    Log.e(TAG,"Image added is "+uploadImage.getImage());
+
+    if (holder.getItemViewType() == IMAGE_LIST) {
       Glide.with(context)
-              .load(uploadImages.get(position).getImage())
+              .load(uploadImage.getImage())
               //.placeholder(R.color.codeGray)
               //.centerCrop()
               .transition(DrawableTransitionOptions.withCrossFade(500))
-              .into(viewHolder.image);
+              .into(((ImageListViewHolder) holder).image);
 
-      if (uploadImages.get(position).isSelected()) {;
-        viewHolder.checkBox.setChecked(true);
-      } else {;
-        viewHolder.checkBox.setChecked(false);
+      if (uploadImage.isSelected()) {
+        ((ImageListViewHolder) holder).checkBox.setChecked(true);
+      } else {
+        ((ImageListViewHolder) holder).checkBox.setChecked(false);
       }
-    } else {;
+    } else {
       ImagePickerViewHolder viewHolder = (ImagePickerViewHolder) holder;
-      viewHolder.image.setImageResource(uploadImages.get(position).getResImg());
-      viewHolder.title.setText(uploadImages.get(position).getTitle());
+      viewHolder.image.setImageResource(uploadImage.getResImg());
+      viewHolder.title.setText(uploadImage.getTitle());
     }
 
-    // handle delete icon
-    //applyDeleteItem(holder, position);
-
     // apply click events
-    applyClickEvents(holder, position);
+    applyClickEvents(holder, position, uploadImage.getImage());
 
   }
 
   //handling different click events
-  private void applyClickEvents(RecyclerView.ViewHolder holder, final int position) {
+  private void applyClickEvents(RecyclerView.ViewHolder holder, final int position, String imagePath) {
+
+    if (holder.getItemViewType() == IMAGE_LIST) {
+      ((ImageListViewHolder) holder).imgContainer.setOnLongClickListener(new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+          listener.onImageLongClicked(position);
+          view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+          return true;
+        }
+      });
+
+      ((ImageListViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          listener.onImageClicked(position, imagePath);
+        }
+      });
+
+    }else{
+      ((ImagePickerViewHolder) holder).itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          listener.onImageClicked(position, imagePath);
+        }
+      });
+    }
 
     /*holder.iconDel.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         listener.onDeleteImageClicked(position);
-      }
-    });*/
-
-    /*holder.uploadImg.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View view) {
-        listener.onImageClicked(position);
       }
     });*/
 /*
@@ -157,10 +166,19 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
   }
 
   public void refreshImageList(final ArrayList<UploadImage> newImage){
-    if (uploadImages == null) {
-      uploadImages = newImage;
+    //if (uploadImages == null) {
+      this.uploadImages = newImage;
       notifyDataSetChanged();
-    }
+      Log.e(TAG,"Size of list is "+uploadImages.size());
+    //}
+  }
+
+  public void addNewImageToList(String filePath){
+    UploadImage imageModel = new UploadImage();
+    imageModel.setImage(filePath);
+    imageModel.setSelected(false);
+    uploadImages.add(imageModel);
+    notifyDataSetChanged();
   }
 
 
@@ -181,17 +199,27 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
   public class ImageListViewHolder extends RecyclerView.ViewHolder {
     ImageView image;
     CheckBox checkBox;
+    public RelativeLayout imgContainer;
 
     public ImageListViewHolder(View itemView) {
       super(itemView);
-      image = itemView.findViewById(R.id.image);
-      //checkBox = itemView.findViewById(R.id.circle);
-      itemView.setOnClickListener(new View.OnClickListener() {
+      image = itemView.findViewById(R.id.uploadJobImage);
+      checkBox = itemView.findViewById(R.id.circle);
+      imgContainer = itemView.findViewById(R.id.uploadImageContainer);
+      /*imgContainer.setOnLongClickListener(new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+          listener.onImageLongClicked(getAdapterPosition());
+          view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+          return true;
+        }
+      });*/
+      /*itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           onItemClickListener.onItemClick(getAdapterPosition(), v);
         }
-      });
+      });*/
     }
   }
 
@@ -203,12 +231,12 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
       super(itemView);
       image = itemView.findViewById(R.id.image);
       title = itemView.findViewById(R.id.title);
-      itemView.setOnClickListener(new View.OnClickListener() {
+      /*itemView.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
           onItemClickListener.onItemClick(getAdapterPosition(), v);
         }
-      });
+      });*/
     }
   }
 
@@ -256,14 +284,14 @@ public class UploadImagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     void onDeleteImageClicked(int position);
 
-    void onImageClicked(int position);
+    void onImageClicked(int position, String imagePath);
 
-    //void onItemClick(int position, View v);
+    void onImageLongClicked(int position);
 
   }
 
   public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-    UploadImagesAdapter.onItemClickListener = onItemClickListener;
+    this.onItemClickListener = onItemClickListener;
   }
 
   public interface OnItemClickListener {

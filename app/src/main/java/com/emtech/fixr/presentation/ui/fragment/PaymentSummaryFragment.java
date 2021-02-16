@@ -172,13 +172,13 @@ public class PaymentSummaryFragment extends Fragment {
     //this method calculates the amount to be paid to the fixer by deducting
     //the service fee
     private void calculatePayment(int job_cost){
-        float serviceFesPercentage = 0.15f;
-        Log.e(TAG, "service fee = "+ serviceFesPercentage);
+        float serviceFeePercentage = 0.15f;
+        Log.e(TAG, "service fee = "+ serviceFeePercentage);
         Log.e(TAG, "job cost = "+ job_cost);
 
         //calculate the service fee
         //this is what we get to keep
-        serviceFee = (int) (serviceFesPercentage * job_cost);
+        serviceFee = (int) (serviceFeePercentage * job_cost);
 
         //calculate the final cost
         //this what the fixer receives

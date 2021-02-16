@@ -12,7 +12,9 @@ import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.models.UserJobs;
+import com.emtech.fixr.presentation.ui.activity.OfferAcceptedDetailsForPosterActivity;
 import com.emtech.fixr.presentation.ui.activity.OfferReceivedDetailsForPosterActivity;
+import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +44,7 @@ public class GetMyJobs {
     private final MutableLiveData<List<Offer>> mFixerOffersAcceptedList;
     private final MutableLiveData<List<Offer>> mPosterOffersReceivedList;
     private final MutableLiveData<List<Offer>> mPosterOffersAcceptedList;
+    private final MutableLiveData<Integer> mJobStatus;
 
     // For Singleton instantiation
     private static final Object LOCK = new Object();
@@ -65,6 +68,7 @@ public class GetMyJobs {
         mOfferDetails = new MutableLiveData<>();
         mPosterOffersReceivedList = new MutableLiveData<>();
         mPosterOffersAcceptedList = new MutableLiveData<>();
+        mJobStatus = new MutableLiveData<>();
     }
 
     /**
@@ -129,6 +133,11 @@ public class GetMyJobs {
     //returned offers accepted by poster
     public LiveData<List<Offer>> getOffersAcceptedForPoster() {
         return mPosterOffersAcceptedList;
+    }
+
+    //return the job status
+    public LiveData<Integer> getJobStatus() {
+        return mJobStatus;
     }
 
     /**
@@ -306,54 +315,59 @@ public class GetMyJobs {
             @Override
             public void onResponse(Call<UserJobs> call, Response<UserJobs> response) {
 
-                //if response body is not null, we have some data
-                //count what we have in the response
-                if (response.body() != null) {
-                    Log.d(LOG_TAG, "JSON not null");
+                try {
+                    //if response body is not null, we have some data
+                    //count what we have in the response
+                    if (response.body() != null) {
+                        Log.d(LOG_TAG, "JSON not null");
 
-                    //clear the previous search list if it has content
-                    if (jobList != null) {
-                        jobList.clear();
+                        //clear the previous list if it has content
+                        if (jobList != null) {
+                            jobList.clear();
+                        }
+
+                        for (int i = 0; i < response.body().getJobsListByStatus().size(); i++) {
+                            job = new Job();
+                            job.setCategory_id(response.body().getJobsListByStatus().get(i).getCategory_id());
+                            job.setJob_id(response.body().getJobsListByStatus().get(i).getJob_id());
+                            job.setPosted_by(response.body().getJobsListByStatus().get(i).getPosted_by());
+                            job.setName(response.body().getJobsListByStatus().get(i).getName());
+                            job.setDescription(response.body().getJobsListByStatus().get(i).getDescription());
+                            job.setMust_have_one(response.body().getJobsListByStatus().get(i).getMust_have_one());
+                            job.setMust_have_two(response.body().getJobsListByStatus().get(i).getMust_have_two());
+                            job.setMust_have_three(response.body().getJobsListByStatus().get(i).getMust_have_three());
+                            job.setIs_job_remote(response.body().getJobsListByStatus().get(i).getIs_job_remote());
+                            job.setLocation(response.body().getJobsListByStatus().get(i).getLocation());
+                            job.setImage1(response.body().getJobsListByStatus().get(i).getImage1());
+                            job.setJob_date(response.body().getJobsListByStatus().get(i).getJob_date());
+                            job.setJob_time(response.body().getJobsListByStatus().get(i).getJob_time());
+                            job.setTotal_budget(response.body().getJobsListByStatus().get(i).getTotal_budget());
+                            job.setPrice_per_hr(response.body().getJobsListByStatus().get(i).getPrice_per_hr());
+                            job.setTotal_hrs(response.body().getJobsListByStatus().get(i).getTotal_hrs());
+                            job.setEst_tot_budget(response.body().getJobsListByStatus().get(i).getEst_tot_budget());
+                            job.setJob_status(response.body().getJobsListByStatus().get(i).getJob_status());
+                            job.setCompleted_by(response.body().getJobsListByStatus().get(i).getCompleted_by());
+                            job.setPosted_on(response.body().getJobsListByStatus().get(i).getPosted_on());
+                            job.setCompleted_on(response.body().getJobsListByStatus().get(i).getCompleted_on());
+
+                            jobList.add(job);
+                        }
+
+                        //add the profile pic of the user who posted the job
+                        job.setProfile_pic(response.body().getProfilePic());
+
+                        // When you are off of the main thread and want to update LiveData, use postValue.
+                        // It posts the update to the main thread.
+                        mDownloadedJobsByStatus.postValue(jobList);
+
+                        Log.d(LOG_TAG, "Size of list: " + response.body().getJobsListByStatus().size());
+                        // If the code reaches this point, we have successfully performed our sync
+                        Log.d(LOG_TAG, "Successfully got all jobs associated " +
+                                "to this user by status = " + status);
                     }
-
-                    for (int i = 0; i < response.body().getJobsListByStatus().size(); i++) {
-                        job = new Job();
-                        job.setCategory_id(response.body().getJobsListByStatus().get(i).getCategory_id());
-                        job.setJob_id(response.body().getJobsListByStatus().get(i).getJob_id());
-                        job.setPosted_by(response.body().getJobsListByStatus().get(i).getPosted_by());
-                        job.setName(response.body().getJobsListByStatus().get(i).getName());
-                        job.setDescription(response.body().getJobsListByStatus().get(i).getDescription());
-                        job.setMust_have_one(response.body().getJobsListByStatus().get(i).getMust_have_one());
-                        job.setMust_have_two(response.body().getJobsListByStatus().get(i).getMust_have_two());
-                        job.setMust_have_three(response.body().getJobsListByStatus().get(i).getMust_have_three());
-                        job.setIs_job_remote(response.body().getJobsListByStatus().get(i).getIs_job_remote());
-                        job.setLocation(response.body().getJobsListByStatus().get(i).getLocation());
-                        job.setImage1(response.body().getJobsListByStatus().get(i).getImage1());
-                        job.setJob_date(response.body().getJobsListByStatus().get(i).getJob_date());
-                        job.setJob_time(response.body().getJobsListByStatus().get(i).getJob_time());
-                        job.setTotal_budget(response.body().getJobsListByStatus().get(i).getTotal_budget());
-                        job.setPrice_per_hr(response.body().getJobsListByStatus().get(i).getPrice_per_hr());
-                        job.setTotal_hrs(response.body().getJobsListByStatus().get(i).getTotal_hrs());
-                        job.setEst_tot_budget(response.body().getJobsListByStatus().get(i).getEst_tot_budget());
-                        job.setJob_status(response.body().getJobsListByStatus().get(i).getJob_status());
-                        job.setCompleted_by(response.body().getJobsListByStatus().get(i).getCompleted_by());
-                        job.setPosted_on(response.body().getJobsListByStatus().get(i).getPosted_on());
-                        job.setCompleted_on(response.body().getJobsListByStatus().get(i).getCompleted_on());
-
-                        jobList.add(job);
-                    }
-
-                    //add the profile pic of the user who posted the job
-                    job.setProfile_pic(response.body().getProfilePic());
-
-                    // When you are off of the main thread and want to update LiveData, use postValue.
-                    // It posts the update to the main thread.
-                    mDownloadedJobsByStatus.postValue(jobList);
-
-                    Log.d(LOG_TAG, "Size of list: "+response.body().getJobsListByStatus().size());
-                    // If the code reaches this point, we have successfully performed our sync
-                    Log.d(LOG_TAG, "Successfully got all jobs associated " +
-                            "to this user by status = "+status);
+                }catch (Exception e){
+                    Log.e(LOG_TAG,"Could not get jobs for status " +status);
+                    e.printStackTrace();
                 }
             }
 
@@ -982,6 +996,49 @@ public class GetMyJobs {
                     offerAcceptedDetailsForFixerActivity.updateUiAfterFixerRejectOffer(false,
                             t.getMessage());
                 }
+            }
+        });
+
+    }
+
+    //retrofit call to create a new job at the server
+    public void getJobStatusForPoster(int jobId, OfferAcceptedDetailsForPosterActivity activityInstance){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.getStatusForPoster(jobId);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try{
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+
+                        int job_status = response.body().getJob().getJob_status();
+
+                        mJobStatus.postValue(job_status);
+
+                    }else{
+                        Log.e(LOG_TAG, response.body().getMessage());
+                        Log.e(LOG_TAG, "Error: could not get job status for poster");
+                    }
+                }catch (Exception e){
+                    Log.d(LOG_TAG, "Error: could not get job status for poster");
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
             }
         });
 

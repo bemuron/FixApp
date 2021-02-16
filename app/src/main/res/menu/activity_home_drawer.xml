@@ -32,8 +32,7 @@
                 android:title="@string/offers_made" />
             <item
                 android:id="@+id/browse_jobs"
-                android:icon="@android:drawable/ic_menu_search"
-                android:iconTint="@color/colorPrimaryDark"
+                android:icon="@mipmap/ic_search"
                 android:title="@string/browse_jobs"/>
         </menu>
     </item>
@@ -50,7 +49,7 @@
                 android:title="@string/payment_history" />
             <item
                 android:id="@+id/my_profile"
-                android:icon="@drawable/ic_menu_manage"
+                android:icon="@mipmap/ic_account"
                 android:title="@string/profile" />
             <item
                 android:id="@+id/settings"
@@ -58,7 +57,7 @@
                 android:title="@string/action_settings" />
             <item
                 android:id="@+id/privacy_policy"
-                android:icon="@drawable/ic_menu_manage"
+                android:icon="@mipmap/ic_security"
                 android:title="@string/nav_privacy_policy" />
         </menu>
     </item>

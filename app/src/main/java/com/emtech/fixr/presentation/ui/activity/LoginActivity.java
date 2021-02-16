@@ -336,9 +336,9 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
             }
 
             //start home activity
-            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            startActivity(intent);
-            LoginActivity.this.finish();
+            //Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            //startActivity(intent);
+            //LoginActivity.this.finish();
         }else{
             hideDialog();
             Log.d(TAG, "login not successful");
@@ -413,6 +413,7 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
             if (apiAvailability.isUserResolvableError(resultCode)) {
                 apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
                         .show();
+                Log.e(TAG, "Google play services check result code = "+resultCode);
             } else {
                 Log.i(TAG, "This device is not supported. Google Play Services not installed!");
                 Toast.makeText(getApplicationContext(), "This device is not supported. Google Play Services not installed!", Toast.LENGTH_LONG).show();

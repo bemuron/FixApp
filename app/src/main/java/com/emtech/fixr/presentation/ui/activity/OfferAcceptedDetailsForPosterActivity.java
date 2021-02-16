@@ -33,6 +33,8 @@ import com.emtech.fixr.presentation.ui.fragment.MakeOfferDialogFragment;
 import com.emtech.fixr.presentation.ui.fragment.NoticeDialogFragment;
 import com.emtech.fixr.presentation.viewmodels.MyJobsActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.MyJobsViewModelFactory;
+import com.emtech.fixr.presentation.viewmodels.PaymentActivityViewModel;
+import com.emtech.fixr.presentation.viewmodels.PaymentViewModelFactory;
 import com.emtech.fixr.presentation.viewmodels.PostJobActivityViewModel;
 import com.emtech.fixr.presentation.viewmodels.PostJobViewModelFactory;
 import com.emtech.fixr.utilities.InjectorUtils;
@@ -56,6 +58,7 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
     private Button rejectOfferButton, callFixerButton, acceptOfferButton;
     private MyJobsActivityViewModel mViewModel;
     private PostJobActivityViewModel postJobActivityViewModel;
+    private PaymentActivityViewModel paymentActivityViewModel;
     public static OfferAcceptedDetailsForPosterActivity offerAcceptedDetailsForPosterActivity;
     private Offer offer, offerDet;
     private ProgressBar pBar;
@@ -85,6 +88,10 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
         PostJobViewModelFactory factory1 = InjectorUtils.providePostJobActivityViewModelFactory(this.getApplicationContext());
         postJobActivityViewModel = new ViewModelProvider
                 (this, factory1).get(PostJobActivityViewModel.class);
+
+        PaymentViewModelFactory factory2 = InjectorUtils.providePaymentActivityViewModelFactory(this.getApplicationContext());
+        paymentActivityViewModel = new ViewModelProvider
+                (this, factory2).get(PaymentActivityViewModel.class);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this.getApplicationContext());
         mViewModel = new ViewModelProvider
@@ -121,6 +128,8 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
                 offer.setJob_date(offerDet.getJob_date());
 
                 Log.e(LOG_TAG, "Offer details name is " + offerDet.getName());
+                //get the status of the job and launch the respective activity based on it
+                getJobStatus();
                 displayDetails();
             }else {
                 hideBar();
@@ -246,10 +255,37 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
         lastEditDateTv.setText(lastEditedOn);
     }
 
-            /**
-             * TODO
-             *create a menu list which has items like view job details, reject offer, call
-             */
+    //check the status of the job, if 5(in progress), go to job in progress activity
+    //if 4(complete), check if payment has been made, if not, go to payment activity,
+            //after payment activity go to rating activity
+    private void getJobStatus(){
+        //observes for the job status received
+        paymentActivityViewModel.getJobStatusForPoster(offer.getJob_id(),
+                OfferAcceptedDetailsForPosterActivity.getInstance()).observe(this, jobStatus ->{
+            Log.e(LOG_TAG,"Job status "+jobStatus);
+            switch (jobStatus){
+                case 5:
+                    Intent intent = new Intent(this, JobInProgressActivity.class);
+                    intent.putExtra("jobID", offer.getJob_id());
+                    intent.putExtra("jobName", jobName);
+                    startActivity(intent);
+                    break;
+                case 4:
+                    Intent intent2 = new Intent(this, PaymentActivity.class);
+                    intent2.putExtra("job_id", offer.getJob_id());
+                    intent2.putExtra("poster_id", offer.getPosted_by());
+                    intent2.putExtra("fixer_id", offer.getOffered_by());
+                    intent2.putExtra("job_cost", offer.getOffer_amount());
+                    intent2.putExtra("jobName", jobName);
+                    startActivity(intent2);
+            }
+        });
+    }
+
+    /**
+    * TODO
+    *create a menu list which has items like view job details, reject offer, call
+    */
 
     @Override
     public void onClick(View v) {

@@ -22,10 +22,12 @@ import com.emtech.fixr.data.network.api.APIService;
 import com.emtech.fixr.data.network.api.LocalRetrofitApi;
 import com.emtech.fixr.models.Offer;
 import com.emtech.fixr.models.User;
+import com.emtech.fixr.presentation.ui.activity.OfferAcceptedDetailsForPosterActivity;
 import com.emtech.fixr.presentation.ui.activity.PostJobActivity;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -241,6 +243,12 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         return mGetMyJobs.getOfferDetails();
     }
 
+    //get the job status for the poster
+    public LiveData<Integer> getJobStatusForPoster(int jobId, OfferAcceptedDetailsForPosterActivity activity){
+        mExecutors.diskIO().execute(() ->mGetMyJobs.getJobStatusForPoster(jobId, activity));
+        return mGetMyJobs.getJobStatus();
+    }
+
     //updating offer seen status to 1 (seen by poster)
     public void updateOfferSeenByPosterStatus(int offer_id){
         Log.e(LOG_TAG, "calling method to update offer seen status");
@@ -373,11 +381,24 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         mFetchCategories.startFetchCategoryService();
     }
 
+    //create a new job, returns the job id
+    public LiveData<Integer> createJob(int userId, String jobTitle, String jobDesc,
+                             int categoryId, PostJobActivity postJobActivity){
+        mExecutors.diskIO().execute(() ->mPostFixAppJob.createNewJob(userId, jobTitle, jobDesc, categoryId, postJobActivity));
+        return mPostFixAppJob.getJobId();
+    }
+
+    //create a new job, returns the job id
+    public void createNewJob(int userId, String jobTitle, String jobDesc,
+                             int categoryId, PostJobActivity postJobActivity){
+        mExecutors.diskIO().execute(() ->mPostFixAppJob.createNewJob(userId, jobTitle, jobDesc, categoryId, postJobActivity));
+    }
+
     public void postJobService(int userId, String jobTitle, String jobDesc, String jobLocation,
                                String mustHaveOne, String mustHaveTwo, String mustHaveThree, int isJobRemote,
-                               File file, int categoryId, PostJobActivity postJobActivity){
+                               ArrayList<File> imageFilesList, int categoryId, PostJobActivity postJobActivity){
         mPostFixAppJob.startPostJobService(userId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, file, categoryId, postJobActivity);
+                mustHaveThree, isJobRemote, imageFilesList, categoryId, postJobActivity);
     }
 
     //method to post the offer made by the potential fixer/tasker
@@ -417,25 +438,26 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     //method to receive updated job details from activity and pass them to the
     //Async task to post to the db
     //this one is called when the image is attached too
-    public void getJobUpdateDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+    public void updateJobDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
                                      String mustHaveTwo, String mustHaveThree, int isJobRemote,
-                                     File file){
+                                    ArrayList<File> imageFilesList, PostJobActivity postJobActivity){
 
         //call retrofit in background to post job update details
-        mExecutors.diskIO().execute(() -> updateJobDetails(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, file) );
+        mExecutors.diskIO().execute(() -> mPostFixAppJob.updateJobDetails(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, imageFilesList, postJobActivity) );
 
     }
 
     //method to receive updated job details from activity and pass them to the
     //Async task to post to the db
     //this one is called when the image is attached too
-    public void getJobUpdateDetailsWithoutImage(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
-                                    String mustHaveTwo, String mustHaveThree, int isJobRemote){
+    public void UpdateJobDetailsWithoutImage(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
+                                    String mustHaveTwo, String mustHaveThree, int isJobRemote, PostJobActivity postJobActivity){
 
         //call retrofit in background to post job update details
-        mExecutors.diskIO().execute(() -> updateJobDetailsWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote));
+        mExecutors.diskIO().execute(() -> mPostFixAppJob.updateJobDetailsWithoutImage(jobId, jobTitle, jobDesc,
+                jobLocation, mustHaveOne, mustHaveTwo,
+                mustHaveThree, isJobRemote, postJobActivity));
 
     }
 
@@ -502,98 +524,6 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
                 loginActivityInstance.updateUIAfterFcmUpdate(false, t.getMessage());
-            }
-        });
-
-    }
-
-    //retrofit call to post the job details to the server
-    //when image is attached
-    public void updateJobDetails(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
-                                 String mustHaveTwo, String mustHaveThree, int isJobRemote,
-                                 File file){
-
-        //Map is used to multipart the file using okhttp3.RequestBody
-        //File file = new File(mediaPath);
-
-        //parsing any media file
-        RequestBody requestBody = RequestBody.create(MediaType.parse("*image/*"), file);
-        MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("file", file.getName(), requestBody);
-        RequestBody fileName = RequestBody.create(MediaType.parse("text/plain"), file.getName());
-
-        //Defining retrofit api service*/
-        //APIService service = retrofit.create(APIService.class);
-        APIService service = new LocalRetrofitApi().getRetrofitService();
-
-        //defining the call
-        Call<Result> call = service.updateJob(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote, fileToUpload, fileName);
-
-        //calling the com.emtech.retrofitexample.api
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, Response<Result> response) {
-
-                if (!response.body().getError()) {
-                    Log.d(LOG_TAG, response.body().getMessage());
-                    //send response data to postjobactivity
-                    //success
-                    postJobActivity.updateUiAfterJobDetailsWithoutImage(true,
-                            response.body().getMessage(),"basicsWithImage");
-                }else{
-                    updateResponseMessage = response.body().getMessage();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                //print out any error we may get
-                //probably server connection
-                Log.e(LOG_TAG, t.getMessage());
-                //send response data to the postjobactivity
-                postJobActivity.updateUiAfterJobDetailsWithoutImage(true,
-                        updateResponseMessage,"basicsWithImage");
-            }
-        });
-
-    }
-
-    //retrofit call to update the job details to the server when an image is not added by the user
-    public void updateJobDetailsWithoutImage(int jobId, String jobTitle, String jobDesc, String jobLocation, String mustHaveOne,
-                                             String mustHaveTwo, String mustHaveThree, int isJobRemote){
-
-        //Defining retrofit api service*/
-        //APIService service = retrofit.create(APIService.class);
-        APIService service = new LocalRetrofitApi().getRetrofitService();
-
-        //defining the call
-        Call<Result> call = service.updateJobWithoutImage(jobId, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                mustHaveThree, isJobRemote);
-
-        //calling the com.emtech.retrofitexample.api
-        call.enqueue(new Callback<Result>() {
-            @Override
-            public void onResponse(Call<Result> call, Response<Result> response) {
-
-                if (!response.body().getError()) {
-                    Log.d(LOG_TAG, response.body().getMessage());
-                    //send response data to postjobactivity
-                    //success
-                    postJobActivity.updateUiAfterJobDetailsWithoutImage(true,
-                            response.body().getMessage(),"basicsWithoutImage");
-                }else{
-                    updateResponseMessage = response.body().getMessage();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Result> call, Throwable t) {
-                //print out any error we may get
-                //probably server connection
-                Log.e(LOG_TAG, t.getMessage());
-                //send response data to postjobactivity
-                postJobActivity.updateUiAfterJobDetailsWithoutImage(true,
-                        updateResponseMessage,"basicsWithoutImage");
             }
         });
 

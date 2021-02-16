@@ -192,6 +192,15 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_padding_xnormal"
             android:text="View Job Details" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/forFixer_startJob"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/btn_login"
+            android:layout_marginTop="@dimen/margin_padding_xnormal"
+            android:text="Star Job" />
     </LinearLayout>
 
         <RelativeLayout
