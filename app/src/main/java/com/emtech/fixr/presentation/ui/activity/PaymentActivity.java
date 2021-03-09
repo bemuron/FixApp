@@ -2,6 +2,7 @@ package com.emtech.fixr.presentation.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -13,20 +14,28 @@ import com.emtech.fixr.presentation.ui.fragment.PaymentSummaryFragment;
 public class PaymentActivity extends AppCompatActivity implements PaymentSummaryFragment.OnPaymentSummaryListener {
     private static final String TAG = PaymentActivity.class.getSimpleName();
     private SessionManager session;
-    private String userRole;
-    private int userId;
+    private String userRole, fixerProfPicName, posterProfPicName, posterName, fixerName;
+    private int userId, fixer_id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_payment);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         // session manager
         session = new SessionManager(getApplicationContext());
         userRole = session.getUserRole();
         userId = session.getUserId();
+
+        Log.e(TAG,"User role = "+userRole);
+
+        fixerProfPicName = getIntent().getStringExtra("fixer_prof_pic");
+        posterProfPicName = getIntent().getStringExtra("poster_prof_pic");
+
+        fixerName = getIntent().getStringExtra("fixer_name");
+        posterName = getIntent().getStringExtra("poster_name");
 
         // Check that the activity is using the layout version with
         // the fragment_container FrameLayout
@@ -46,8 +55,8 @@ public class PaymentActivity extends AppCompatActivity implements PaymentSummary
             //this mainly targets a user/poster
             //this is coming from the fcm notification received
             int job_id = getIntent().getIntExtra("job_id", 0);
-            boolean session_finished = getIntent().getBooleanExtra("job_finished", false);
-            if (session_finished) {
+            boolean job_finished = getIntent().getBooleanExtra("job_finished", false);
+            if (job_finished) {
                 int job_cost = getIntent().getIntExtra("job_cost", 0);
                 PaymentSummaryFragment paymentSummaryFragment =
                         PaymentSummaryFragment.newInstance(job_id,poster_id, job_cost);
@@ -67,7 +76,7 @@ public class PaymentActivity extends AppCompatActivity implements PaymentSummary
     //set up the payment summary fragment
     private void setUpPaymentSummaryFragment(){
         int job_id = getIntent().getIntExtra("job_id", 0);
-        int fixer_id = getIntent().getIntExtra("fixer_id", 0);
+        fixer_id = getIntent().getIntExtra("fixer_id", 0);
         int poster_id = getIntent().getIntExtra("poster_id", 0);
         int job_cost = getIntent().getIntExtra("job_cost", 0);
         PaymentSummaryFragment paymentSummaryFragment = PaymentSummaryFragment.newInstance(job_id, poster_id, job_cost);
@@ -83,6 +92,11 @@ public class PaymentActivity extends AppCompatActivity implements PaymentSummary
         Intent intent = new Intent(PaymentActivity.this, RatingActivity.class);
         intent.putExtra("job_id", job_id);
         intent.putExtra("poster_id", poster_id);
+        intent.putExtra("fixer_id", fixer_id);
+        intent.putExtra("poster_prof_pic", posterProfPicName);
+        intent.putExtra("fixer_prof_pic", fixerProfPicName);
+        intent.putExtra("poster_name", posterName);
+        intent.putExtra("fixer_name", fixerName);
         startActivity(intent);
     }
 }

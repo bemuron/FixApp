@@ -336,9 +336,9 @@ public class LoginActivity extends AppCompatActivity implements LoginUser.Succes
             }
 
             //start home activity
-            //Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-            //startActivity(intent);
-            //LoginActivity.this.finish();
+            Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+            startActivity(intent);
+            LoginActivity.this.finish();
         }else{
             hideDialog();
             Log.d(TAG, "login not successful");

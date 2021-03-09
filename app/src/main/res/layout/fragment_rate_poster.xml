@@ -24,7 +24,7 @@
         tools:text="@string/rate_poster" />
 
     <!-- User image -->
-    <de.hdodenhof.circleimageview.CircleImageView
+    <!--<de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/rate_poster_icon"
         android:layout_width="96dp"
         android:layout_height="96dp"
@@ -33,7 +33,17 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rate_poster_instruction"
-        tools:src="@drawable/img_layer" />
+        tools:src="@drawable/img_layer" />-->
+    <ImageView
+        android:id="@+id/rate_poster_icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rate_poster_instruction"
+        tools:src="@drawable/img_layer"/>
 
     <TextView
         android:id="@+id/rate_poster_name"
@@ -75,7 +85,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:focusableInTouchMode="false"
-            android:focusable="false"
             android:layout_marginBottom="@dimen/margin_padding_small"
             android:layout_marginTop="@dimen/margin_padding_small"
             android:maxLines="10"
@@ -91,6 +100,7 @@
         android:layout_marginTop="34dp"
         android:text="Submit"
         android:textColor="@color/white"
+        android:background="@color/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

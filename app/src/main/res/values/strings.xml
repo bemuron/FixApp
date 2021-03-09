@@ -115,6 +115,9 @@
     <string name="offer_message_instructions">Write a brief message below to accompany your offer</string>
     <string name="offer_amount_hint">Enter amount eg 250,000</string>
     <string name="offer_message_hint">Brief message</string>
+    <string name="notif_poster_offer_amnt_not_set_by_fixer">This job fixer is comfortable with the amount you set for this job</string>
+    <string name="notif_fixer_offer_amnt_not_set">Not setting an offer amount means you are
+        comfortable with the job cost set by the job poster</string>
 
     <!--fcm-->
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>

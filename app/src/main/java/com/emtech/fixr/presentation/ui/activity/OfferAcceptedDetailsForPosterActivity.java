@@ -121,11 +121,14 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
                 offer.setOffer_accepted(offerDet.getOffer_accepted());
                 offer.setName(offerDet.getName());
                 offer.setEst_tot_budget(offerDet.getEst_tot_budget());
+                offer.setFinal_job_cost(offerDet.getFinal_job_cost());
                 offer.setPosted_by(offerDet.getPosted_by());
                 offer.setProfile_pic(offerDet.getProfile_pic());
                 offer.setUser_name(offerDet.getUser_name());
                 offer.setPosted_on(offerDet.getPosted_on());
                 offer.setJob_date(offerDet.getJob_date());
+                offer.setJob_status(offerDet.getJob_status());
+                offer.setJob_name(offerDet.getJob_name());
 
                 Log.e(LOG_TAG, "Offer details name is " + offerDet.getName());
                 //get the status of the job and launch the respective activity based on it
@@ -137,6 +140,20 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
             }
 
         });
+
+        /* check if poster accepted this offer (status - 1)
+         *  if accepted, check if job is in progress (jip - 5)
+         *  if offer status = 1 and jip status = 5 launch JobInProgress activity
+         * */
+        if (isJobInProgress()){
+            Intent intent2 = new Intent(this, JobInProgressActivity.class);
+            intent2.putExtra("jobID", offer.getJob_id());
+            intent2.putExtra("jobName", offer.getJob_name());
+            intent2.putExtra("poster", offer.getPosted_by());
+            intent2.putExtra("fixer", offer.getOffered_by());
+            intent2.putExtra("postedOn", offer.getPosted_on());
+            startActivity(intent2);
+        }
     }
 
             @Override
@@ -145,6 +162,16 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
                 if (offerDet == null){
                     showBar();
                     clearViews();
+                }else{
+                    if (isJobInProgress()){
+                        Intent intent2 = new Intent(this, JobInProgressActivity.class);
+                        intent2.putExtra("jobID", offer.getJob_id());
+                        intent2.putExtra("jobName", offer.getJob_name());
+                        intent2.putExtra("poster", offer.getPosted_by());
+                        intent2.putExtra("fixer", offer.getOffered_by());
+                        intent2.putExtra("postedOn", offer.getPosted_on());
+                        startActivity(intent2);
+                    }
                 }
             }
 
@@ -184,6 +211,14 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
         //}
     }
 
+    //check if poster accepted this offer (status - 1)
+    //if accepted, check if job is in progress (jip - 5)
+    //if offer status = 1 and jip status = 5 launch JobInProgress activity
+
+     private boolean isJobInProgress(){
+        return offer.getJob_status() == 5 && offer.getOffer_accepted() == 1;
+    }
+
     //method to handle population of the views with the content
     private void displayDetails(){
         hideBar();
@@ -191,7 +226,7 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
         offerByTV.setText(offer.getUser_name());
         //toBeDoneDateTV.setText(job.getJob_date());
         formatDate();
-        offeredAmountTV.setText("UGX." + offer.getOffer_amount());
+        offeredAmountTV.setText("UGX." + offer.getFinal_job_cost());
         offerMsgTV.setText(offer.getMessage());
         editCount = offer.getEdit_count();
 

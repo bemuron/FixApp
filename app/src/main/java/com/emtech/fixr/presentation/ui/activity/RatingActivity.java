@@ -2,6 +2,7 @@ package com.emtech.fixr.presentation.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,8 +21,8 @@ public class RatingActivity extends AppCompatActivity implements
         RateFixerFragment.OnRateFixerInteractionListener, RatePosterFragment.OnRatePosterListener {
     private static final String TAG = RatingActivity.class.getSimpleName();
     private SessionManager session;
-    private String userRole;
-    private int userId;
+    private String userRole, fixerProfPicName, posterProfPicName, posterName, fixerName;
+    private int userId, job_id, poster_id, fixer_id;
     public static RatingActivity ratingActivity;
     private MyJobsActivityViewModel mViewModel;
 
@@ -29,8 +30,6 @@ public class RatingActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         ratingActivity = this;
 
@@ -38,6 +37,22 @@ public class RatingActivity extends AppCompatActivity implements
         session = new SessionManager(getApplicationContext());
         userRole = session.getUserRole();
         userId = session.getUserId();
+
+        //get intent from which this activity is called and the id of the job
+        job_id = getIntent().getIntExtra("job_id", 0);
+        //get the id of the poster
+        poster_id = getIntent().getIntExtra("poster_id", 0);
+
+        //get the id of the fixer
+        fixer_id = getIntent().getIntExtra("fixer_id", 0);
+
+        fixerProfPicName = getIntent().getStringExtra("fixer_prof_pic");
+        posterProfPicName = getIntent().getStringExtra("poster_prof_pic");
+
+        fixerName = getIntent().getStringExtra("fixer_name");
+        posterName = getIntent().getStringExtra("poster_name");
+
+        Log.e(TAG,"fixer_prof_pic is "+ fixerProfPicName +" and poster_prof_pic is "+posterProfPicName);
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this);
         mViewModel = new ViewModelProvider(this, factory).get(MyJobsActivityViewModel.class);
@@ -64,24 +79,18 @@ public class RatingActivity extends AppCompatActivity implements
 
     //show the respective fragment based on the role of the user
     private void setUpRespectiveFragment(String role){
-
-        //get intent from which this activity is called and the id of the job
-        int job_id = getIntent().getIntExtra("job_id", 0);
-        //get the id of the poster
-        int poster_id = getIntent().getIntExtra("poster_id", 0);
-
-        if (role.equals("poster") || userId == poster_id) {
+        if (userId == poster_id) {
             //if the current user of the app is a poster then the userId passed here is for the user/job poster
-            RateFixerFragment rateFixerFragment = RateFixerFragment.newInstance(job_id, userId);
+            RateFixerFragment rateFixerFragment = RateFixerFragment.newInstance(job_id, userId, fixerProfPicName, fixerName);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.rating_fragment_container, rateFixerFragment)
                     .commit();
 
-        }else if (role.equals("fixer")){
-            //if the current user of the app is a tutor then the userId passed here is for the tutor
-            RatePosterFragment ratePosterFragment = RatePosterFragment.newInstance(job_id, userId);
+        }else if (userId == fixer_id){
+            //if the current user of the app is a fixer then the userId passed here is for the fixer
+            RatePosterFragment ratePosterFragment = RatePosterFragment.newInstance(job_id, userId, posterProfPicName, posterName);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
@@ -99,7 +108,6 @@ public class RatingActivity extends AppCompatActivity implements
     }
 
     //callback from rate poster fragment
-
     @Override
     public void onRatePosterInteraction(int job_id, int fixer_id, int poster_id, float posterRating, String comment) {
         mViewModel.submitPosterRating(job_id, fixer_id, poster_id, posterRating, comment);

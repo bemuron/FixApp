@@ -229,6 +229,20 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         return mGetMyJobs.getOfferDetails();
     }
 
+    //updating the job to started - 5
+    public void fixerStartJob(int offerId, int jobId){
+        Log.e(LOG_TAG, "calling method to set job status to job in progress");
+        //call retrofit in background to start the job. 5 - job in progress
+        mExecutors.diskIO().execute(() -> mGetMyJobs.FixerStartJob(offerId, jobId));
+    }
+
+    //getting offer details of a job in progress
+    public LiveData<Offer> getJIPDetails(int offer_id){
+        Log.d(LOG_TAG, "calling bg method to get details of job in progress");
+        mExecutors.diskIO().execute(() -> mGetMyJobs.GetJIPDetails(offer_id));
+        return mGetMyJobs.getJIPDetails();
+    }
+
     //a getter method for all the jobs by a poster to which offers have been made
     public LiveData<List<Offer>> getOffersReceived(int user_id){
         Log.d(LOG_TAG, "calling bg method to get offers received list");

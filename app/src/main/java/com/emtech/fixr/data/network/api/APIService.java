@@ -289,6 +289,18 @@ public interface APIService {
             @Path("userId") int userId,
             @Path("jobId") int jobId);
 
+    //updating job to 5 - Job in Progress
+    @FormUrlEncoded
+    @POST("public/fixerStartJob")
+    Call<Result> fixerStartJob(
+            @Field("offer_id") int offer_id,
+            @Field("job_id") int job_id);
+
+    //getting the details of a job in progress
+    @GET("public/getJIPDetails/{offer_id}")
+    Call<UserJobs> getJIPDetails(
+            @Path("offer_id") int offer_id);
+
     //submitting poster rating
     @FormUrlEncoded
     @POST("submitPosterRating")

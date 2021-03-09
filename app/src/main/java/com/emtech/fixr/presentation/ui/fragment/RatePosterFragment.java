@@ -12,16 +12,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.emtech.fixr.R;
+import com.emtech.fixr.helpers.CircleTransform;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,13 +44,15 @@ public class RatePosterFragment extends Fragment {
     private static final String JOB_ID = "job_id";
     //ID of the current user in this case a poster
     private static final String POSTER_ID = "poster_id";
+    private static final String POSTER_PROF_PIC = "poster_prof_pic";
+    private static final String POSTER_NAME = "poster_name";
     private int job_id, poster_id, fixer_id;
     private float posterRating;
-    private String posterName;
+    private String posterName, posterProfPic;
     private RatingBar posterRatingBar;
     private Button submitPosterRatingButton;
     private TextView posterNameTv, ratePosterInstruction;
-    private CircleImageView posterIcon;
+    private ImageView posterIcon;
     private TextInputEditText ratePosterEditText;
 
     private OnRatePosterListener mListener;
@@ -62,11 +70,13 @@ public class RatePosterFragment extends Fragment {
      * @return A new instance of fragment RateUserFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RatePosterFragment newInstance(int job_id, int poster_id) {
+    public static RatePosterFragment newInstance(int job_id, int poster_id, String posterProfPic, String posterName) {
         RatePosterFragment fragment = new RatePosterFragment();
         Bundle args = new Bundle();
         args.putInt(JOB_ID, job_id);
         args.putInt(POSTER_ID, poster_id);
+        args.putString(POSTER_PROF_PIC, posterProfPic);
+        args.putString(POSTER_NAME, posterName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,6 +87,8 @@ public class RatePosterFragment extends Fragment {
         if (getArguments() != null) {
             job_id = getArguments().getInt(JOB_ID);
             poster_id = getArguments().getInt(POSTER_ID);
+            posterProfPic = getArguments().getString(POSTER_PROF_PIC);
+            posterName = getArguments().getString(POSTER_NAME);
         }
 
         //set the name of this fragment in the toolbar
@@ -104,12 +116,27 @@ public class RatePosterFragment extends Fragment {
 
     private void getAllWidgets(View view){
         posterNameTv = view.findViewById(R.id.rate_poster_name);
+        posterNameTv.setText(posterName);
         ratePosterInstruction = view.findViewById(R.id.rate_poster_instruction);
         ratePosterInstruction.setText(R.string.rate_poster);
         submitPosterRatingButton = view.findViewById(R.id.submitPosterRatingButton);
         posterIcon = view.findViewById(R.id.rate_poster_icon);
         posterRatingBar = view.findViewById(R.id.posterRatingBar);
         ratePosterEditText = view.findViewById(R.id.edit_text_rate_poster_comment);
+
+        //get poster profile pic
+        try {
+            Glide.with(this)
+                    .load("http://www.emtechint.com/fixapp/assets/images/profile_pics/" + posterProfPic)
+                    .thumbnail(0.5f)
+                    .transition(withCrossFade())
+                    .apply(new RequestOptions().fitCenter()
+                            .transform(new CircleTransform(getActivity())).diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .into(posterIcon);
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
 
         handlePosterRating();
         handleSubmitRating();

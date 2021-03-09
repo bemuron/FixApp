@@ -158,7 +158,9 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
         offerMsgTV = findViewById(R.id.forFixer_offer_details_message);
         lastEditDateTv = findViewById(R.id.forFixer_offer_last_edit_date);
         startJobButton = findViewById(R.id.forFixer_startJob);
+        startJobButton.setOnClickListener(this);
         viewJobDetailsButton = findViewById(R.id.forFixer_viewJobDetails);
+        viewJobDetailsButton.setOnClickListener(this);
         //if the current user is the one that posted this job
         //hide the edit button
         //if (userId == offer.getPosted_by()) {
@@ -262,11 +264,8 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
             //launch activity to show job is in progress
             case R.id.forFixer_startJob:
                 //change job status in db to in progress
-                updateJobStatus(5);
-                Intent intent2 = new Intent(this, JobInProgressActivity.class);
-                intent2.putExtra("jobID", offer.getJob_id());
-                intent2.putExtra("jobName", jobName);
-                startActivity(intent2);
+                //launch the JIP activity
+                updateJobStatus(offer_id, offer.getJob_id());
                 break;
         }
     }
@@ -316,11 +315,7 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
 
     @Override
     public void onOfferSaved(Boolean isOfferSaved, String message) {
-        if (isOfferSaved){
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        }
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
      //called in GetMyJobs to get the response after a job is rejected
@@ -333,9 +328,24 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
         }
     }
 
-    //update job status in the db if fixer starts the job to 5 - in progress
-    private void updateJobStatus(int status){
+    //called in GetMyJobs to start the job, set the status to 5
+    public void jobStartedResponse(Boolean isJobStarted, String message){
+        if (isJobStarted){
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 
+            Intent intent2 = new Intent(this, JobInProgressActivity.class);
+            intent2.putExtra("jobID", offer.getJob_id());
+            intent2.putExtra("offerID", offer_id);
+            intent2.putExtra("jobName", jobName);
+            startActivity(intent2);
+        }else{
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //update job status in the db if fixer starts the job to 5 - in progress
+    private void updateJobStatus(int offerId, int jobId){
+        mViewModel.fixerStartJob(offerId, jobId);
     }
 
     @Override

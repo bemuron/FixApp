@@ -129,14 +129,6 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
 
         });
 
-        /*
-        * TODO
-        *  check if poster accepted this offer (status - 1)
-        *  if accepted, check if job is in progress (jip - 5)
-        *  if offer status = 1 and jip status = 5 launch JobInProgress activity
-        * */
-
-        
     }
 
     @Override
@@ -191,7 +183,11 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
         offerByTV.setText(offer.getUser_name());
         //toBeDoneDateTV.setText(job.getJob_date());
         formatDate();
-        offeredAmountTV.setText("UGX." + offer.getOffer_amount());
+        if (offer.getOffer_amount() == null){
+            offeredAmountTV.setText(R.string.notif_poster_offer_amnt_not_set_by_fixer);
+        }else{
+            offeredAmountTV.setText("UGX." + offer.getOffer_amount());
+        }
         offerMsgTV.setText(offer.getMessage());
         editCount = offer.getEdit_count();
 
@@ -421,8 +417,16 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
 
     //alert dialog to confirm if user wants to accept the offer
     public void acceptOfferNotice(){
+        String msg = null;
+        if (offer.getOffer_amount() != null){
+            msg = "By accepting this offer you are comfortable with the cost proposed by the fixer of "+ "UGX." + offer.getOffer_amount()+".\n " +
+                    "Do you wish to continue?";
+        }
         MaterialAlertDialogBuilder alertDialog = new MaterialAlertDialogBuilder(this);
-        alertDialog.setMessage("Accept this offer?");
+        alertDialog.setTitle("Accept this offer?");
+        if (msg != null){
+            alertDialog.setMessage(msg);
+        }
         alertDialog.setPositiveButton(R.string.notice_yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

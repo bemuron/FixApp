@@ -4,11 +4,13 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -17,12 +19,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.emtech.fixr.R;
+import com.emtech.fixr.helpers.CircleTransform;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,15 +44,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RateFixerFragment extends Fragment {
     private static final String TAG = RateFixerFragment.class.getSimpleName();
     private static final String JOB_ID = "job_id";
-    //ID of the current user in this case a user
-    private static final String POSTER_ID = "poster_id";
+    private static final String FIXER_ID = "fixer_id";
+    private static final String FIXER_PROF_PIC = "fixer_prof_pic";
+    private static final String FIXER_NAME = "fixer_name";
     private int job_id, poster_id, fixer_id;
     private float fixer_rating;
-    private String fixerName;
+    private String fixerName, fixerProfPic;
     private RatingBar fixerRatingBar;
     private Button submitFixerRatingButton;
     private TextView fixerNameTv, rateFixerInstruction;
-    private CircleImageView fixerIcon;
+    private ImageView fixerIcon;
     private TextInputEditText rateFixerEditText;
 
     private OnRateFixerInteractionListener mListener;
@@ -63,11 +71,13 @@ public class RateFixerFragment extends Fragment {
      * @return A new instance of fragment RateUserFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RateFixerFragment newInstance(int job_id, int poster_id) {
+    public static RateFixerFragment newInstance(int job_id, int poster_id, String fixerProfPic, String fixerName) {
         RateFixerFragment fragment = new RateFixerFragment();
         Bundle args = new Bundle();
         args.putInt(JOB_ID, job_id);
-        args.putInt(POSTER_ID, poster_id);
+        args.putInt(FIXER_ID, poster_id);
+        args.putString(FIXER_PROF_PIC, fixerProfPic);
+        args.putString(FIXER_NAME, fixerName);
         fragment.setArguments(args);
         return fragment;
     }
@@ -77,7 +87,9 @@ public class RateFixerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             job_id = getArguments().getInt(JOB_ID);
-            poster_id = getArguments().getInt(POSTER_ID);
+            fixer_id = getArguments().getInt(FIXER_ID);
+            fixerProfPic = getArguments().getString(FIXER_PROF_PIC);
+            fixerName = getArguments().getString(FIXER_NAME);
         }
 
         //set the name of this fragment in the toolbar
@@ -110,12 +122,27 @@ public class RateFixerFragment extends Fragment {
 
     private void getAllWidgets(View view){
         fixerNameTv = view.findViewById(R.id.rate_fixer_name);
+        fixerNameTv.setText(fixerName);
         submitFixerRatingButton = view.findViewById(R.id.submitFixerRatingButton);
         fixerIcon = view.findViewById(R.id.rate_fixer_icon);
         rateFixerInstruction = view.findViewById(R.id.rate_fixer_instruction);
         rateFixerInstruction.setText(R.string.rate_fixer_instruction);
         fixerRatingBar = view.findViewById(R.id.fixerRatingBar);
         rateFixerEditText = view.findViewById(R.id.edit_text_rate_fixer_comment);
+
+        //get fixer profile pic
+        try {
+            Glide.with(this)
+                    .load("http://www.emtechint.com/fixapp/assets/images/profile_pics/" + fixerProfPic)
+                    .thumbnail(0.5f)
+                    .transition(withCrossFade())
+                    .apply(new RequestOptions().fitCenter()
+                            .transform(new CircleTransform(getActivity())).diskCacheStrategy(DiskCacheStrategy.ALL))
+                    .into(fixerIcon);
+        }catch (Exception e){
+            e.printStackTrace();
+            Log.e(TAG, e.getMessage());
+        }
 
         handleFixerRating();
         handleSubmitRating();

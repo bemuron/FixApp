@@ -9,6 +9,10 @@ public class Offer {
 
     private int job_id;
 
+    private int job_status;
+
+    private String job_name;
+
     private String offer_amount;
 
     private String message;
@@ -23,7 +27,13 @@ public class Offer {
 
     private String name;
 
+    private String poster_user_name;
+
+    private String fixer_user_name;
+
     private String est_tot_budget;
+
+    private String final_job_cost;
 
     private int posted_by;
 
@@ -34,6 +44,10 @@ public class Offer {
     private String job_date;
 
     private String profile_pic;
+
+    private String poster_profile_pic;
+
+    private String fixer_profile_pic;
 
     private int color = -1;
 
@@ -171,5 +185,61 @@ public class Offer {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public int getJob_status() {
+        return job_status;
+    }
+
+    public void setJob_status(int job_status) {
+        this.job_status = job_status;
+    }
+
+    public String getJob_name() {
+        return job_name;
+    }
+
+    public void setJob_name(String job_name) {
+        this.job_name = job_name;
+    }
+
+    public String getFinal_job_cost() {
+        return final_job_cost;
+    }
+
+    public void setFinal_job_cost(String final_job_cost) {
+        this.final_job_cost = final_job_cost;
+    }
+
+    public String getPoster_user_name() {
+        return poster_user_name;
+    }
+
+    public void setPoster_user_name(String poster_user_name) {
+        this.poster_user_name = poster_user_name;
+    }
+
+    public String getFixer_user_name() {
+        return fixer_user_name;
+    }
+
+    public void setFixer_user_name(String fixer_user_name) {
+        this.fixer_user_name = fixer_user_name;
+    }
+
+    public String getPoster_profile_pic() {
+        return poster_profile_pic;
+    }
+
+    public void setPoster_profile_pic(String poster_profile_pic) {
+        this.poster_profile_pic = poster_profile_pic;
+    }
+
+    public String getFixer_profile_pic() {
+        return fixer_profile_pic;
+    }
+
+    public void setFixer_profile_pic(String fixer_profile_pic) {
+        this.fixer_profile_pic = fixer_profile_pic;
     }
 }

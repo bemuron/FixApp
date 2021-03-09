@@ -110,8 +110,15 @@ public class MyJobsActivityViewModel extends ViewModel {
         mRepository.submitPosterRating(job_id, fixer_id, poster_id, poster_rating, comment);
     }
 
-    //get the details for the job in progress
+    //method to update the job status to job in progress / started - 5
+    public void fixerStartJob(int offerId, int jobId){
+        mRepository.fixerStartJob(offerId, jobId);
+    }
 
+    //get the details for the job in progress
+    public LiveData<Offer> getJIPDetails(int offerId){
+        return mRepository.getJIPDetails(offerId);
+    }
 
 
 }

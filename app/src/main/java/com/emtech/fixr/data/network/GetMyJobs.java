@@ -40,6 +40,7 @@ public class GetMyJobs {
 
     private final MutableLiveData<Job> mJobDetails;
     private final MutableLiveData<Offer> mOfferDetails;
+    private final MutableLiveData<Offer> mJIPDetails;
     private final MutableLiveData<List<Offer>> mFixerOffersMadeList;
     private final MutableLiveData<List<Offer>> mFixerOffersAcceptedList;
     private final MutableLiveData<List<Offer>> mPosterOffersReceivedList;
@@ -66,6 +67,7 @@ public class GetMyJobs {
         mFixerOffersMadeList = new MutableLiveData<>();
         mFixerOffersAcceptedList = new MutableLiveData<>();
         mOfferDetails = new MutableLiveData<>();
+        mJIPDetails = new MutableLiveData<>();
         mPosterOffersReceivedList = new MutableLiveData<>();
         mPosterOffersAcceptedList = new MutableLiveData<>();
         mJobStatus = new MutableLiveData<>();
@@ -123,6 +125,11 @@ public class GetMyJobs {
     //returned offer details
     public LiveData<Offer> getOfferDetails() {
         return mOfferDetails;
+    }
+
+    //returned JIP details
+    public LiveData<Offer> getJIPDetails() {
+        return mJIPDetails;
     }
 
     //returned offers received for poster
@@ -601,6 +608,79 @@ public class GetMyJobs {
 
     }
 
+
+    public void GetJIPDetails(int offer_id) {
+        Log.d(LOG_TAG, "Fetch offer JIP details started");
+
+        //Defining retrofit com.emtech.retrofitexample.api service
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<UserJobs> call = service.getJIPDetails(offer_id);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<UserJobs>() {
+            @Override
+            public void onResponse(Call<UserJobs> call, Response<UserJobs> response) {
+
+                try {
+                    //if response body is not null, we have some data
+                    if (response.body() != null) {
+                        //count what we have in the response
+                        if (!response.body().getError()) {
+                            Log.d(LOG_TAG, "JSON not null");
+
+                            offer = new Offer();
+                            offer.setOffer_id(response.body().getOfferDetails().getOffer_id());
+                            offer.setOffered_by(response.body().getOfferDetails().getOffered_by());
+                            offer.setJob_id(response.body().getOfferDetails().getJob_id());
+                            offer.setOffer_amount(response.body().getOfferDetails().getOffer_amount());
+                            offer.setMessage(response.body().getOfferDetails().getMessage());
+                            offer.setLast_edited_on(response.body().getOfferDetails().getLast_edited_on());
+                            offer.setSeen_by_poster(response.body().getOfferDetails().getSeen_by_poster());
+                            offer.setEdit_count(response.body().getOfferDetails().getEdit_count());
+                            offer.setOffer_accepted(response.body().getOfferDetails().getOffer_accepted());
+                            offer.setName(response.body().getOfferDetails().getName());
+                            offer.setEst_tot_budget(response.body().getOfferDetails().getEst_tot_budget());
+                            offer.setPosted_by(response.body().getOfferDetails().getPosted_by());
+                            offer.setPosted_on(response.body().getOfferDetails().getPosted_on());
+                            offer.setJob_date(response.body().getOfferDetails().getJob_date());
+                            //add the profile pic of the fixer
+                            offer.setFixer_profile_pic(response.body().getFixer_profile_pic());
+                            //profile pic of the poster
+                            offer.setPoster_profile_pic(response.body().getPoster_profile_pic());
+                            //set the name of the poster
+                            offer.setPoster_user_name(response.body().getPoster_user_name());
+                            //set the name of the fixer
+                            offer.setFixer_user_name(response.body().getFixer_user_name());
+
+                            // When you are off of the main thread and want to update LiveData, use postValue.
+                            // It posts the update to the main thread.
+                            mJIPDetails.postValue(offer);
+
+                            // If the code reaches this point, we have successfully performed our sync
+                            Log.d(LOG_TAG, "Successfully got all JIP details");
+                        }
+                    } else {
+                        Log.e(LOG_TAG, "response.body() is null");
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, "catch block error msg: "+e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserJobs> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+            }
+        });
+
+    }
+
     //getting the offers on jobs the poster has received
     public void GetOffersReceivedForPoster(int user_id) {
         Log.d(LOG_TAG, "Fetch offers received for jobs by poster started");
@@ -998,10 +1078,51 @@ public class GetMyJobs {
                 }
             }
         });
+    }
+
+    //retrofit call to update job status to 5 - Job In Progress
+    //job is started by the fixer
+    public void FixerStartJob(int offerId, int jobId){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.fixerStartJob(offerId, jobId);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+                        //send response data to the activity
+                        //success
+                        offerAcceptedDetailsForFixerActivity.jobStartedResponse(true,
+                                response.body().getMessage());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                offerAcceptedDetailsForFixerActivity.jobStartedResponse(false,
+                        t.getMessage());
+            }
+        });
 
     }
 
-    //retrofit call to create a new job at the server
+    //retrofit call to get job status
     public void getJobStatusForPoster(int jobId, OfferAcceptedDetailsForPosterActivity activityInstance){
 
         //Defining retrofit api service*/

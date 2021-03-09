@@ -18,6 +18,12 @@ public class UserJobs {
     @SerializedName("profile_pic")
     private String profile_pic;
 
+    @SerializedName("fixer_profile_pic")
+    private String fixer_profile_pic;
+
+    @SerializedName("poster_profile_pic")
+    private String poster_profile_pic;
+
     @SerializedName("name")
     private String name;
 
@@ -26,6 +32,12 @@ public class UserJobs {
 
     @SerializedName("user_name")
     private String user_name;
+
+    @SerializedName("fixer_user_name")
+    private String fixer_user_name;
+
+    @SerializedName("poster_user_name")
+    private String poster_user_name;
 
     //@SerializedName("jobDetails")
     private List<Job> jobsListByStatus;
@@ -66,6 +78,14 @@ public class UserJobs {
 
     public String getProfilePic() {
         return profile_pic;
+    }
+
+    public String getFixer_profile_pic() {
+        return fixer_profile_pic;
+    }
+
+    public String getPoster_profile_pic() {
+        return poster_profile_pic;
     }
 
     public Boolean getError() {
@@ -118,6 +138,14 @@ public class UserJobs {
 
     public String getUser_name() {
         return user_name;
+    }
+
+    public String getPoster_user_name() {
+        return poster_user_name;
+    }
+
+    public String getFixer_user_name() {
+        return fixer_user_name;
     }
 
     //LiveData<List<FixAppCategory>> getCategories();

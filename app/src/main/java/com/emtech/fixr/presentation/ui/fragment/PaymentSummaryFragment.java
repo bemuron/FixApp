@@ -173,7 +173,7 @@ public class PaymentSummaryFragment extends Fragment {
     //the service fee
     private void calculatePayment(int job_cost){
         float serviceFeePercentage = 0.15f;
-        Log.e(TAG, "service fee = "+ serviceFeePercentage);
+        Log.e(TAG, "service fee percentage = "+ serviceFeePercentage);
         Log.e(TAG, "job cost = "+ job_cost);
 
         //calculate the service fee
@@ -187,10 +187,10 @@ public class PaymentSummaryFragment extends Fragment {
         Log.e(TAG, "service fee = "+ serviceFee);
         Log.e(TAG, "total cost = "+ total_cost);
 
-        jobCost.setText(job_cost);
-        serviceCharge.setText(serviceFee);
-        finalTotalCost.setText(total_cost);
-        finalTotalCostLarge.setText(total_cost);
+        jobCost.setText(String.valueOf(job_cost));
+        serviceCharge.setText(String.valueOf(serviceFee));
+        finalTotalCost.setText(String.valueOf(total_cost));
+        finalTotalCostLarge.setText(String.valueOf(total_cost));
 
     }
 
