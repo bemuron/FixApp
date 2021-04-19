@@ -50,7 +50,8 @@ public interface APIService {
             @Field("date_of_birth") String date_of_birth,
             @Field("gender") String gender,
             @Field("email") String email,
-            @Field("password") String password);
+            @Field("password") String password,
+            @Field("phoneNumber") String phoneNumber);
 
     //getting category images
     @GET("public/messages/{image}")
@@ -158,7 +159,7 @@ public interface APIService {
             @Part("name") RequestBody name);
 
     //getting all the jobs associated with this user based on the status they have chosen
-    // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - complete, 5 - in progress
+    // 0 - draft, 1 - posted, 2 - assigned, 3 - offers, 4 - in progress, 5 - complete
     @GET("public/getJobsByStatus/{user_id}/{status}")
     Call<UserJobs> getJobsByStatus(
             @Path("user_id") int user_id,
@@ -289,10 +290,17 @@ public interface APIService {
             @Path("userId") int userId,
             @Path("jobId") int jobId);
 
-    //updating job to 5 - Job in Progress
+    //updating job to 4 - Job in Progress
     @FormUrlEncoded
     @POST("public/fixerStartJob")
     Call<Result> fixerStartJob(
+            @Field("offer_id") int offer_id,
+            @Field("job_id") int job_id);
+
+    //updating job to 5 - completed / finished
+    @FormUrlEncoded
+    @POST("public/fixerFinishJob")
+    Call<Result> fixerFinishJob(
             @Field("offer_id") int offer_id,
             @Field("job_id") int job_id);
 
@@ -301,9 +309,34 @@ public interface APIService {
     Call<UserJobs> getJIPDetails(
             @Path("offer_id") int offer_id);
 
+    //to make mobile money payment
+    //called a collection request using the Beyonic API
+    @FormUrlEncoded
+    @POST("public/makeMobileMoneyPayment")
+    Call<Result> makeMobileMoneyPayment(
+            @Field("job_id") int job_id,
+            @Field("poster_id") int poster_id,
+            @Field("fixer_id") int fixer_id,
+            @Field("offer_id") int offer_id,
+            @Field("job_cost") int job_cost,
+            @Field("amnt_fixer_gets") int amnt_fixer_gets,
+            @Field("service_fee") int service_fee);
+
+    //to make cash payment
+    @FormUrlEncoded
+    @POST("public/makeCashPayment")
+    Call<Result> makeCashPayment(
+            @Field("job_id") int job_id,
+            @Field("poster_id") int poster_id,
+            @Field("fixer_id") int fixer_id,
+            @Field("offer_id") int offer_id,
+            @Field("job_cost") int job_cost,
+            @Field("amnt_fixer_gets") int amnt_fixer_gets,
+            @Field("service_fee") int service_fee);
+
     //submitting poster rating
     @FormUrlEncoded
-    @POST("submitPosterRating")
+    @POST("public/submitPosterRating")
     Call<Result> submitPosterRating(
             @Field("job_id") int job_id,
             @Field("fixer_id") int fixer_id,
@@ -313,7 +346,7 @@ public interface APIService {
 
     //submitting fixer rating
     @FormUrlEncoded
-    @POST("submitFixerRating")
+    @POST("public/submitFixerRating")
     Call<Result> submitFixerRating(
             @Field("job_id") int job_id,
             @Field("poster_id") int poster_id,

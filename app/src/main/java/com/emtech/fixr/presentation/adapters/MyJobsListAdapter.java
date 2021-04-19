@@ -143,6 +143,10 @@ public class MyJobsListAdapter extends RecyclerView.Adapter<MyJobsListAdapter.My
         holder.job_status.setTextColor(context.getResources().getColor(R.color.offered_job));
         break;
       case 4:
+        holder.job_status.setText("In Progress");
+        holder.job_status.setTextColor(context.getResources().getColor(R.color.job_in_progress));
+        break;
+      case 5:
         holder.job_status.setText("Complete");
         holder.job_status.setTextColor(context.getResources().getColor(R.color.completed_job));
         break;

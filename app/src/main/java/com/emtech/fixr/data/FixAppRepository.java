@@ -15,6 +15,7 @@ import com.emtech.fixr.data.network.FixAppNetworkDataSource;
 import com.emtech.fixr.data.network.FetchCategories;
 import com.emtech.fixr.data.network.GetMyJobs;
 import com.emtech.fixr.data.network.LoginUser;
+import com.emtech.fixr.data.network.MakePayments;
 import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.data.network.RegisterUser;
 import com.emtech.fixr.data.network.Result;
@@ -60,6 +61,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     private FetchCategories mFetchCategories;
     private BrowsedJobsDataSource mBrowsedJobs;
     private GetMyJobs mGetMyJobs;
+    private MakePayments mMakePayments;
     private static PostFixAppJob mPostFixAppJob;
     private LoginUser mLoginUser;
     private RegisterUser mRegisterUser;
@@ -74,7 +76,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
 
     private FixAppRepository(CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
                                PostFixAppJob postFixAppJob, RegisterUser registerUser,
-                             LoginUser loginUser, GetMyJobs getMyJobs,
+                             LoginUser loginUser, GetMyJobs getMyJobs, MakePayments makePayments,
                              BrowsedJobsDataSource browsedJobsDataSource, AppExecutors executors) {
         mUsersDao = usersDao;
         mCategoryDao = categoryDao;
@@ -83,6 +85,7 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         mRegisterUser = registerUser;
         mLoginUser = loginUser;
         mGetMyJobs = getMyJobs;
+        mMakePayments = makePayments;
         mBrowsedJobs = browsedJobsDataSource;
         mExecutors = executors;
         LiveData<Category[]> fixAppCategories = mFetchCategories.getCurrentCategories();
@@ -114,12 +117,12 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
     public synchronized static FixAppRepository getInstance(
             CategoriesDao categoryDao, UsersDao usersDao, FetchCategories fetchCategories,
             PostFixAppJob postFixAppJob, RegisterUser registerUser, LoginUser loginUser,
-            GetMyJobs getMyJobs, BrowsedJobsDataSource browsedJobsDataSource, AppExecutors executors) {
+            GetMyJobs getMyJobs, MakePayments makePayments, BrowsedJobsDataSource browsedJobsDataSource, AppExecutors executors) {
         Log.d(LOG_TAG, "Getting the repository");
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new FixAppRepository(categoryDao, usersDao, fetchCategories,
-                        postFixAppJob, registerUser, loginUser, getMyJobs,
+                        postFixAppJob, registerUser, loginUser, getMyJobs, makePayments,
                         browsedJobsDataSource, executors);
                 Log.d(LOG_TAG, "Made new repository");
             }
@@ -229,11 +232,18 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         return mGetMyJobs.getOfferDetails();
     }
 
-    //updating the job to started - 5
+    //updating the job to started - 4
     public void fixerStartJob(int offerId, int jobId){
         Log.e(LOG_TAG, "calling method to set job status to job in progress");
-        //call retrofit in background to start the job. 5 - job in progress
+        //call retrofit in background to start the job. 4 - job in progress
         mExecutors.diskIO().execute(() -> mGetMyJobs.FixerStartJob(offerId, jobId));
+    }
+
+    //updating the job to completed - 5
+    public void fixerFinishJob(int offerId, int jobId){
+        Log.e(LOG_TAG, "calling method to set job status to complete/finished");
+        //call retrofit in background to start the job. 5 - job completed
+        mExecutors.diskIO().execute(() -> mGetMyJobs.FixerFinishJob(offerId, jobId));
     }
 
     //getting offer details of a job in progress
@@ -298,6 +308,26 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
         Log.e(LOG_TAG, "calling method to check if a fixer already made an offer to a job");
         //call retrofit in background to check if offer is already made
         mExecutors.diskIO().execute(() -> mGetMyJobs.CheckIfOfferIsAlreadyMade(userId, jobId));
+    }
+
+    //make a mobile money payment
+    //used when the poster has mobile money payment set as default
+    public void makeMobileMoneyPayment(int job_id, int poster_id, int fixer_id, int offer_id,
+                                       int job_cost, int service_fee, int amnt_fixer_gets){
+        Log.e(LOG_TAG, "calling method to make mobile money payment");
+        //call retrofit in background to make mobile money payment
+        mExecutors.diskIO().execute(() -> mMakePayments.MakeMobileMoneyPayment(job_id, poster_id,
+                fixer_id, offer_id, job_cost, amnt_fixer_gets, service_fee));
+
+    }
+
+    public void makeCashPayment(int job_id, int poster_id, int fixer_id, int offer_id,
+                                int job_cost, int service_fee, int amnt_fixer_gets){
+        Log.e(LOG_TAG, "calling method to make cash payment");
+        //call retrofit in background to make cash payment
+        mExecutors.diskIO().execute(() -> mMakePayments.MakeCashPayment(job_id, poster_id,
+                fixer_id, offer_id, job_cost, amnt_fixer_gets, service_fee));
+
     }
 
     //submitting the fixer rating
@@ -445,8 +475,8 @@ public class FixAppRepository implements PostFixAppJob.JobUpdatedCallBack, PostF
 
     //method to register user in database
     //calls service
-    public void registerFixAppUser(String name, String date_of_birth, String gender, String email, String password){
-        mRegisterUser.startRegisterUserService(name, date_of_birth, gender, email, password);
+    public void registerFixAppUser(String name, String date_of_birth, String gender, String email, String password,String phoneNumber){
+        mRegisterUser.startRegisterUserService(name, date_of_birth, gender, email, password, phoneNumber);
     }
 
     //method to receive updated job details from activity and pass them to the

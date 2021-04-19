@@ -361,12 +361,17 @@ public class PostFixAppJob {
 
         MultipartBody.Part[] fileToUpload = new MultipartBody.Part[fileArrayList.size()];
 
-        for (int pos = 0; pos < fileArrayList.size(); pos++){
-            //parsing any media file
-            RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), fileArrayList.get(pos));
+        try {
+            for (int pos = 0; pos < fileArrayList.size(); pos++) {
+                //parsing any media file
+                RequestBody requestBody = RequestBody.create(MediaType.parse("image/*"), fileArrayList.get(pos));
 
-            fileToUpload[pos] = MultipartBody.Part.createFormData("file[]",
-                    fileArrayList.get(pos).getName(), requestBody);
+                fileToUpload[pos] = MultipartBody.Part.createFormData("file[]",
+                        fileArrayList.get(pos).getName(), requestBody);
+            }
+        }catch (Exception e){
+            Log.e(LOG_TAG,"Error when parsing image list array");
+            e.printStackTrace();
         }
 
         //Defining retrofit api service*/

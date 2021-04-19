@@ -643,7 +643,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
     public File createImageFile() {
         // Create an image file name
         String formattedDate = new SimpleDateFormat("yyyyMMdd",Locale.US).format(new Date());
-        String imageFileName = "FAIMG_" + formattedDate + "_";
+        String imageFileName = "FAIMG_" + formattedDate + "_P"+userId+"J"+mJobId+"_";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             File mFile = null;
 
@@ -651,6 +651,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
                 //imageFile = createImageFile();
                 File storageDir = getActivity().getExternalFilesDir(DIRECTORY_PICTURES);
                 mFile = File.createTempFile(imageFileName,".jpg",storageDir);
+                Log.e(TAG,"Cam image File in try block = "+ mFile);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -659,6 +660,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             mCurrentPhotoPath = mFile.getAbsolutePath();
             Log.e(TAG,"Abs Path = "+ mFile.getAbsolutePath());
             //mCurrentPhotoPath = file.getAbsolutePath();
+            Log.e(TAG,"Cam image File = "+ mFile);
             return mFile;
         }else {
             File storageDir = Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES);
@@ -667,9 +669,11 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            mPhotoFile = imageFile;
             // Save a file: path for use with ACTION_VIEW intents
             mCurrentPhotoPath = "file:" + imageFile.getAbsolutePath();
             Log.e(TAG,"Path = "+mCurrentPhotoPath);
+            Log.e(TAG,"Cam image File = "+ imageFile);
             return imageFile;
         }
     }
@@ -714,13 +718,13 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
     //method to get what user has filled in
     public  void getJobDetails() {
-        String jobTitle = jobTitleEditText.getText().toString().trim();
+        jobTitle = jobTitleEditText.getText().toString().trim();
         if (TextUtils.isEmpty(jobTitle)) {
             jobTitleEditText.setError("Job Title is required");
             //return false;
         }
 
-        String jobDesc = jobDescEditText.getText().toString().trim();
+        jobDesc = jobDescEditText.getText().toString().trim();
         if (TextUtils.isEmpty(jobDesc)) {
             jobDescEditText.setError("Job description is required");
             //return false;
@@ -729,7 +733,7 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         String jobLocation = jobLocationEditText.getText().toString().trim();
 
         //job title and description are mandatory
-        //after making making sure they are there we create the job using this data, return the job id,
+        //after making making sure they are there we can update the job details,
         //then just keep updating with more details as the user adds
         if (!jobTitle.isEmpty() && !jobDesc.isEmpty()){
             //if location is specified
@@ -810,10 +814,12 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
 
     //creating a temp file
     private File createTempFile(String name,Uri uri){
+        String formattedDate = new SimpleDateFormat("yyyyMMdd",Locale.US).format(new Date());
+        String imageFileName = "FAIMG_" + formattedDate + "_P"+userId+"J"+mJobId+"_";
         File file = null;
         try {
             File storageDir = PostJobActivity.getInstance().getExternalFilesDir(DIRECTORY_PICTURES);
-            file = File.createTempFile("sample_dem", ".jpg", storageDir);
+            file = File.createTempFile(imageFileName, ".jpg", storageDir);
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -1226,7 +1232,9 @@ public class PostJobDetailsFragment extends Fragment implements View.OnClickList
         imageModel.setSelected(false);
         uploadImageArrayList.add(imageModel);
         imageFilesList.add(mPhotoFile);
-        Log.e(TAG, "filepath object "+filePath);
+        //imageFilesList.add(filePath);
+        Log.e(TAG, "photo file "+mPhotoFile);
+        //Log.e(TAG, "filepath object "+filePath);
         uploadImagesAdapter.refreshImageList(uploadImageArrayList);
     }
 

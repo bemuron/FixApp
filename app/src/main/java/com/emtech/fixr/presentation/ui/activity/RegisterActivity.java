@@ -47,7 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText dob;
     private Calendar myCalendar = Calendar.getInstance();
     private DatePickerDialog mDatePickerDialog;
-    private EditText inputPassword;
+    private EditText inputPassword, confirmPassword, phoneNumber;
     private ProgressDialog pDialog;
     private SessionManager session;
 
@@ -69,10 +69,13 @@ public class RegisterActivity extends AppCompatActivity {
         dob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //show a calendar when clicked
                 mDatePickerDialog.show();
             }
-        }); //when clicked should show a calendar
+        });
         inputPassword = findViewById(R.id.edit_text_register_password);
+        confirmPassword = findViewById(R.id.edit_text_confirm_password);
+        phoneNumber = findViewById(R.id.edit_text_register_phonenumber);
         btnRegister = findViewById(R.id.btnRegister);
         btnLinkToLogin = findViewById(R.id.btnLinkToLoginScreen);
 
@@ -121,8 +124,18 @@ public class RegisterActivity extends AppCompatActivity {
                     inputEmail.setError("Please enter your email");
                 }
                 String password = inputPassword.getText().toString().trim();
-                if (TextUtils.isEmpty(firstName)) {
-                    inputFirstName.setError("Please enter your password");
+                if (TextUtils.isEmpty(password)) {
+                    inputPassword.setError("Please enter your password");
+                }
+
+                String passwordConfirm = confirmPassword.getText().toString().trim();
+                if (TextUtils.isEmpty(passwordConfirm)) {
+                    confirmPassword.setError("Please enter your password");
+                }
+
+                String userPhone = phoneNumber.getText().toString().trim();
+                if (TextUtils.isEmpty(userPhone)) {
+                    phoneNumber.setError("Please enter your phone number");
                 }
 
                 String gender = (String) userGender.getText();
@@ -131,9 +144,15 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 if (!firstName.isEmpty() && !lastName.isEmpty()  && !birth_date.isEmpty()
-                        && !email.isEmpty() && !password.isEmpty() && !gender.isEmpty()) {
+                        && !email.isEmpty() && !password.isEmpty() && !userPhone.isEmpty() && !gender.isEmpty()) {
                     String fullName = firstName + " " + lastName;
-                    registerUser(fullName, birth_date, gender, email, password);
+                    if (comparePasswords(password, passwordConfirm)){
+                        registerUser(fullName, birth_date, gender, email, password, userPhone);
+                    }else{
+                        Toast.makeText(RegisterActivity.this, "Passwords do not match", Toast.LENGTH_LONG).show();
+                        confirmPassword.setError("Passwords do not match");
+                    }
+
                 } else {
                     Toast.makeText(getApplicationContext(),
                             "Please enter your details!", Toast.LENGTH_LONG)
@@ -171,12 +190,17 @@ public class RegisterActivity extends AppCompatActivity {
         dob.setText(sdf.format(myCalendar.getTime()));
     }
 
+    //method to compare user entered passwords
+    private boolean comparePasswords(String pass, String comPass){
+        return pass.equals(comPass);
+    }
+
     /**
      * Method to call viewmodel method to post user reg details to database
      * */
     private void registerUser(final String fullName, final String dob,
                               final String gender,  final String email,
-                              final String password) {
+                              final String password, final String phoneNumber) {
 
         //disable clicks on the register button during registration process
         btnRegister.setClickable(false);
@@ -201,7 +225,7 @@ public class RegisterActivity extends AppCompatActivity {
         APIService service = new LocalRetrofitApi().getRetrofitService();
 
         //defining the call
-        Call<Result> call = service.createUser(fullName, mysqlDate, gender, email, password);
+        Call<Result> call = service.createUser(fullName, mysqlDate, gender, email, password, phoneNumber);
 
         //calling the com.emtech.retrofitexample.api
         call.enqueue(new Callback<Result>() {
@@ -219,12 +243,18 @@ public class RegisterActivity extends AppCompatActivity {
                         Log.e(TAG, "Registered user id is " + user_id);
 
                         Toast toast = Toast.makeText(RegisterActivity.this,
-                                "Registration successful. Verify phone number", Toast.LENGTH_LONG);
+                                "Registration successful. Log in now", Toast.LENGTH_LONG);
                         toast.show();
 
                         //go and verify the user's phone
-                        Intent intent = new Intent(RegisterActivity.this, VerifyPhoneActivity.class);
+                        /*Intent intent = new Intent(RegisterActivity.this, VerifyPhoneActivity.class);
                         intent.putExtra("user_id", user_id);
+                        startActivity(intent);
+                        finish();*/
+
+                        //go and verify the user's phone
+                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                        //intent.putExtra("user_id", user_id);
                         startActivity(intent);
                         finish();
 

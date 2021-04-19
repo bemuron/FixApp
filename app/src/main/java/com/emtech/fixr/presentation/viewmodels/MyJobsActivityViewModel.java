@@ -110,7 +110,7 @@ public class MyJobsActivityViewModel extends ViewModel {
         mRepository.submitPosterRating(job_id, fixer_id, poster_id, poster_rating, comment);
     }
 
-    //method to update the job status to job in progress / started - 5
+    //method to update the job status to job in progress / started - 4
     public void fixerStartJob(int offerId, int jobId){
         mRepository.fixerStartJob(offerId, jobId);
     }
@@ -118,6 +118,11 @@ public class MyJobsActivityViewModel extends ViewModel {
     //get the details for the job in progress
     public LiveData<Offer> getJIPDetails(int offerId){
         return mRepository.getJIPDetails(offerId);
+    }
+
+    //method to update the job status to completed - 5
+    public void fixerFinishJob(int offerId, int jobId){
+        mRepository.fixerFinishJob(offerId, jobId);
     }
 
 

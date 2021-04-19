@@ -242,14 +242,15 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         //if job id is > 0 we are updating the job, else its at the default
         // state of 0 - posting fresh details
         if (job_id > 0) {
-            //we are updating the existing job details
-            postJobActivityViewModel.updateJobDetails(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
-                    mustHaveThree, isJobRemote, imageFilesList, PostJobActivity.getInstance());
-            Log.e(LOG_TAG, "Inside job posted callback job id = "+ job_id);
             //if the file is null, then we are updating the details without an image attached
             if (imageFilesList == null){
                 postJobActivityViewModel.updateJobDetailsWithoutImage(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
                         mustHaveThree, isJobRemote, PostJobActivity.getInstance());
+            }else{
+                //we are updating the existing job details with images attached
+                postJobActivityViewModel.updateJobDetails(job_id, jobTitle, jobDesc, jobLocation, mustHaveOne, mustHaveTwo,
+                        mustHaveThree, isJobRemote, imageFilesList, PostJobActivity.getInstance());
+                Log.e(LOG_TAG, "Inside job posted callback job id = "+ job_id);
             }
 
         }/*else {
@@ -521,6 +522,7 @@ public class PostJobActivity extends AppCompatActivity implements PostJobDetails
         }else {
             hideBar();
             Log.e(LOG_TAG, "Job details not updated");
+            Toast.makeText(this, "Something went wrong. \n "+message, Toast.LENGTH_SHORT).show();
         }
     }
 }

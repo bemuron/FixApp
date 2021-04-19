@@ -55,8 +55,8 @@ public class LoginRegisterActivityViewModel extends ViewModel {
     }
 
     //call repository method to handle posting user reg details to server
-    public void registerUser(String name, String date_of_birth, String gender, String email, String password){
-        mRepository.registerFixAppUser(name, date_of_birth, gender, email, password);
+    public void registerUser(String name, String date_of_birth, String gender, String email, String password, String phoneNumber){
+        mRepository.registerFixAppUser(name, date_of_birth, gender, email, password, phoneNumber);
     }
 
     //call repository method to update the user's FCM id in the db

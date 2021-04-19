@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.emtech.fixr.R;
 import com.emtech.fixr.helpers.SessionManager;
@@ -28,6 +29,7 @@ import java.util.Locale;
 
 public class JobInProgressActivity extends AppCompatActivity {
     private static final String LOG_TAG = JobInProgressActivity.class.getSimpleName();
+    public static JobInProgressActivity jobInProgressActivity;
     private MaterialButton finishJobBtn;
     private MyJobsActivityViewModel mViewModel;
     private int offer_id, jobId, userId;
@@ -46,6 +48,8 @@ public class JobInProgressActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupActionBar();
+
+        jobInProgressActivity = this;
 
         // Progress bar
         pBar = findViewById(R.id.jip_progress_bar);
@@ -117,6 +121,10 @@ public class JobInProgressActivity extends AppCompatActivity {
         }
     }
 
+    public JobInProgressActivity getInstance(){
+        return jobInProgressActivity;
+    }
+
     //initialise the view widgets
     private void setUpWidgets(){
         collapsingToolbar = findViewById(R.id.toolbar_layout);
@@ -131,18 +139,9 @@ public class JobInProgressActivity extends AppCompatActivity {
         finishJobBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(JobInProgressActivity.this, PaymentActivity.class);
-                intent.putExtra("job_id", offer.getJob_id());
-                intent.putExtra("poster_id", offer.getPosted_by());
-                intent.putExtra("fixer_id", offer.getOffered_by());
-                intent.putExtra("job_cost", offer.getFinal_job_cost());
-                intent.putExtra("fixer_prof_pic", offer.getFixer_profile_pic());
-                intent.putExtra("poster_prof_pic", offer.getPoster_profile_pic());
-                intent.putExtra("fixer_name", offer.getFixer_user_name());
-                intent.putExtra("poster_name", offer.getPoster_user_name());
-                intent.putExtra("offerID", offer_id);
-                intent.putExtra("jobName", jobName);
-                startActivity(intent);
+                showBar();
+                //change job status in db to 5 - completed
+                mViewModel.fixerFinishJob(offer_id, jobId);
             }
         });
     }
@@ -184,6 +183,27 @@ public class JobInProgressActivity extends AppCompatActivity {
 
         jobStartDate.setText(jobDate);
         jobActualStartDate.setText(todayDate);
+    }
+
+    //called in GetMyJobs to provide the response to the finish job action
+    public void jobFinishedResponse(Boolean isJobFinished, String message){
+        hideBar();
+        if(isJobFinished){
+            Intent intent = new Intent(JobInProgressActivity.this, PaymentActivity.class);
+            intent.putExtra("job_id", offer.getJob_id());
+            intent.putExtra("poster_id", offer.getPosted_by());
+            intent.putExtra("fixer_id", offer.getOffered_by());
+            intent.putExtra("job_cost", offer.getFinal_job_cost());
+            intent.putExtra("fixer_prof_pic", offer.getFixer_profile_pic());
+            intent.putExtra("poster_prof_pic", offer.getPoster_profile_pic());
+            intent.putExtra("fixer_name", offer.getFixer_user_name());
+            intent.putExtra("poster_name", offer.getPoster_user_name());
+            intent.putExtra("offer_id", offer_id);
+            intent.putExtra("jobName", jobName);
+            startActivity(intent);
+        }else{
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void showBar() {

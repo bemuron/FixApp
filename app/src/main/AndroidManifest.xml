@@ -27,6 +27,8 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         android:windowSoftInputMode="adjustPan">
+        <activity android:name=".presentation.ui.activity.IntroActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <!-- Log in Activity -->
         <activity
             android:name=".presentation.ui.activity.LoginActivity"
@@ -105,17 +107,17 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".presentation.ui.activity.PaymentActivity"
-            android:screenOrientation="portrait" /> <!-- upload image preview activity-->
+            android:screenOrientation="portrait" /> <!-- upload image preview activity -->
         <activity
             android:name=".presentation.ui.activity.ImagePreviewActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_image_preview"
             android:parentActivityName=".presentation.ui.activity.PostJobActivity"
             android:theme="@style/FullscreenTheme" />
-
-        <activity android:name=".presentation.ui.activity.JobInProgressActivity"
+        <activity
+            android:name=".presentation.ui.activity.JobInProgressActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <service
             android:name=".fcm.MyFirebaseMessagingService"

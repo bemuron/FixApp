@@ -25,7 +25,10 @@
     <string name="payment_summary_title">Payment summary</string>
 
     <string name="hint_password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
     <string name="hint_email">Email</string>
+    <string name="hint_phonenumber">Your phone number e.g 07…</string>
+    <string name="phonenumber_caution">\u2713 Make sure to put in your correct phone number as this is how people will be able to contact you</string>
     <string name="hint_first_name">First Name</string>
     <string name="hint_last_name">Last Name</string>
     <string name="hint_dob">Date of Birth</string>
@@ -158,6 +161,25 @@
     <string name="menu_edit_profile">Edit Profile</string>
     <string name="title_activity_image_preview">Image Preview</string>
     <string name="create_job_button">Create Job</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <!-- For app on boarding screens-->
+    <string name="next">NEXT</string>
+    <string name="skip">SKIP</string>
+    <string name="start">GOT IT</string>
+
+    <string name="slide_1_title">Hello Food!</string>
+    <string name="slide_1_desc">The easiest way to order food from your favourite restaurant!</string>
+
+    <string name="slide_2_title">Movie Tickets</string>
+    <string name="slide_2_desc">Book movie tickets for your family and friends!</string>
+
+    <string name="slide_3_title">Great Discounts</string>
+    <string name="slide_3_desc">Best discounts on every single service we offer!</string>
+
+    <string name="slide_4_title">World Travel</string>
+    <string name="slide_4_desc">Book tickets of any transportation and travel the world!</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
 </resources>

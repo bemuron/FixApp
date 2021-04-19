@@ -39,9 +39,10 @@ public class PaymentSummaryFragment extends Fragment {
     private Button confirmPaymentButton;
     private SessionManager session;
     private String userRole;
-    private int job_id, poster_id, total_cost, job_cost, serviceFee;
+    private int job_id, poster_id, total_cost, job_cost, serviceFee, userId;
 
     private OnPaymentSummaryListener mListener;
+    private OnPaymentByMobileMoneyListener mmPaymentListener;
 
     public PaymentSummaryFragment() {
         // Required empty public constructor
@@ -80,6 +81,7 @@ public class PaymentSummaryFragment extends Fragment {
         // session manager
         session = new SessionManager(getActivity());
         userRole = session.getUserRole();
+        userId = session.getUserId();
     }
 
     @Override
@@ -102,7 +104,7 @@ public class PaymentSummaryFragment extends Fragment {
         paymentIstruction = view.findViewById(R.id.paymentInstructionTv);
         confirmPaymentButton = view.findViewById(R.id.confirmPaymentButton);
         //only show this button if the role of the user is fixer
-        if (userRole.equals("poster")) {
+        if (userId == poster_id) {
             confirmPaymentButton.setVisibility(View.GONE);
             paymentIstruction.setText("Please pay the amount below to the job fixer");
         }else{
@@ -131,7 +133,8 @@ public class PaymentSummaryFragment extends Fragment {
                     //the final cost received by the fixer
                     //paymentReceived(job_id, poster_id, total_cost);
 
-                    mListener.onPaymentSummaryInteraction(job_id, poster_id);
+                    //when cash is used
+                    mListener.onPaymentSummaryInteraction(job_id, poster_id, job_cost, serviceFee, job_cost);
                 }
             }
         });
@@ -142,6 +145,7 @@ public class PaymentSummaryFragment extends Fragment {
         super.onAttach(context);
         if (context instanceof OnPaymentSummaryListener) {
             mListener = (OnPaymentSummaryListener) context;
+            mmPaymentListener = (OnPaymentByMobileMoneyListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnPaymentSummaryInteraction");
@@ -165,8 +169,15 @@ public class PaymentSummaryFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnPaymentSummaryListener {
-        // send meeting id to parent activity
-        void onPaymentSummaryInteraction(int job_id, int poster_id);
+        //fixer send data to payment activity that payment received
+        //this is only if cash has been used
+        void onPaymentSummaryInteraction(int job_id, int poster_id, int job_cost,
+                                         int service_fee, int amnt_fixer_gets);
+    }
+
+    public interface OnPaymentByMobileMoneyListener{
+        void onPaymentByMobileMoney(int job_id, int poster_id, int job_cost,
+                                    int service_fee, int amnt_fixer_gets);
     }
 
     //this method calculates the amount to be paid to the fixer by deducting
@@ -189,8 +200,15 @@ public class PaymentSummaryFragment extends Fragment {
 
         jobCost.setText(String.valueOf(job_cost));
         serviceCharge.setText(String.valueOf(serviceFee));
+        //if payment is by cash then the fixer will be given all the amount, the service fee inclusive
         finalTotalCost.setText(String.valueOf(total_cost));
         finalTotalCostLarge.setText(String.valueOf(total_cost));
+
+        //if this is the poster, and they have mm payment set as default then initiate Beyonic api
+        //payment
+        if (userId == poster_id) {
+            mmPaymentListener.onPaymentByMobileMoney(job_id, poster_id, job_cost, serviceFee,total_cost);
+        }
 
     }
 

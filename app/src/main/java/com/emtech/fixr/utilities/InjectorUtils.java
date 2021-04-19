@@ -26,6 +26,7 @@ import com.emtech.fixr.data.network.FetchCategories;
 import com.emtech.fixr.data.network.FixAppNetworkDataSource;
 import com.emtech.fixr.data.network.GetMyJobs;
 import com.emtech.fixr.data.network.LoginUser;
+import com.emtech.fixr.data.network.MakePayments;
 import com.emtech.fixr.data.network.PostFixAppJob;
 import com.emtech.fixr.data.network.RegisterUser;
 import com.emtech.fixr.data.network.SearchJobsDataSource;
@@ -69,6 +70,8 @@ public class InjectorUtils {
 
         GetMyJobs getMyJobs = GetMyJobs.getInstance(context.getApplicationContext(), executors);
 
+        MakePayments makePayments = MakePayments.getInstance(context.getApplicationContext(), executors);
+
         BrowsedJobsDataSource browsedJobsDataSource =
                 BrowsedJobsDataSource.getInstance();
 
@@ -76,7 +79,7 @@ public class InjectorUtils {
         //      SearchJobsDataSource.getInstance();
 
         return FixAppRepository.getInstance(database.categoriesDao(), database.usersDao(), fetchCategories,
-                fixAppJob, registerUser, loginUser, getMyJobs, browsedJobsDataSource, executors);
+                fixAppJob, registerUser, loginUser, getMyJobs, makePayments, browsedJobsDataSource, executors);
     }
 
     public static PostFixAppJob providePostFixAppJob(Context context) {

@@ -81,7 +81,7 @@ public class RatingActivity extends AppCompatActivity implements
     private void setUpRespectiveFragment(String role){
         if (userId == poster_id) {
             //if the current user of the app is a poster then the userId passed here is for the user/job poster
-            RateFixerFragment rateFixerFragment = RateFixerFragment.newInstance(job_id, userId, fixerProfPicName, fixerName);
+            RateFixerFragment rateFixerFragment = RateFixerFragment.newInstance(job_id, userId, fixer_id, fixerProfPicName, fixerName);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()
@@ -90,7 +90,7 @@ public class RatingActivity extends AppCompatActivity implements
 
         }else if (userId == fixer_id){
             //if the current user of the app is a fixer then the userId passed here is for the fixer
-            RatePosterFragment ratePosterFragment = RatePosterFragment.newInstance(job_id, userId, posterProfPicName, posterName);
+            RatePosterFragment ratePosterFragment = RatePosterFragment.newInstance(job_id, userId, poster_id, posterProfPicName, posterName);
 
             // Add the fragment to the 'fragment_container' FrameLayout
             getSupportFragmentManager().beginTransaction()

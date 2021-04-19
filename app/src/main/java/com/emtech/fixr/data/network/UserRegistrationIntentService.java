@@ -51,9 +51,10 @@ public class UserRegistrationIntentService extends IntentService {
       String gender = registerBundle.getString("gender");
       String email = registerBundle.getString("email");
       String password = registerBundle.getString("password");
+      String phoneNumber = registerBundle.getString("phoneNumber");
 
       //pass the reg details to the method to be posted to the server: finally
-      registerUser.UserRegister(name, dob, gender, email, password);
+      registerUser.UserRegister(name, dob, gender, email, password, phoneNumber);
                     /*
             if (registerUser.UserRegister(name, dob, gender, email, password)){
                 registerSuccess = true;

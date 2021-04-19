@@ -44,6 +44,7 @@ import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOption
 public class RateFixerFragment extends Fragment {
     private static final String TAG = RateFixerFragment.class.getSimpleName();
     private static final String JOB_ID = "job_id";
+    private static final String POSTER_ID = "poster_id";
     private static final String FIXER_ID = "fixer_id";
     private static final String FIXER_PROF_PIC = "fixer_prof_pic";
     private static final String FIXER_NAME = "fixer_name";
@@ -71,11 +72,12 @@ public class RateFixerFragment extends Fragment {
      * @return A new instance of fragment RateUserFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RateFixerFragment newInstance(int job_id, int poster_id, String fixerProfPic, String fixerName) {
+    public static RateFixerFragment newInstance(int job_id, int poster_id, int fixer_id, String fixerProfPic, String fixerName) {
         RateFixerFragment fragment = new RateFixerFragment();
         Bundle args = new Bundle();
         args.putInt(JOB_ID, job_id);
-        args.putInt(FIXER_ID, poster_id);
+        args.putInt(POSTER_ID, poster_id);
+        args.putInt(FIXER_ID, fixer_id);
         args.putString(FIXER_PROF_PIC, fixerProfPic);
         args.putString(FIXER_NAME, fixerName);
         fragment.setArguments(args);
@@ -87,6 +89,7 @@ public class RateFixerFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             job_id = getArguments().getInt(JOB_ID);
+            poster_id = getArguments().getInt(POSTER_ID);
             fixer_id = getArguments().getInt(FIXER_ID);
             fixerProfPic = getArguments().getString(FIXER_PROF_PIC);
             fixerName = getArguments().getString(FIXER_NAME);

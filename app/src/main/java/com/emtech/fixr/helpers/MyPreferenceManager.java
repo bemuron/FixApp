@@ -28,12 +28,22 @@ public class MyPreferenceManager {
   private static final String KEY_USER_NAME = "user_name";
   private static final String KEY_USER_EMAIL = "user_email";
   private static final String KEY_NOTIFICATIONS = "notifications";
+  private static final String IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch";
 
   // Constructor
   public MyPreferenceManager(Context context) {
     this._context = context;
     pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
     editor = pref.edit();
+  }
+
+  public void setFirstTimeLaunch(boolean isFirstTime) {
+    editor.putBoolean(IS_FIRST_TIME_LAUNCH, isFirstTime);
+    editor.commit();
+  }
+
+  public boolean isFirstTimeLaunch() {
+    return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true);
   }
 
   public void addNotification(String notification) {

@@ -44,6 +44,7 @@ public class RatePosterFragment extends Fragment {
     private static final String JOB_ID = "job_id";
     //ID of the current user in this case a poster
     private static final String POSTER_ID = "poster_id";
+    private static final String FIXER_ID = "fixer_id";
     private static final String POSTER_PROF_PIC = "poster_prof_pic";
     private static final String POSTER_NAME = "poster_name";
     private int job_id, poster_id, fixer_id;
@@ -70,10 +71,11 @@ public class RatePosterFragment extends Fragment {
      * @return A new instance of fragment RateUserFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RatePosterFragment newInstance(int job_id, int poster_id, String posterProfPic, String posterName) {
+    public static RatePosterFragment newInstance(int job_id, int fixer_id, int poster_id, String posterProfPic, String posterName) {
         RatePosterFragment fragment = new RatePosterFragment();
         Bundle args = new Bundle();
         args.putInt(JOB_ID, job_id);
+        args.putInt(FIXER_ID, fixer_id);
         args.putInt(POSTER_ID, poster_id);
         args.putString(POSTER_PROF_PIC, posterProfPic);
         args.putString(POSTER_NAME, posterName);
@@ -86,6 +88,7 @@ public class RatePosterFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             job_id = getArguments().getInt(JOB_ID);
+            fixer_id = getArguments().getInt(FIXER_ID);
             poster_id = getArguments().getInt(POSTER_ID);
             posterProfPic = getArguments().getString(POSTER_PROF_PIC);
             posterName = getArguments().getString(POSTER_NAME);

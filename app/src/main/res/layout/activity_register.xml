@@ -11,6 +11,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical"
     android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:padding="10dp" >
 
     <LinearLayout
@@ -79,8 +80,7 @@
                 android:layout_marginBottom="10dp"
                 android:hint="@string/hint_dob"
                 android:padding="10dp"
-                android:clickable="true"
-                android:focusable="true"
+                android:focusable="false"
                 android:singleLine="true"
                 android:inputType="date"
                 android:textColor="@color/colorPrimaryDark"
@@ -132,10 +132,37 @@
             android:singleLine="true"
             android:textColor="@color/colorPrimaryDark"
             android:textColorHint="@color/colorPrimaryDark" />
-    </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/register_phonenumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/edit_text_register_phonenumber"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/hint_phonenumber"
+                android:inputType="phone"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:textColor="@color/colorPrimaryDark"
+                android:textColorHint="@color/colorPrimaryDark" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/maps_btn_margin"
+            android:paddingLeft="@dimen/album_title_padding"
+            android:paddingRight="@dimen/album_title_padding"
+            android:paddingBottom="@dimen/text_size_xnormal"
+            android:text="@string/phonenumber_caution"/>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/register_password"
+            app:passwordToggleEnabled="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -150,6 +177,24 @@
             android:singleLine="true"
             android:textColor="@color/colorPrimaryDark"
             android:textColorHint="@color/colorPrimaryDark" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/confirm_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/edit_text_confirm_password"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/confirm_password"
+                android:inputType="textPassword"
+                android:padding="10dp"
+                android:singleLine="true"
+                android:textColor="@color/colorPrimaryDark"
+                android:textColorHint="@color/colorPrimaryDark" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Login Button -->

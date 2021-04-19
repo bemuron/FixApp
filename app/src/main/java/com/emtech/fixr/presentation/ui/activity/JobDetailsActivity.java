@@ -30,6 +30,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class JobDetailsActivity extends AppCompatActivity implements View.OnClickListener,
         MakeOfferDialogFragment.MakeOfferDialogListener
@@ -215,10 +216,19 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         String jobDate = null;
         String postedOn = null;
 
+        //date format for dates coming from server
         SimpleDateFormat mysqlDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         SimpleDateFormat mysqlDateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+
+        //convert to UTC first to enable us convert to local time zone later
+        mysqlDateTimeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        //the format we want them in
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
-        SimpleDateFormat myFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa", Locale.US);
+        SimpleDateFormat myFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aa", Locale.ENGLISH);
+
+        //set the time zone
+        TimeZone timeZone = TimeZone.getTimeZone("Africa/Kampala");
 
         try{
             Date d = mysqlDateFormat.parse(job.getJob_date());
@@ -229,6 +239,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
         try{
             Date d = mysqlDateTimeFormat.parse(job.getPosted_on());
+            myFormat.setTimeZone(timeZone);
             postedOn = myFormat.format(d);
         }catch (Exception e){
             e.printStackTrace();

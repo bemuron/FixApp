@@ -29,9 +29,27 @@ public class PaymentActivityViewModel extends ViewModel {
         return  this.jobStatus;
     }
 
-    //returned the new job created id
+    //returned the job status
     public LiveData<Integer> getJobStatus() {
         return this.jobStatus;
+    }
+
+    //if fixer was paid in cash
+    public void madeCashPayment(){
+
+    }
+
+    //make mobile money payment
+    public void makeMobileMoneyPayment(int job_id, int poster_id, int fixer_id, int offer_id,
+                                       int job_cost, int service_fee, int amnt_fixer_gets){
+        mRepository.makeMobileMoneyPayment(job_id, poster_id, fixer_id, offer_id, job_cost, amnt_fixer_gets, service_fee);
+
+    }
+
+    //make cash payment
+    public void makeCashPayment(int job_id, int poster_id, int fixer_id, int offer_id,
+                                int job_cost, int service_fee, int amnt_fixer_gets){
+        mRepository.makeCashPayment(job_id, poster_id, fixer_id, offer_id, job_cost, amnt_fixer_gets, service_fee);
     }
 
 }

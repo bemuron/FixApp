@@ -51,7 +51,7 @@ public class RegisterUser {
   /**
    * Starts an intent service to register the user
    */
-  public void startRegisterUserService(String name, String date_of_birth, String gender, String email, String password) {
+  public void startRegisterUserService(String name, String date_of_birth, String gender, String email, String password, String phoneNumber) {
 
     Intent intentToPost = new Intent(mContext, UserRegistrationIntentService.class);
 
@@ -61,6 +61,7 @@ public class RegisterUser {
     registerBundle.putString("gender", gender);
     registerBundle.putString("email", email);
     registerBundle.putString("password", password);
+    registerBundle.putString("phoneNumber", phoneNumber);
     intentToPost.putExtras(registerBundle);
 
     mContext.startService(intentToPost);
@@ -69,7 +70,7 @@ public class RegisterUser {
     //userRegistrationIntentService.isRegistrationSuccess();
   }
 
-  public void UserRegister(String name, String date_of_birth, String gender, String email, String password) {
+  public void UserRegister(String name, String date_of_birth, String gender, String email, String password, String phoneNumber) {
     Log.d(LOG_TAG, "Register user started");
 
     //building retrofit object
@@ -83,7 +84,7 @@ public class RegisterUser {
     APIService service = new LocalRetrofitApi().getRetrofitService();
 
     //defining the call
-    Call<Result> call = service.createUser(name, date_of_birth, gender, email, password);
+    Call<Result> call = service.createUser(name, date_of_birth, gender, email, password, phoneNumber);
 
     //calling the com.emtech.retrofitexample.api
     call.enqueue(new Callback<Result>() {

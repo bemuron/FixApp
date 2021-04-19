@@ -24,6 +24,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static com.emtech.fixr.presentation.ui.activity.JobDetailsActivity.jobDetailsActivity;
+import static com.emtech.fixr.presentation.ui.activity.JobInProgressActivity.jobInProgressActivity;
 import static com.emtech.fixr.presentation.ui.activity.OfferAcceptedDetailsForFixerActivity.offerAcceptedDetailsForFixerActivity;
 import static com.emtech.fixr.presentation.ui.activity.OfferAcceptedDetailsForPosterActivity.offerAcceptedDetailsForPosterActivity;
 import static com.emtech.fixr.presentation.ui.activity.OfferMadeDetailsForFixerActivity.offerMadeDetailsForFixerActivity;
@@ -145,15 +146,6 @@ public class GetMyJobs {
     //return the job status
     public LiveData<Integer> getJobStatus() {
         return mJobStatus;
-    }
-
-    /**
-     * Starts an intent service to fetch the categories.
-     */
-    public void startFetchCategoryService() {
-        Intent intentToFetch = new Intent(mContext, FixAppSyncIntentService.class);
-        mContext.startService(intentToFetch);
-        Log.d(LOG_TAG, "Fetch categories service created");
     }
 
     public void GetJobs(int user_id) {
@@ -1080,7 +1072,7 @@ public class GetMyJobs {
         });
     }
 
-    //retrofit call to update job status to 5 - Job In Progress
+    //retrofit call to update job status to 4 - Job In Progress
     //job is started by the fixer
     public void FixerStartJob(int offerId, int jobId){
 
@@ -1116,6 +1108,48 @@ public class GetMyJobs {
                 //probably server connection
                 Log.e(LOG_TAG, t.getMessage());
                 offerAcceptedDetailsForFixerActivity.jobStartedResponse(false,
+                        t.getMessage());
+            }
+        });
+
+    }
+
+    //retrofit call to update job status to 5 - complete / finished
+    //job is done/completed by the fixer
+    public void FixerFinishJob(int offerId, int jobId){
+
+        //Defining retrofit api service*/
+        //APIService service = retrofit.create(APIService.class);
+        APIService service = new LocalRetrofitApi().getRetrofitService();
+
+        //defining the call
+        Call<Result> call = service.fixerFinishJob(offerId, jobId);
+
+        //calling the com.emtech.retrofitexample.api
+        call.enqueue(new Callback<Result>() {
+            @Override
+            public void onResponse(Call<Result> call, Response<Result> response) {
+
+                try {
+                    if (!response.body().getError()) {
+                        Log.d(LOG_TAG, response.body().getMessage());
+                        //send response data to the activity
+                        //success
+                        jobInProgressActivity.jobFinishedResponse(true,
+                                response.body().getMessage());
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    Log.e(LOG_TAG, e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Result> call, Throwable t) {
+                //print out any error we may get
+                //probably server connection
+                Log.e(LOG_TAG, t.getMessage());
+                jobInProgressActivity.jobFinishedResponse(false,
                         t.getMessage());
             }
         });
@@ -1242,6 +1276,7 @@ public class GetMyJobs {
     }
 
 //retrofit call to send poster rating to db
+    //this also set the job status to 5 - completed
     public void submitPosterRating(int job_id, int fixer_id, int poster_id, float ratingValue, String comment){
         APIService service = new LocalRetrofitApi().getRetrofitService();
 

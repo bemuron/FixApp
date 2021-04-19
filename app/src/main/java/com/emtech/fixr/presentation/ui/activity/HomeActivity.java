@@ -496,7 +496,9 @@ public class HomeActivity extends AppCompatActivity
                 break;
 
             case R.id.payment_history:
-                navDrawerFragmentContainer.setVisibility(View.VISIBLE);
+                intent = new Intent(this, IntroActivity.class);
+                startActivity(intent);
+                //navDrawerFragmentContainer.setVisibility(View.VISIBLE);
                 //fragment = new PaymentHistoryFragment(userId, "fixer");
                 break;
 

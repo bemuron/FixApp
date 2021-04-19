@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/margin_padding_xtiny"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".presentation.ui.fragment.RatePosterFragment">
+    android:padding="@dimen/margin_padding_normal"
+    android:clipToPadding="false"
+    tools:context=".presentation.ui.fragment.RatePosterFragment"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
     <TextView
         android:id="@+id/rate_poster_instruction"
@@ -62,7 +67,7 @@
         android:id="@+id/posterRatingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="148dp"
+        android:layout_marginTop="100dp"
         android:isIndicator="false"
         android:stepSize="1.0"
         app:layout_constraintEnd_toEndOf="parent"
@@ -74,6 +79,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
         android:hint="Any comments (Optional)"
         app:hintEnabled="true"
         app:layout_constraintBottom_toTopOf="@+id/submitPosterRatingButton"
@@ -84,9 +90,8 @@
             android:id="@+id/edit_text_rate_poster_comment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:focusableInTouchMode="false"
             android:layout_marginBottom="@dimen/margin_padding_small"
-            android:layout_marginTop="@dimen/margin_padding_small"
+            android:layout_marginTop="20dp"
             android:maxLines="10"
             android:inputType="textMultiLine"
             android:textColor="#000000"/>
@@ -101,8 +106,9 @@
         android:text="Submit"
         android:textColor="@color/white"
         android:background="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

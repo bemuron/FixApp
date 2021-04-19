@@ -42,8 +42,11 @@ public class SessionManager {
   //email
   public static final String KEY_EMAIL = "email";
 
-  //user role (can be user or tutor)
+  //user role (can be poster or fixer)
   public static final String KEY_ROLE = "role";
+
+  //phone number
+  public static final String KEY_PHONE_NUMBER = "phone_number";
 
   //user profile pic
   public static final String KEY_PROFILE_PIC = "profile_pic";
@@ -54,8 +57,8 @@ public class SessionManager {
   //session: payment received
   private static final String KEY_SESSION_PAYMENT_RECEIVED = "isPaymentReceived";
 
-  //session meeting id
-  private static final String KEY_SESSION_JOB_ID = "job_id";
+  //session job id
+  private static final String KEY_JOB_ID = "job_id";
 
   //session user id
   //id of the user who requested for a tutor

@@ -343,7 +343,7 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
         }
     }
 
-    //update job status in the db if fixer starts the job to 5 - in progress
+    //update job status in the db if fixer starts the job to 4 - in progress
     private void updateJobStatus(int offerId, int jobId){
         mViewModel.fixerStartJob(offerId, jobId);
     }
