@@ -128,14 +128,18 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
         });
     }
 
-            @Override
-            public void onResume(){
-                super.onResume();
-                if (mOfferDetails == null){
-                    showBar();
-                    clearViews();
-                }
-            }
+    @Override
+    public void onResume(){
+        super.onResume();
+        showBar();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        //clear the views if they had any data before
+        clearViews();
+    }
 
     public OfferAcceptedDetailsForFixerActivity getInstance(){
         return offerAcceptedDetailsForFixerActivity;
@@ -191,7 +195,6 @@ public class OfferAcceptedDetailsForFixerActivity extends AppCompatActivity impl
 
     //method to handle clearing of the views with the content
     private void clearViews(){
-        showBar();
         jobTitleTV.setText("");
         postedByTV.setText("");
         //timePostedTV.setText("");

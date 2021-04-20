@@ -57,9 +57,6 @@ public class PosterOffersListActivity extends AppCompatActivity implements
             Toast.makeText(this, "Please check your internet connection", Toast.LENGTH_LONG).show();
         }
 
-        //first clear the previous list
-        clearData();
-
         getAllWidgets();
 
         MyJobsViewModelFactory factory = InjectorUtils.provideMyJobsViewModelFactory(this);
@@ -114,12 +111,15 @@ public class PosterOffersListActivity extends AppCompatActivity implements
     @Override
     public void onResume(){
         super.onResume();
-        //showBar();
-        //clearData();
-        /*if (!(offersAdapter == null)) {
-            offersAdapter.notifyDataSetChanged();
-        }*/
+        showBar();
 
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        //first clear the previous list
+        clearData();
     }
 
     private void setupActionBar() {

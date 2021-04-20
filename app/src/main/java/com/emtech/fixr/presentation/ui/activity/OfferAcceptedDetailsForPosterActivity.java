@@ -104,8 +104,6 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
 
         //initialise the views
         setUpWidgets();
-        //clear the views if they had eny data before
-        clearViews();
 
         mViewModel.getOfferDetailsForPoster(offer_id).observe(this, offerDetails -> {
             offerDet = offerDetails;
@@ -156,24 +154,26 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
         }
     }
 
-            @Override
-            public void onResume(){
-                super.onResume();
-                if (offerDet == null){
-                    showBar();
-                    clearViews();
-                }else{
-                    if (isJobInProgress()){
-                        Intent intent2 = new Intent(this, JobInProgressActivity.class);
-                        intent2.putExtra("jobID", offer.getJob_id());
-                        intent2.putExtra("jobName", offer.getJob_name());
-                        intent2.putExtra("poster", offer.getPosted_by());
-                        intent2.putExtra("fixer", offer.getOffered_by());
-                        intent2.putExtra("postedOn", offer.getPosted_on());
-                        startActivity(intent2);
-                    }
-                }
-            }
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (isJobInProgress()){
+                    Intent intent2 = new Intent(this, JobInProgressActivity.class);
+                    intent2.putExtra("jobID", offer.getJob_id());
+                    intent2.putExtra("jobName", offer.getJob_name());
+                    intent2.putExtra("poster", offer.getPosted_by());
+                    intent2.putExtra("fixer", offer.getOffered_by());
+                    intent2.putExtra("postedOn", offer.getPosted_on());
+                    startActivity(intent2);
+        }
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        //clear the views if they had any data before
+        clearViews();
+    }
 
     public static OfferAcceptedDetailsForPosterActivity getInstance(){
         return offerAcceptedDetailsForPosterActivity;
@@ -258,7 +258,6 @@ public class OfferAcceptedDetailsForPosterActivity extends AppCompatActivity imp
 
     //method to handle clearing of the views with the content
     private void clearViews(){
-        showBar();
         jobTitleTV.setText("");
         offerByTV.setText("");
         //toBeDoneDateTV.setText(job.getJob_date());

@@ -55,9 +55,6 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
         progressBar = findViewById(R.id.browse_jobs_progress_bar);
         showBar();
 
-        //clear previous list if it exists
-        clearData();
-
         BrowseJobsViewModelFactory factory = InjectorUtils.provideBrowseJobsViewModelFactory(getApplicationContext());
         mViewModel = new ViewModelProvider
                 (this, factory).get(BrowseJobsActivityViewModel.class);
@@ -73,6 +70,21 @@ public class BrowseJobsActivity extends AppCompatActivity implements BrowseJobsA
 
         getAllWidgets();
         setAdapter();
+    }
+
+    //onResume is called when the activity is relaunched again from the back stack
+    @Override
+    public void onResume(){
+        super.onResume();
+        showBar();
+    }
+
+    //onPause is called when another activity takes foreground
+    @Override
+    public void onPause(){
+        super.onPause();
+        //first clear the previous list
+        clearData();
     }
 
     private void setupActionBar() {

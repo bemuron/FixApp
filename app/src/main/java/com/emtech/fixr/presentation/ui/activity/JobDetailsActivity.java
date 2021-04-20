@@ -87,8 +87,7 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         mViewModel.checkIfOfferIsAlreadyMade(userId, job_id);
 
         mViewModel.getJobDetails(job_id).observe(this, jobDetails -> {
-            clearViews();
-
+            showDialog();
             if (jobDetails != null) {
                 job = new Job();
                 job.setCategory_id(jobDetails.getCategory_id());
@@ -133,12 +132,20 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         return jobDetailsActivity;
     }
 
-    /*@Override
+    @Override
     public void onResume(){
         super.onResume();
-        jobDetailsActivity = this;
+        showDialog();
+    }
 
-    }*/
+
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        //clear the views when the activity is paused (another activity comes on top)
+        clearViews();
+    }
 
     private void setupActionBar() {
         ActionBar actionBar = getSupportActionBar();
@@ -152,12 +159,15 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
     //this method is called from GetMyJobs with the network response for whether an offer
     //has already been made
     public void offerAlreadyMadeCheck(Boolean isOfferAlreadyMade){
+        isOfferMade = isOfferAlreadyMade;
         if (isOfferAlreadyMade){
-            isOfferMade = isOfferAlreadyMade;
             makeOfferButton.setEnabled(false);
             makeOfferButton.setVisibility(View.GONE);
             offerAlreadyMadeNoticeTV.setVisibility(View.VISIBLE);
             offerAlreadyMadeNoticeTV.setText("You already made an offer to this job");
+        }else{
+            makeOfferButton.setEnabled(true);
+            makeOfferButton.setVisibility(View.VISIBLE);
         }
     }
 
@@ -173,6 +183,8 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
         jobDetailsET = findViewById(R.id.JD_job_details);
         makeOfferButton = findViewById(R.id.JD_make_offer);
         makeOfferButton.setOnClickListener(this);
+        makeOfferButton.setEnabled(false);
+        makeOfferButton.setVisibility(View.GONE);
         offerAlreadyMadeNoticeTV = findViewById(R.id.JD_offer_already_made_notice);
     }
 
@@ -200,7 +212,6 @@ public class JobDetailsActivity extends AppCompatActivity implements View.OnClic
 
     //method to handle clearing of the views with the content
     private void clearViews(){
-        showDialog();
         jobTitleTV.setText("");
         postedByTV.setText("");
         timePostedTV.setText("");

@@ -65,9 +65,6 @@ public class FixerOffersListActivity extends AppCompatActivity implements
         mUserId = getIntent().getIntExtra(USER_ID, 0);
         mOfferType = getIntent().getStringExtra(OFFER_TYPE);
 
-        //first clear the previous list
-        clearData();
-
         getAllWidgets();
         setAdapter();
         showBar();
@@ -119,6 +116,14 @@ public class FixerOffersListActivity extends AppCompatActivity implements
     @Override
     public void onResume(){
         super.onResume();
+    }
+
+    //onPause is called when another activity takes over the view/screen
+    @Override
+    public void onPause(){
+        super.onPause();
+        //first clear the previous list
+        clearData();
     }
 
     private void setupActionBar() {

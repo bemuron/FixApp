@@ -97,10 +97,9 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
 
         //initialise the views
         setUpWidgets();
-        //clear the views if they had eny data before
-        clearViews();
 
         mViewModel.getOfferDetailsForPoster(offer_id).observe(this, offerDetails -> {
+            showBar();
             offerDet = offerDetails;
             if (offerDetails != null) {
                 offer = new Offer();
@@ -134,10 +133,14 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
     @Override
     public void onResume(){
         super.onResume();
-        if (offerDet == null){
-            showBar();
-            clearViews();
-        }
+        showBar();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        //clear the views if they had any data before
+        clearViews();
     }
 
     public static OfferReceivedDetailsForPosterActivity getInstance(){
@@ -219,7 +222,6 @@ public class OfferReceivedDetailsForPosterActivity extends AppCompatActivity
 
     //method to handle clearing of the views with the content
     private void clearViews(){
-        showBar();
         jobTitleTV.setText("");
         offerByTV.setText("");
         //toBeDoneDateTV.setText(job.getJob_date());

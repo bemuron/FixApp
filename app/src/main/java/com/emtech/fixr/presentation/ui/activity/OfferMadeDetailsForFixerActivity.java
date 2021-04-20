@@ -124,10 +124,14 @@ public class OfferMadeDetailsForFixerActivity extends AppCompatActivity implemen
     @Override
     public void onResume(){
         super.onResume();
-        if (mOfferDetails == null){
-            showBar();
-            clearViews();
-        }
+        showBar();
+    }
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        //clear the views if they had any data before
+        clearViews();
     }
 
     public OfferMadeDetailsForFixerActivity getInstance(){
@@ -182,7 +186,6 @@ public class OfferMadeDetailsForFixerActivity extends AppCompatActivity implemen
 
     //method to handle clearing of the views with the content
     private void clearViews(){
-        showBar();
         jobTitleTV.setText("");
         postedByTV.setText("");
         //timePostedTV.setText("");

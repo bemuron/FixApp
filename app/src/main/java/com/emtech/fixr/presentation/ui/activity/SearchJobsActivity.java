@@ -53,9 +53,6 @@ public class SearchJobsActivity extends AppCompatActivity implements SearchJobsA
         // Progress bar
         progressBar = findViewById(R.id.search_jobs_progress_bar);
 
-        //clear previous list of it exists
-        clearData();
-
         SearchJobsViewModelFactory searchFactory = InjectorUtils.provideSearchJobsViewModelFactory(getApplicationContext());
         viewModel = new ViewModelProvider
                 (this, searchFactory).get(SearchJobsActivityViewModel.class);
@@ -69,6 +66,21 @@ public class SearchJobsActivity extends AppCompatActivity implements SearchJobsA
                         InputMethodManager.HIDE_IMPLICIT_ONLY);*/
 
         handleIntent(getIntent());
+    }
+
+    //onResume is called when the activity is relaunched again from the back stack
+    @Override
+    public void onResume(){
+        super.onResume();
+        showBar();
+    }
+
+    //onPause is called when another activity takes foreground
+    @Override
+    public void onPause(){
+        super.onPause();
+        //first clear the previous list
+        clearData();
     }
 
     private void setupActionBar() {
@@ -89,7 +101,6 @@ public class SearchJobsActivity extends AppCompatActivity implements SearchJobsA
     private void setAdapter()
     {
         jobsAdapter = new SearchJobsAdapter(this,this);
-
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
